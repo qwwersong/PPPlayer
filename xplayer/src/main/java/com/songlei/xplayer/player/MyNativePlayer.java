@@ -29,6 +29,11 @@ public class MyNativePlayer implements IPlayer {
     }
 
     @Override
+    public void resume() {
+
+    }
+
+    @Override
     public void release() {
 
     }

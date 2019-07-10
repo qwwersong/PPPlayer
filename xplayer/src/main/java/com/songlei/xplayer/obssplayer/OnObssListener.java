@@ -3,7 +3,7 @@ package com.songlei.xplayer.obssplayer;
 /**
  * Created by songlei on 2018/11/12.
  */
-public interface OnPlayerListener {
+public interface OnObssListener {
 
     /**
      * 播放异常

@@ -17,6 +17,8 @@ public interface IPlayer {
 
     void pause();
 
+    void resume();
+
     void release();
 
     void setPlayPosition(int playPosition);

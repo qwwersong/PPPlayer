@@ -171,22 +171,47 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
             Log.e("xxx", "播放地址为空");
             return;
         }
-        prepare();
-        start();
+        if (mCurrentState == STATE_NO_PLAY) {
+            prepare();
+            start();
+        } else if (mCurrentState == STATE_PLAYING) {
+            pause();
+        } else if (mCurrentState == STATE_PAUSE) {
+            resume();
+        } else if (mCurrentState == STATE_COMPLETE) {
+            prepare();
+            start();
+        }
     }
 
-    /**
-     * 定义开始按键显示
-     */
     protected void updateStartImage() {
         ImageView imageView = (ImageView) mStartButton;
-//        if (mCurrentState == CURRENT_STATE_PLAYING) {
-//            imageView.setImageResource(R.drawable.ic_pause);
-//        } else if (mCurrentState == CURRENT_STATE_ERROR) {
-//            imageView.setImageResource(R.drawable.ic_pause);
-//        } else {
+        if (mCurrentState == STATE_PLAYING) {
+            imageView.setImageResource(R.drawable.ic_pause);
+        } else {
             imageView.setImageResource(R.drawable.ic_play);
-//        }
+        }
     }
 
+    @Override
+    public void onStateLayout(int state) {
+        switch (state) {
+            case STATE_NO_PLAY:
+
+                break;
+            case STATE_PREPARE:
+
+                break;
+            case STATE_PLAYING:
+
+                break;
+            case STATE_PAUSE:
+
+                break;
+            case STATE_COMPLETE:
+
+                break;
+        }
+        updateStartImage();
+    }
 }

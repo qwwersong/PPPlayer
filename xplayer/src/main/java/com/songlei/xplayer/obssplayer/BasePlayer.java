@@ -34,7 +34,7 @@ public abstract class BasePlayer {
 
     public abstract int getBufferTime();
 
-    public abstract void setOnPlayerListener(OnPlayerListener onPlayerListener);
+    public abstract void setOnObssListener(OnObssListener onObssListener);
 
     //0：不静音 1：静音
     public abstract void setMute(int mute);

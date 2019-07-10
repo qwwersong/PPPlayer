@@ -9,9 +9,9 @@ import android.view.Surface;
 
 import com.songlei.xplayer.base.CommonHandler;
 import com.songlei.xplayer.obssplayer.BasePlayer;
-import com.songlei.xplayer.obssplayer.OnPlayerListener;
+import com.songlei.xplayer.obssplayer.OnObssListener;
 import com.songlei.xplayer.obssplayer.PlayException;
-import com.songlei.xplayer.obssplayer.PlayerConstants;
+import com.songlei.xplayer.obssplayer.ObssConstants;
 
 
 /**
@@ -20,10 +20,10 @@ import com.songlei.xplayer.obssplayer.PlayerConstants;
 public class playerView extends BasePlayer implements CommonHandler.HandlerCallBack {
     private static final String TAG = "playerView";
     private CommonHandler mHandler;
-    private OnPlayerListener onPlayerListener;
+    private OnObssListener onObssListener;
     private Surface mSurface = null;
     // 默认全屏
-    private int mSacleType = PlayerConstants.VIDEO_SCALE_FILL;
+    private int mSacleType = ObssConstants.VIDEO_SCALE_FILL;
     private int playTime;
     private int playState;
     private boolean isStartPlay = false;
@@ -46,48 +46,53 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
 
     @Override
     public void handleMessage(Message msg) {
-        if (onPlayerListener == null) {
+        Log.e(TAG, "handleMessage onObssListener = " + onObssListener);
+        if (onObssListener == null) {
             return;
         }
         switch (msg.what) {
-            case PlayerConstants.VPC_OUT_OF_MEMORY:
-                playState = PlayerConstants.STATE_ERROR;
-                onPlayerListener.onError(new PlayException(PlayException.VPC_OUT_OF_MEMORY, "内存不足"));
+            case ObssConstants.VPC_OUT_OF_MEMORY:
+                playState = ObssConstants.STATE_ERROR;
+                onObssListener.onError(new PlayException(PlayException.VPC_OUT_OF_MEMORY, "内存不足"));
                 break;
-            case PlayerConstants.VPC_NO_SOURCE_DEMUX:
-                playState = PlayerConstants.STATE_ERROR;
-                onPlayerListener.onError(new PlayException(PlayException.VPC_NO_SOURCE_DEMUX, "没有数据处理器"));
+            case ObssConstants.VPC_NO_SOURCE_DEMUX:
+                playState = ObssConstants.STATE_ERROR;
+                onObssListener.onError(new PlayException(PlayException.VPC_NO_SOURCE_DEMUX, "没有数据处理器"));
                 break;
-            case PlayerConstants.VPC_MEDIA_SPEC_ERROR:
-                playState = PlayerConstants.STATE_ERROR;
-                onPlayerListener.onError(new PlayException(PlayException.VPC_MEDIA_SPEC_ERROR, "数据格式错误"));
+            case ObssConstants.VPC_MEDIA_SPEC_ERROR:
+                playState = ObssConstants.STATE_ERROR;
+                onObssListener.onError(new PlayException(PlayException.VPC_MEDIA_SPEC_ERROR, "数据格式错误"));
                 break;
-            case PlayerConstants.VPC_NO_PLAY_OBJECT:
-                playState = PlayerConstants.STATE_ERROR;
-                onPlayerListener.onError(new PlayException(PlayException.VPC_NO_PLAY_OBJECT, "无播放对象"));
+            case ObssConstants.VPC_NO_PLAY_OBJECT:
+                playState = ObssConstants.STATE_ERROR;
+                onObssListener.onError(new PlayException(PlayException.VPC_NO_PLAY_OBJECT, "无播放对象"));
                 break;
-            case PlayerConstants.VPC_NET_TIME_OUT:
-                playState = PlayerConstants.STATE_ERROR;
-                onPlayerListener.onError(new PlayException(PlayException.VPC_NET_TIME_OUT, "网络超时"));
+            case ObssConstants.VPC_NET_TIME_OUT:
+                playState = ObssConstants.STATE_ERROR;
+                onObssListener.onError(new PlayException(PlayException.VPC_NET_TIME_OUT, "网络超时"));
                 break;
-            case PlayerConstants.VPC_NETWORK_ERROR:
-                playState = PlayerConstants.STATE_ERROR;
-                onPlayerListener.onError(new PlayException(PlayException.VPC_NETWORK_ERROR, "网络错误"));
+            case ObssConstants.VPC_NETWORK_ERROR:
+                playState = ObssConstants.STATE_ERROR;
+                onObssListener.onError(new PlayException(PlayException.VPC_NETWORK_ERROR, "网络错误"));
                 break;
-            case PlayerConstants.VPC_START_PLAY:
-                playState = PlayerConstants.STATE_PLAYING;
-                onPlayerListener.onPlayState(PlayerConstants.STATE_PLAYING);
+            case ObssConstants.VPC_START_PLAY:
+                Log.e(TAG, "handleMessage Playing");
+                playState = ObssConstants.STATE_PLAYING;
+                onObssListener.onPlayState(ObssConstants.STATE_PLAYING);
                 break;
-            case PlayerConstants.VPC_PLAY_FINISH:
+            case ObssConstants.VPC_PLAY_FINISH:
                 stop(true);
                 break;
-            case PlayerConstants.VPC_START_BUFFER_DATA:
-            case PlayerConstants.VPC_PLAY_BUFFER:
-                playState = PlayerConstants.STATE_BUFFERING;
-                onPlayerListener.onPlayState(PlayerConstants.STATE_BUFFERING);
+            case ObssConstants.VPC_START_BUFFER_DATA:
+            case ObssConstants.VPC_PLAY_BUFFER:
+                playState = ObssConstants.STATE_BUFFERING;
+                onObssListener.onPlayState(ObssConstants.STATE_BUFFERING);
                 break;
-            case PlayerConstants.VPC_DELETE_FRAME:
+            case ObssConstants.VPC_DELETE_FRAME:
 
+                break;
+            case ObssConstants.VPC_NOTIFY_MEDIA_INFO:
+                onObssListener.onPlayState(ObssConstants.STATE_PREPARE);
                 break;
         }
     }
@@ -301,9 +306,9 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
 
     @Override
     public void stop(boolean isCallBack) {
-        playState = PlayerConstants.STATE_FINISH;
+        playState = ObssConstants.STATE_FINISH;
         if (isCallBack) {
-            onPlayerListener.onPlayState(PlayerConstants.STATE_FINISH);
+            onObssListener.onPlayState(ObssConstants.STATE_FINISH);
         }
         nativePlayerStop();
         nativeSetSurface(null);
@@ -311,8 +316,8 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
 
     @Override
     public void pause() {
-        playState = PlayerConstants.STATE_PAUSE;
-        onPlayerListener.onPlayState(PlayerConstants.STATE_PAUSE);
+        playState = ObssConstants.STATE_PAUSE;
+        onObssListener.onPlayState(ObssConstants.STATE_PAUSE);
         nativePlayerPause(0);
     }
 
@@ -333,8 +338,8 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
     }
 
     @Override
-    public void setOnPlayerListener(OnPlayerListener onPlayerListener) {
-        this.onPlayerListener = onPlayerListener;
+    public void setOnObssListener(OnObssListener onObssListener) {
+        this.onObssListener = onObssListener;
     }
 
     @Override

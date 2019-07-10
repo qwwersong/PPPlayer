@@ -1,6 +1,7 @@
 package com.songlei.xplayer.player;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.Surface;
 
 import com.songlei.xplayer.base.Option;
@@ -13,8 +14,6 @@ public class PlayerManager {
     private IPlayer player;
     private Context context;
 
-//    private PlayerListener playerListener;
-
     public PlayerManager(Context context){
         this.context = context;
     }
@@ -22,9 +21,11 @@ public class PlayerManager {
     public void initPlayer(Option option){
         switch (Option.getPlayerType()) {
             case Option.PLAYER_IJK:
+                Log.e("xxx", "创建播放器 Ijk");
                 player = new IjkPlayer(context);
                 break;
             case Option.PLAYER_OBSS:
+                Log.e("xxx", "创建播放器 Obss");
                 player = new ObssPlayer(context);
                 break;
 
@@ -43,6 +44,22 @@ public class PlayerManager {
         player.start();
     }
 
+    public void pause(){
+        player.pause();
+    }
+
+    public void resume(){
+        player.resume();
+    }
+
+    public void stop(){
+        player.stop();
+    }
+
+    public void release(){
+        player.release();
+    }
+
     public int getCurrentVideoWidth(){
         return player.getVideoWidth();
     }
@@ -52,7 +69,6 @@ public class PlayerManager {
     }
 
     public void setPlayerListener(PlayerListener playerListener){
-//        this.playerListener = playerListener;
         player.setPlayerListener(playerListener);
     }
 

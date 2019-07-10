@@ -81,7 +81,13 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
     public void pause() {
         if (mediaPlayer != null) {
             mediaPlayer.pause();
+            playerListener.onPlayerState(PlayerConstants.STATE_PAUSE);
         }
+    }
+
+    @Override
+    public void resume() {
+
     }
 
     @Override
@@ -162,34 +168,37 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
 
     @Override
     public void onCompletion(IMediaPlayer iMediaPlayer) {
-        playerListener.onCompletion();
+        playerListener.onPlayerState(PlayerConstants.STATE_COMPLETE);
+//        playerListener.onCompletion();
     }
 
     @Override
     public void onPrepared(IMediaPlayer iMediaPlayer) {
-        playerListener.onPrepared();
+        playerListener.onPlayerState(PlayerConstants.STATE_PREPARE);
+//        playerListener.onPrepared();
     }
 
     @Override
     public void onSeekComplete(IMediaPlayer iMediaPlayer) {
-        playerListener.onSeekComplete();
+//        playerListener.onSeekComplete();
     }
 
     @Override
     public boolean onError(IMediaPlayer iMediaPlayer, int what, int extra) {
-        playerListener.onError(what, extra);
+        playerListener.onPlayerError(what, extra);
+//        playerListener.onError(what, extra);
         return true;
     }
 
     @Override
     public boolean onInfo(IMediaPlayer iMediaPlayer, int what, int extra) {
-        playerListener.onInfo(what, extra);
+//        playerListener.onInfo(what, extra);
         return false;
     }
 
     @Override
     public void onVideoSizeChanged(IMediaPlayer iMediaPlayer, int width, int height, int sar_num, int sar_den) {
-        playerListener.onVideoSizeChanged(width, height);
+//        playerListener.onVideoSizeChanged(width, height);
     }
 
     @Override

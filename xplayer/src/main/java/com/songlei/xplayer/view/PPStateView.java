@@ -12,12 +12,18 @@ import android.view.View;
 import com.songlei.xplayer.R;
 import com.songlei.xplayer.base.Option;
 import com.songlei.xplayer.listener.PlayerListener;
+import com.songlei.xplayer.player.PlayerConstants;
 import com.songlei.xplayer.player.PlayerManager;
 
 /**
  * Created by songlei on 2019/07/02.
  */
 public abstract class PPStateView extends PPTextureRenderView {
+    public static final int STATE_NO_PLAY = PlayerConstants.STATE_NO_PLAY;
+    public static final int STATE_PLAYING = PlayerConstants.STATE_PLAYING;
+    public static final int STATE_PREPARE = PlayerConstants.STATE_PREPARE;
+    public static final int STATE_PAUSE = PlayerConstants.STATE_PAUSE;
+    public static final int STATE_COMPLETE = PlayerConstants.STATE_COMPLETE;
     //上下文
     protected Context mContext;
     //屏幕宽度
@@ -30,6 +36,8 @@ public abstract class PPStateView extends PPTextureRenderView {
     protected String mUrl;
     //播放器控制类
     protected PlayerManager mPlayerManager;
+    //当前的播放状态
+    protected int mCurrentState;
 
     public PPStateView(Context context) {
         super(context);
@@ -90,6 +98,22 @@ public abstract class PPStateView extends PPTextureRenderView {
         mPlayerManager.start();
     }
 
+    protected void pause(){
+        mPlayerManager.pause();
+    }
+
+    protected void resume(){
+        mPlayerManager.resume();
+    }
+
+    protected void stop(){
+        mPlayerManager.stop();
+    }
+
+    protected void release(){
+        mPlayerManager.release();
+    }
+
     @Override
     protected void releaseSurface(Surface surface) {
 
@@ -97,13 +121,11 @@ public abstract class PPStateView extends PPTextureRenderView {
 
     @Override
     public int getCurrentVideoWidth() {
-        Log.e("xxx", "PPStateView getCurrentVideoWidth = " + mPlayerManager.getCurrentVideoWidth());
         return mPlayerManager.getCurrentVideoWidth();
     }
 
     @Override
     public int getCurrentVideoHeight() {
-        Log.e("xxx", "PPStateView getCurrentVideoHeight = " + mPlayerManager.getCurrentVideoHeight());
         return mPlayerManager.getCurrentVideoHeight();
     }
 
@@ -119,33 +141,43 @@ public abstract class PPStateView extends PPTextureRenderView {
 
     private PlayerListener playerListener = new PlayerListener() {
         @Override
-        public void onCompletion() {
-
+        public void onPlayerState(int state) {
+            switch (state) {
+                case STATE_NO_PLAY:
+                    Log.e("xxx", "未播放");
+                    mCurrentState = STATE_NO_PLAY;
+                    onStateLayout(mCurrentState);
+                    break;
+                case STATE_PREPARE:
+                    Log.e("xxx", "准备中....");
+                    mCurrentState = STATE_PREPARE;
+                    addTextureView();
+                    onStateLayout(mCurrentState);
+                    break;
+                case STATE_PLAYING:
+                    Log.e("xxx", "播放中....");
+                    mCurrentState = STATE_PLAYING;
+                    onStateLayout(mCurrentState);
+                    break;
+                case STATE_PAUSE:
+                    Log.e("xxx", "暂停");
+                    mCurrentState = STATE_PAUSE;
+                    onStateLayout(mCurrentState);
+                    break;
+                case STATE_COMPLETE:
+                    Log.e("xxx", "播放结束");
+                    mCurrentState = STATE_COMPLETE;
+                    onStateLayout(mCurrentState);
+                    break;
+            }
         }
 
         @Override
-        public void onPrepared() {
-            addTextureView();
-        }
+        public void onPlayerError(int error, int extra) {
+            Log.e("xxx", "StateView onPlayerError error = " + error);
+            switch (error) {
 
-        @Override
-        public void onSeekComplete() {
-
-        }
-
-        @Override
-        public boolean onError(int what, int extra) {
-            return false;
-        }
-
-        @Override
-        public boolean onInfo(int what, int extra) {
-            return false;
-        }
-
-        @Override
-        public void onVideoSizeChanged(int width, int height) {
-
+            }
         }
     };
 
@@ -157,4 +189,10 @@ public abstract class PPStateView extends PPTextureRenderView {
      * 当前UI
      */
     public abstract int getLayoutId();
+
+    /**
+     * 显示对应状态的布局
+     * @param state 播放器状态
+     */
+    public abstract void onStateLayout(int state);
 }

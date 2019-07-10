@@ -3,27 +3,14 @@ package com.songlei.xplayer.obssplayer;
 /**
  * Created by songlei on 2018/11/21.
  */
-public class PlayerConstants {
-
-    public static final int PLAYER_MW = 1;          //梦网自研播放器
-    public static final int PLAYER_MEDIA = 2;       //系统播放器
-
-    public enum PlayerType {
-        Player_TYPE_MONTNETS, Player_TYPE_MEDIA
-    }
+public class ObssConstants {
     //-----------------播放状态------------------------//
     public static final int STATE_PLAYING = 1;      //正在播放
     public static final int STATE_PAUSE = 2;        //暂停
     public static final int STATE_FINISH = 3;       //结束
     public static final int STATE_BUFFERING = 4;    //缓冲
     public static final int STATE_ERROR = 5;        //错误
-
-    //-----------------直播流状态------------------------//
-    public static final int LIVE_STATUS_PREVIEW = 0;        //直播预告或视频未审核
-    public static final int LIVE_STATUS_LIVING = 1;         //直播中或视频上线
-    public static final int LIVE_STATUS_END = 2;            //直播结束或视频下线
-    public static final int LIVE_STATUS_ERROR = 3;          //直播异常中断或视频审核不通过
-    public static final int LIVE_STATUS_TIMEOUT = 4;        //直播过期
+    public static final int STATE_PREPARE = 6;      //准备
 
     //-----------------播放器缩放状态------------------------//
     public static final int VIDEO_SCALE_ORIGIN = 0;         //原始
