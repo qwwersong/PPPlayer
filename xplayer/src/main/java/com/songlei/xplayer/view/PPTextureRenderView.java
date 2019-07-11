@@ -8,6 +8,7 @@ import android.view.Surface;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.songlei.xplayer.base.Option;
 import com.songlei.xplayer.util.MeasureHelper;
 import com.songlei.xplayer.view.render.RenderView;
 import com.songlei.xplayer.view.render.effect.NoEffect;
@@ -71,16 +72,18 @@ public abstract class PPTextureRenderView extends FrameLayout implements ISurfac
 
     @Override
     public void onSurfaceAvailable(Surface surface) {
+        Log.e("xxx", "onSurfaceAvailable");
         setDisplay(surface);
     }
 
     @Override
     public void onSurfaceSizeChanged(Surface surface, int width, int height) {
-
+        Log.e("xxx", "onSurfaceSizeChanged");
     }
 
     @Override
     public boolean onSurfaceDestroyed(Surface surface) {
+        Log.e("xxx", "onSurfaceDestroyed");
         //清空释放
         setDisplay(null);
         //同一消息队列中去release
@@ -93,21 +96,21 @@ public abstract class PPTextureRenderView extends FrameLayout implements ISurfac
 
     }
 
+    protected void changeViewShowType(){
+        if (mTextureView != null) {
+            boolean typeChanged = (Option.getShowType() != Option.SCREEN_TYPE_DEFAULT);
+            int params =  (typeChanged) ? ViewGroup.LayoutParams.WRAP_CONTENT : ViewGroup.LayoutParams.MATCH_PARENT;
+            ViewGroup.LayoutParams layoutParams = mTextureView.getLayoutParams();
+            layoutParams.width = params;
+            layoutParams.height = params;
+            mTextureView.setLayoutParams(layoutParams);
+        }
+    }
+
     //设置播放
     protected abstract void setDisplay(Surface surface);
 
     //释放
     protected abstract void releaseSurface(Surface surface);
 
-//    @Override
-//    public int getCurrentVideoWidth() {
-//        Log.e("xxx", "PPTextureRenderView getCurrentVideoWidth");
-//        return 0;
-//    }
-//
-//    @Override
-//    public int getCurrentVideoHeight() {
-//        Log.e("xxx", "PPTextureRenderView getCurrentVideoHeight");
-//        return 0;
-//    }
 }

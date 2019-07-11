@@ -18,5 +18,7 @@ public class PlayerConstants {
     public static final int STATE_COMPLETE = 4;
     //异常
     public static final int STATE_ERROR = 5;
+    //缓冲
+    public static final int STATE_BUFFERING = 6;
 
 }

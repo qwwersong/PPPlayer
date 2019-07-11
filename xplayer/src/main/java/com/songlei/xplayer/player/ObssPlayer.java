@@ -43,7 +43,7 @@ public class ObssPlayer implements IPlayer {
                     playerListener.onPlayerState(PlayerConstants.STATE_COMPLETE);
                     break;
                 case ObssConstants.STATE_BUFFERING:
-
+                    playerListener.onPlayerState(PlayerConstants.STATE_BUFFERING);
                     break;
                 case ObssConstants.STATE_PREPARE:
                     Log.e("xxx", "Obss notify media info");

@@ -60,12 +60,24 @@ public class PlayerManager {
         player.release();
     }
 
+    public void seekTo(long time){
+        player.seekTo(time);
+    }
+
     public int getCurrentVideoWidth(){
         return player.getVideoWidth();
     }
 
     public int getCurrentVideoHeight() {
         return player.getVideoHeight();
+    }
+
+    public long getCurrentPosition(){
+        return player.getCurrentPosition();
+    }
+
+    public long getDuration(){
+        return player.getDuration();
     }
 
     public void setPlayerListener(PlayerListener playerListener){

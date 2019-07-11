@@ -24,6 +24,7 @@ public abstract class PPStateView extends PPTextureRenderView {
     public static final int STATE_PREPARE = PlayerConstants.STATE_PREPARE;
     public static final int STATE_PAUSE = PlayerConstants.STATE_PAUSE;
     public static final int STATE_COMPLETE = PlayerConstants.STATE_COMPLETE;
+    public static final int STATE_BUFFERING = PlayerConstants.STATE_BUFFERING;
     //上下文
     protected Context mContext;
     //屏幕宽度
@@ -38,6 +39,8 @@ public abstract class PPStateView extends PPTextureRenderView {
     protected PlayerManager mPlayerManager;
     //当前的播放状态
     protected int mCurrentState;
+    //当前播放时间
+    protected long mCurrentPosition;
 
     public PPStateView(Context context) {
         super(context);
@@ -66,7 +69,7 @@ public abstract class PPStateView extends PPTextureRenderView {
 
         mAudioManager = (AudioManager) mContext.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         mPlayerManager = new PlayerManager(context);
-        Option.setPlayerType(Option.PLAYER_OBSS);
+        Option.setPlayerType(Option.PLAYER_IJK);
         mPlayerManager.initPlayer(null);
         mPlayerManager.setPlayerListener(playerListener);
     }
@@ -112,6 +115,10 @@ public abstract class PPStateView extends PPTextureRenderView {
 
     protected void release(){
         mPlayerManager.release();
+    }
+
+    protected void seekTo(int time){
+        mPlayerManager.seekTo(time);
     }
 
     @Override
@@ -169,6 +176,11 @@ public abstract class PPStateView extends PPTextureRenderView {
                     mCurrentState = STATE_COMPLETE;
                     onStateLayout(mCurrentState);
                     break;
+                case STATE_BUFFERING:
+                    Log.e("xxx", "缓冲中");
+                    mCurrentState = STATE_BUFFERING;
+                    onStateLayout(mCurrentState);
+                    break;
             }
         }
 
@@ -180,6 +192,22 @@ public abstract class PPStateView extends PPTextureRenderView {
             }
         }
     };
+
+    public int getCurrentPosition(){
+        int position = 0;
+        if (mCurrentState == STATE_PLAYING || mCurrentState == STATE_PAUSE) {
+            position = (int) mPlayerManager.getCurrentPosition();
+        }
+        if (position == 0 && mCurrentPosition > 0) {
+            return (int) mCurrentPosition;
+        }
+        return position;
+    }
+
+    public int getDuration() {
+        int duration = (int) mPlayerManager.getDuration();
+        return duration;
+    }
 
     /*
       =========================================抽象接口===============================================

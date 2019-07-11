@@ -46,9 +46,9 @@
 
         <TextView
             android:id="@+id/current"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
+            android:layout_marginLeft="10dp"
             android:text="00:00"
             android:textColor="#ffffff" />
 
@@ -69,9 +69,9 @@
 
         <TextView
             android:id="@+id/total"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
+            android:layout_marginRight="10dp"
             android:text="00:00"
             android:textColor="#ffffff" />
 
@@ -120,9 +120,21 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:paddingLeft="10dp"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/moreScale"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:minEms="5"
+            android:paddingLeft="10dp"
+            android:text="默认比例"
+            android:textColor="@android:color/white"
+            android:textSize="13sp" />
     </LinearLayout>
 
     <!--<moe.codeest.enviews.ENDownloadView-->

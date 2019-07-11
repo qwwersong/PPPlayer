@@ -3,6 +3,7 @@ package com.songlei.xplayer.player;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Surface;
 
 import com.songlei.xplayer.listener.PlayerListener;
@@ -21,7 +22,7 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
         IMediaPlayer.OnPreparedListener, IMediaPlayer.OnSeekCompleteListener,
         IMediaPlayer.OnErrorListener, IMediaPlayer.OnInfoListener,
         IMediaPlayer.OnVideoSizeChangedListener, IMediaPlayer.OnBufferingUpdateListener {
-    private static int logLevel = IjkMediaPlayer.IJK_LOG_DEFAULT;
+    private static int logLevel = IjkMediaPlayer.IJK_LOG_SILENT;
     private static IjkLibLoader ijkLibLoader;
     private IjkMediaPlayer mediaPlayer;
     private Surface surface;
@@ -33,6 +34,7 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
 
     public IjkPlayer(Context context){
         mediaPlayer = (ijkLibLoader == null) ? new IjkMediaPlayer() : new IjkMediaPlayer(ijkLibLoader);
+        mediaPlayer.setLogEnabled(false);
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setOnNativeInvokeListener(new IjkMediaPlayer.OnNativeInvokeListener() {
             @Override
@@ -67,6 +69,7 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
     public void start() {
         if (mediaPlayer != null) {
             mediaPlayer.start();
+            playerListener.onPlayerState(PlayerConstants.STATE_PLAYING);
         }
     }
 
@@ -87,7 +90,10 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
 
     @Override
     public void resume() {
-
+        if (mediaPlayer != null) {
+            mediaPlayer.start();
+            playerListener.onPlayerState(PlayerConstants.STATE_PLAYING);
+        }
     }
 
     @Override
@@ -169,40 +175,47 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
     @Override
     public void onCompletion(IMediaPlayer iMediaPlayer) {
         playerListener.onPlayerState(PlayerConstants.STATE_COMPLETE);
-//        playerListener.onCompletion();
     }
 
     @Override
     public void onPrepared(IMediaPlayer iMediaPlayer) {
         playerListener.onPlayerState(PlayerConstants.STATE_PREPARE);
-//        playerListener.onPrepared();
     }
 
     @Override
     public void onSeekComplete(IMediaPlayer iMediaPlayer) {
-//        playerListener.onSeekComplete();
     }
 
     @Override
     public boolean onError(IMediaPlayer iMediaPlayer, int what, int extra) {
         playerListener.onPlayerError(what, extra);
-//        playerListener.onError(what, extra);
         return true;
     }
 
     @Override
     public boolean onInfo(IMediaPlayer iMediaPlayer, int what, int extra) {
-//        playerListener.onInfo(what, extra);
+        Log.e("xxx", "Ijk onInfo what = " + what);
+        switch (what) {
+            case IjkMediaPlayer.MEDIA_INFO_BUFFERING_END:
+                playerListener.onPlayerState(PlayerConstants.STATE_PLAYING);
+                break;
+            case IjkMediaPlayer.MEDIA_INFO_BUFFERING_START:
+                playerListener.onPlayerState(PlayerConstants.STATE_BUFFERING);
+                break;
+            case IjkMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
+                playerListener.onPlayerState(PlayerConstants.STATE_PLAYING);
+                break;
+        }
         return false;
     }
 
     @Override
     public void onVideoSizeChanged(IMediaPlayer iMediaPlayer, int width, int height, int sar_num, int sar_den) {
-//        playerListener.onVideoSizeChanged(width, height);
+
     }
 
     @Override
-    public void onBufferingUpdate(IMediaPlayer iMediaPlayer, int i) {
+    public void onBufferingUpdate(IMediaPlayer iMediaPlayer, int percent) {
 
     }
 }

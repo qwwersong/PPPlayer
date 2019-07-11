@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import com.songlei.xplayer.util.OrientationUtil;
 import com.songlei.xplayer.util.PlayerLayoutHelper;
@@ -41,17 +42,18 @@ public abstract class PPOrientationView extends PPControlView {
         mSystemUiVisibility = ((Activity) context).getWindow().getDecorView().getSystemUiVisibility();
         mLayoutHelper = new PlayerLayoutHelper(context);
         mLayoutHelper.setLayoutType(this, PlayerLayoutHelper.TYPE_BIG);
+        mOrientationUtil = new OrientationUtil((Activity) context);
     }
 
     //退出全屏
     public void onBackFullScreen(){
         if (mIfCurrentIsFullScreen) {//全屏时
             mIfCurrentIsFullScreen = false;
-            if (mOrientationUtil != null) {
-                mOrientationUtil.setEnable(false);
-                mOrientationUtil.releaseListener();
-                mOrientationUtil = null;
-            }
+//            if (mOrientationUtil != null) {
+////                mOrientationUtil.setEnable(false);
+//                mOrientationUtil.releaseListener();
+//                mOrientationUtil = null;
+//            }
             mLayoutHelper.setLayoutType(this, PlayerLayoutHelper.TYPE_BIG);
             //TODO::回调退出全屏
             //UI显示
@@ -76,8 +78,7 @@ public abstract class PPOrientationView extends PPControlView {
         mLayoutHelper.setLayoutType(this, PlayerLayoutHelper.TYPE_FULL);
 
         mIfCurrentIsFullScreen = true;
-        mOrientationUtil = new OrientationUtil((Activity) context);
-        mOrientationUtil.setEnable(true);
+//        mOrientationUtil.setEnable(true);
 //        mOrientationUtil.setRotateWithSystem();
 
 //        final boolean isVertical = isVerticalFullByVideoSize();
@@ -95,17 +96,19 @@ public abstract class PPOrientationView extends PPControlView {
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (newConfig.orientation == ActivityInfo.SCREEN_ORIENTATION_USER) {
+            Log.e("xxx", "进入全屏 mIfCurrentIsFullScreen = " + mIfCurrentIsFullScreen);
             if (!mIfCurrentIsFullScreen) {
                 onEnterFullScreen(mContext, true, true);//TODO::actionBar和statusBar两个值的设置
             }
         } else {
             //新版本isIfCurrentIsFullscreen的标志位内部提前设置了，所以不会和手动点击冲突
+            Log.e("xxx", "退出全屏 mIfCurrentIsFullScreen = " + mIfCurrentIsFullScreen);
             if (mIfCurrentIsFullScreen) {
                 onBackFullScreen();
             }
-            if (mOrientationUtil != null) {
-                mOrientationUtil.setEnable(true);
-            }
+//            if (mOrientationUtil != null) {
+//                mOrientationUtil.setEnable(true);
+//            }
         }
     }
 }
