@@ -7,9 +7,10 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.songlei.xplayer.view.PPVideoPlayerView
-        android:id="@+id/pp_video_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    <Button
+        android:id="@+id/bt_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="打开播放器"/>
 
 </RelativeLayout>

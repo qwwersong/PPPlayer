@@ -109,11 +109,11 @@ public abstract class PPStateView extends PPTextureRenderView {
         mPlayerManager.resume();
     }
 
-    protected void stop(){
+    public void stop(){
         mPlayerManager.stop();
     }
 
-    protected void release(){
+    public void release(){
         mPlayerManager.release();
     }
 

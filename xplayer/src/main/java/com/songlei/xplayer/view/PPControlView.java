@@ -1,6 +1,7 @@
 package com.songlei.xplayer.view;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -52,6 +53,39 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     protected RelativeLayout mThumbImageViewLayout;
     //底部进度调
     protected ProgressBar mBottomProgressBar;
+    //==============================onTouch参数==========================
+    //触摸的X
+    protected float mDownX;
+    //触摸的Y
+    protected float mDownY;
+    //移动的Y
+    protected float mMoveY;
+
+    //触摸的是否进度条
+    protected boolean mTouchingProgressBar = false;
+    //是否改变音量
+    protected boolean mChangeVolume = false;
+    //是否改变播放进度
+    protected boolean mChangePosition = false;
+    //触摸显示虚拟按键
+    protected boolean mShowVKey = false;
+    //是否改变亮度
+    protected boolean mBrightness = false;
+    //是否首次触摸
+    protected boolean mFirstTouch = false;
+
+    //手动改变滑动的位置
+    protected int mSeekTimePosition;
+    //手势偏差值
+    protected int mThreshold = 80;
+    //手指放下时播放的位置
+    protected int mDownPosition;
+    //手动滑动的起始偏移位置
+    protected int mSeekEndOffset;
+    //手势调节音量的大小
+    protected int mGestureDownVolume;
+    //触摸滑动进度的比例系数
+    protected float mSeekRatio = 1;
     //==============================控制参数=============================
     //是否隐藏虚拟按键
     protected boolean mHideKey = true;
@@ -59,12 +93,16 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     protected boolean mTouchProgressBar;
     //正在seek
     protected boolean mHadSeekTouch = false;
+    //锁定屏幕点击
+    protected boolean mLockCurScreen;
     //进度定时器
     protected Timer updateProcessTimer;
-    //触摸显示消失定时
-    protected Timer mDismissControlViewTimer;
     //进度条定时器
     protected ProgressTimerTask mProgressTimerTask;
+    //触摸显示消失定时
+    protected Timer mDismissControlViewTimer;
+    //触摸显示消失定时任务
+    protected DismissControlViewTimerTask mDismissControlViewTimerTask;
 
 
     public PPControlView(Context context) {
@@ -141,29 +179,136 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
             mLockScreen.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    if (mCurrentState == CURRENT_STATE_AUTO_COMPLETE ||
-//                            mCurrentState == CURRENT_STATE_ERROR) {
-//                        return;
-//                    }
-//                    lockTouchLogic();
-//                    if (mLockClickListener != null) {
-//                        mLockClickListener.onClick(v, mLockCurScreen);
-//                    }
+                    if (mCurrentState == STATE_COMPLETE) {
+                        return;
+                    }
+                    lockTouchLogic();
                 }
             });
         }
+
+        mSeekEndOffset = CommonUtil.dip2px(getContext(), 50);
     }
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.start) {
+        int id = v.getId();
+        if (id == R.id.start) {
             clickStartIcon();
+        } else if (id == R.id.surface_container) {
+            startDismissControlViewTimer();
         }
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+
+        int id = v.getId();
+        float x = event.getX();
+        float y = event.getY();
+
+        if (id == R.id.surface_container) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mDownX = x;
+                    mDownY = y;
+                    mChangeVolume = false;
+                    mChangePosition = false;
+                    mBrightness = false;
+                    mFirstTouch = true;
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    float deltaX = x - mDownX;
+                    float deltaY = y - mDownY;
+
+                    float absDeltaX = Math.abs(deltaX);
+                    float absDeltaY = Math.abs(deltaY);
+
+                    touchSurfaceMoveLogic(absDeltaX, absDeltaY);
+                    touchSurfaceMove(deltaX, deltaY, y);
+
+                    break;
+                case MotionEvent.ACTION_UP:
+                    startDismissControlViewTimer();
+                    startProgressTimer();
+
+                    touchSurfaceUp();
+                    break;
+            }
+        }
+//        else if (id == R.id.progress) {
+//
+//        }
+
         return false;
+    }
+
+    protected void touchSurfaceMoveLogic(float absDeltaX, float absDeltaY){
+        int curWidth = CommonUtil.getCurrentScreenLand(CommonUtil.getActivityContext(getContext())) ? mScreenHeight : mScreenWidth;
+
+        Log.e("xxx", "absDeltaX = " + absDeltaX + " absDeltaY = " + absDeltaY);
+        if (absDeltaX > mThreshold || absDeltaY > mThreshold) {//超过偏差值，认定滑动
+            //因为会多次调用，不能用else if会两个条件都满足
+            //TODO::简化逻辑表达式
+            if (absDeltaX >= mThreshold) {//认定横向滑动
+                Log.e("xxx", "横向滑动");
+                mChangePosition = true;
+                mDownPosition = getCurrentPosition();
+            } else {//认定纵向滑动
+                Log.e("xxx", "纵向滑动");
+                int screenHeight = CommonUtil.getScreenHeight(getContext());
+                Log.e("xxx", "screenHeight = " + screenHeight + " mDownY = " + mDownY + " 差值 = " + Math.abs(screenHeight - mDownY));
+                Log.e("xxx", "mSeekEndOffset = " + mSeekEndOffset);
+                boolean noEnd = Math.abs(screenHeight - mDownY) > mSeekEndOffset;//TODO::这个表达式是什么意思?
+                if (mFirstTouch) {
+                    mBrightness = (mDownX < curWidth * 0.5f) && noEnd;//是否调节亮度，在左边屏幕且？
+                    mFirstTouch = false;
+                }
+                if (!mBrightness) {
+                    mChangeVolume = noEnd;//是否调节音量
+                    mGestureDownVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                }
+            }
+        }
+    }
+
+    protected void touchSurfaceMove(float deltaX, float deltaY, float y){
+        int curWidth = CommonUtil.getCurrentScreenLand(CommonUtil.getActivityContext(getContext())) ? mScreenHeight : mScreenWidth;
+        int curHeight = CommonUtil.getCurrentScreenLand(CommonUtil.getActivityContext(getContext())) ? mScreenWidth : mScreenHeight;
+
+        if (mChangePosition) {//调节播放进度
+            int duration = getDuration();
+
+            mSeekTimePosition = (int) (mDownPosition + (deltaX * duration / curWidth) / mSeekRatio);
+            if (mSeekTimePosition > duration) {
+                mSeekTimePosition = duration;
+            }
+            String seekTime = CommonUtil.stringForTime(mSeekTimePosition);
+            String totalTime = CommonUtil.stringForTime(duration);
+            showProgressDialog(deltaX, seekTime, mSeekTimePosition, totalTime, duration);
+        } else if (mChangeVolume) {//调节音量
+
+        } else if (mBrightness) {//调节亮度
+
+        }
+    }
+
+    protected void touchSurfaceUp(){
+        dismissProgressDialog();
+        dismissVolumeDialog();
+        dismissBrightnessDialog();
+        if (mChangePosition && (mCurrentState == STATE_PLAYING || mCurrentState == STATE_PAUSE)) {
+            seekTo(mSeekTimePosition);
+            int duration = getDuration();
+            int progress = mSeekTimePosition * 100 / (duration == 0 ? 1 : duration);
+            if (mProgressBar != null) {
+                mProgressBar.setProgress(progress);
+            }
+        } else if (mChangeVolume) {
+            //回调
+        } else if (mBrightness) {
+            //回调
+        }
     }
 
     public void clickStartIcon() {
@@ -184,15 +329,6 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         }
     }
 
-    protected void updateStartImage() {
-        ImageView imageView = (ImageView) mStartButton;
-        if (mCurrentState == STATE_PLAYING) {
-            imageView.setImageResource(R.drawable.ic_pause);
-        } else {
-            imageView.setImageResource(R.drawable.ic_play);
-        }
-    }
-
     @Override
     public void onStateLayout(int state) {
         switch (state) {
@@ -205,9 +341,10 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
             case STATE_PLAYING:
                 startProgressTimer();
                 mLoadingProgressBar.setVisibility(INVISIBLE);
+                startDismissControlViewTimer();
                 break;
             case STATE_PAUSE:
-
+                cancelDismissControlViewTimer();
                 break;
             case STATE_COMPLETE:
                 stopProgressTimer();
@@ -221,21 +358,12 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         updateStartImage();
     }
 
-    public void startProgressTimer(){
-        stopProgressTimer();
-        updateProcessTimer = new Timer();
-        mProgressTimerTask = new ProgressTimerTask();
-        updateProcessTimer.schedule(mProgressTimerTask, 0, 300);
-    }
-
-    public void stopProgressTimer(){
-        if (updateProcessTimer != null) {
-            updateProcessTimer.cancel();
-            updateProcessTimer = null;
-        }
-        if (mProgressTimerTask != null) {
-            mProgressTimerTask.cancel();
-            mProgressTimerTask = null;
+    protected void updateStartImage() {
+        ImageView imageView = (ImageView) mStartButton;
+        if (mCurrentState == STATE_PLAYING) {
+            imageView.setImageResource(R.drawable.ic_pause);
+        } else {
+            imageView.setImageResource(R.drawable.ic_play);
         }
     }
 
@@ -254,6 +382,26 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         int time = seekBar.getProgress() * getDuration() / 100;
         seekTo(time);
         mHadSeekTouch = false;
+    }
+
+    //开始更新进度条
+    public void startProgressTimer(){
+        stopProgressTimer();
+        updateProcessTimer = new Timer();
+        mProgressTimerTask = new ProgressTimerTask();
+        updateProcessTimer.schedule(mProgressTimerTask, 0, 300);
+    }
+
+    //停止更新进度条
+    public void stopProgressTimer(){
+        if (updateProcessTimer != null) {
+            updateProcessTimer.cancel();
+            updateProcessTimer = null;
+        }
+        if (mProgressTimerTask != null) {
+            mProgressTimerTask.cancel();
+            mProgressTimerTask = null;
+        }
     }
 
     private class ProgressTimerTask extends TimerTask {
@@ -290,24 +438,70 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         }
     }
 
-//    private SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
-//        @Override
-//        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//
-//        }
-//
-//        @Override
-//        public void onStartTrackingTouch(SeekBar seekBar) {
-//            mHadSeekTouch = true;
-//            Log.e("xxx", "=========onStartTrackingTouch mHadSeekTouch = " + mHadSeekTouch);
-//        }
-//
-//        @Override
-//        public void onStopTrackingTouch(SeekBar seekBar) {
-//            int time = seekBar.getProgress() * getDuration() / 100;
-//            seekTo(time);
-//            mHadSeekTouch = false;
-//        }
-//    };
+    protected void startDismissControlViewTimer(){
+        cancelDismissControlViewTimer();
+        mDismissControlViewTimer = new Timer();
+        mDismissControlViewTimerTask = new DismissControlViewTimerTask();
+        mDismissControlViewTimer.schedule(mDismissControlViewTimerTask, 2500);
+    }
+
+    protected void cancelDismissControlViewTimer(){
+        if (mDismissControlViewTimer != null) {
+            mDismissControlViewTimer.cancel();
+            mDismissControlViewTimer = null;
+        }
+        if (mDismissControlViewTimerTask != null) {
+            mDismissControlViewTimerTask.cancel();
+            mDismissControlViewTimerTask = null;
+        }
+    }
+
+    private class DismissControlViewTimerTask extends TimerTask {
+
+        @Override
+        public void run() {
+            if (mCurrentState != STATE_NO_PLAY && mCurrentState != STATE_COMPLETE) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        hideAllWidget();
+                        setViewShowState(mLockScreen, GONE);
+                    }
+                });
+            }
+        }
+    }
+
+    public void setViewShowState(View view, int visibility){
+        if (view != null) {
+            view.setVisibility(visibility);
+        }
+    }
+
+    protected void lockTouchLogic(){
+        if (mLockCurScreen) {
+            mLockCurScreen = false;
+            mLockScreen.setImageResource(R.drawable.unlock);
+            showAllWidget();
+        } else {
+            mLockCurScreen = true;
+            mLockScreen.setImageResource(R.drawable.lock);
+            hideAllWidget();
+        }
+    }
+
+    protected abstract void hideAllWidget();
+
+    protected abstract void showAllWidget();
+
+    protected abstract void showProgressDialog(float deltaX,
+                                               String seekTime, int seekTimePosition,
+                                               String totalTime, int totalTimeDuration);
+
+    protected abstract void dismissProgressDialog();
+
+    protected abstract void dismissVolumeDialog();
+
+    protected abstract void dismissBrightnessDialog();
 
 }

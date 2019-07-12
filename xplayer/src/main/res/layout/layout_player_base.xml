@@ -176,7 +176,7 @@
             android:layout_below="@+id/pb_loading"
             android:layout_marginTop="5dp"
             android:textColor="@android:color/white"
-            android:text="载入中，请稍后" />
+            android:text="爱的魔力转圈圈..." />
 
     </RelativeLayout>
 

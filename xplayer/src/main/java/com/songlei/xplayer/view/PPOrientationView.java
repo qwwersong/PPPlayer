@@ -21,7 +21,7 @@ public abstract class PPOrientationView extends PPControlView {
     protected int mSystemUiVisibility;//TODO::如何显示
     protected PlayerLayoutHelper mLayoutHelper;
     //当前是否全屏
-    protected boolean mIfCurrentIsFullScreen = false;
+    public boolean mIfCurrentIsFullScreen = false;
 
     public PPOrientationView(Context context) {
         super(context);
@@ -38,7 +38,7 @@ public abstract class PPOrientationView extends PPControlView {
         initData(context);
     }
 
-    private void initData(Context context){
+    private void initData(Context context) {
         mSystemUiVisibility = ((Activity) context).getWindow().getDecorView().getSystemUiVisibility();
         mLayoutHelper = new PlayerLayoutHelper(context);
         mLayoutHelper.setLayoutType(this, PlayerLayoutHelper.TYPE_BIG);
@@ -46,49 +46,28 @@ public abstract class PPOrientationView extends PPControlView {
     }
 
     //退出全屏
-    public void onBackFullScreen(){
-        if (mIfCurrentIsFullScreen) {//全屏时
-            mIfCurrentIsFullScreen = false;
-//            if (mOrientationUtil != null) {
-////                mOrientationUtil.setEnable(false);
-//                mOrientationUtil.releaseListener();
-//                mOrientationUtil = null;
-//            }
-            mLayoutHelper.setLayoutType(this, PlayerLayoutHelper.TYPE_BIG);
-            //TODO::回调退出全屏
-            //UI显示
-            if (mHideKey) {
-                PlayerLayoutHelper.showNavKey(mContext, mSystemUiVisibility);
-            }
-            PlayerLayoutHelper.showSupportActionBar(mContext, true, true);
-        } else {//非全屏时
-            //退出界面
+    public void onExitFullScreen() {
+        mIfCurrentIsFullScreen = false;
+        mLayoutHelper.setLayoutType(this, PlayerLayoutHelper.TYPE_BIG);
+        if (mHideKey) {
+            PlayerLayoutHelper.showNavKey(mContext, mSystemUiVisibility);
         }
+        PlayerLayoutHelper.showSupportActionBar(mContext, true, true);
+
+        showVerticalScreen();
     }
 
     //进入全屏
-    public void onEnterFullScreen(Context context, boolean actionBar, boolean statusBar){
+    public void onEnterFullScreen(Context context, boolean actionBar, boolean statusBar) {
+        mIfCurrentIsFullScreen = true;
+        mLayoutHelper.setLayoutType(this, PlayerLayoutHelper.TYPE_FULL);
         mSystemUiVisibility = ((Activity) context).getWindow().getDecorView().getSystemUiVisibility();
-
-        PlayerLayoutHelper.hideSupportActionBar(mContext, actionBar, statusBar);
-
         if (mHideKey) {
             PlayerLayoutHelper.hideNavKey(mContext);
         }
-        mLayoutHelper.setLayoutType(this, PlayerLayoutHelper.TYPE_FULL);
+        PlayerLayoutHelper.hideSupportActionBar(mContext, actionBar, statusBar);
 
-        mIfCurrentIsFullScreen = true;
-//        mOrientationUtil.setEnable(true);
-//        mOrientationUtil.setRotateWithSystem();
-
-//        final boolean isVertical = isVerticalFullByVideoSize();
-//        final boolean isLockLand = isLockLandByAutoFullSize();
-//
-//        if (!isVertical && isLockLand) {
-//            mOrientationUtils.resolveByClick();
-//        }
-
-        //TODO::回调进入全屏
+        showFullScreen();
     }
 
     //旋转处理
@@ -101,14 +80,14 @@ public abstract class PPOrientationView extends PPControlView {
                 onEnterFullScreen(mContext, true, true);//TODO::actionBar和statusBar两个值的设置
             }
         } else {
-            //新版本isIfCurrentIsFullscreen的标志位内部提前设置了，所以不会和手动点击冲突
             Log.e("xxx", "退出全屏 mIfCurrentIsFullScreen = " + mIfCurrentIsFullScreen);
             if (mIfCurrentIsFullScreen) {
-                onBackFullScreen();
+                onExitFullScreen();
             }
-//            if (mOrientationUtil != null) {
-//                mOrientationUtil.setEnable(true);
-//            }
         }
     }
+
+    protected abstract void showFullScreen();
+
+    protected abstract void showVerticalScreen();
 }
