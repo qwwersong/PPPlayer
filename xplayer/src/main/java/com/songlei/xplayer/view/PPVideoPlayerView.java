@@ -155,6 +155,14 @@ public class PPVideoPlayerView extends PPOrientationView {
         onExitFullScreen();
     }
 
+    public void onPause(){
+        clickStartIcon();
+    }
+
+    public void onResume(){
+        clickStartIcon();
+    }
+
     public void setPPPlayerViewListener(PPPlayerViewListener mPPPlayerViewListener){
         this.mPPPlayerViewListener = mPPPlayerViewListener;
     }
@@ -167,7 +175,7 @@ public class PPVideoPlayerView extends PPOrientationView {
 
     @Override
     protected void showVerticalScreen() {
-        setViewShowState(mLockScreen, INVISIBLE);
+        setViewShowState(mLockScreen, GONE);
     }
 
     @Override
@@ -183,23 +191,43 @@ public class PPVideoPlayerView extends PPOrientationView {
     }
 
     @Override
+    protected void onClickUiToggle() {
+        //TODO::区分状态、横竖屏、操作其他控制按钮的时候重置消失时间
+        if (mIfCurrentIsFullScreen && mLockCurScreen) {
+            setViewShowState(mLockScreen, VISIBLE);
+            return;
+        }
+        if (mBottomContainer.getVisibility() == VISIBLE) {
+            //隐藏
+            setViewShowState(mTopContainer, INVISIBLE);
+            setViewShowState(mBottomContainer, INVISIBLE);
+            setViewShowState(mLockScreen, GONE);
+        } else {
+            //显示
+            setViewShowState(mTopContainer, VISIBLE);
+            setViewShowState(mBottomContainer, VISIBLE);
+            setViewShowState(mLockScreen, (mIfCurrentIsFullScreen) ? VISIBLE : GONE);
+        }
+    }
+
+    @Override
     protected void showProgressDialog(float deltaX, String seekTime, int seekTimePosition, String totalTime, int totalTimeDuration) {
         if (mProgressDialog == null) {
             View localView = LayoutInflater.from(getContext()).inflate(getProgressDialogLayoutId(), null);
             if (localView.findViewById(getProgressDialogProgressId()) instanceof ProgressBar) {
-                mDialogProgressBar = ((ProgressBar) localView.findViewById(getProgressDialogProgressId()));
+                mDialogProgressBar = localView.findViewById(getProgressDialogProgressId());
                 if (mDialogProgressBarDrawable != null) {
                     mDialogProgressBar.setProgressDrawable(mDialogProgressBarDrawable);
                 }
             }
             if (localView.findViewById(getProgressDialogCurrentDurationTextId()) instanceof TextView) {
-                mDialogSeekTime = ((TextView) localView.findViewById(getProgressDialogCurrentDurationTextId()));
+                mDialogSeekTime = localView.findViewById(getProgressDialogCurrentDurationTextId());
             }
             if (localView.findViewById(getProgressDialogAllDurationTextId()) instanceof TextView) {
-                mDialogTotalTime = ((TextView) localView.findViewById(getProgressDialogAllDurationTextId()));
+                mDialogTotalTime = localView.findViewById(getProgressDialogAllDurationTextId());
             }
             if (localView.findViewById(getProgressDialogImageId()) instanceof ImageView) {
-                mDialogIcon = ((ImageView) localView.findViewById(getProgressDialogImageId()));
+                mDialogIcon = localView.findViewById(getProgressDialogImageId());
             }
             mProgressDialog = new Dialog(getContext(), R.style.video_style_dialog_progress);
             mProgressDialog.setContentView(localView);

@@ -41,6 +41,8 @@ public abstract class PPStateView extends PPTextureRenderView {
     protected int mCurrentState;
     //当前播放时间
     protected long mCurrentPosition;
+    //是否播放过
+    protected boolean mHadPlay = false;
 
     public PPStateView(Context context) {
         super(context);
@@ -164,6 +166,7 @@ public abstract class PPStateView extends PPTextureRenderView {
                 case STATE_PLAYING:
                     Log.e("xxx", "播放中....");
                     mCurrentState = STATE_PLAYING;
+                    mHadPlay = true;
                     onStateLayout(mCurrentState);
                     break;
                 case STATE_PAUSE:

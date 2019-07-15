@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -196,9 +197,30 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         if (id == R.id.start) {
             clickStartIcon();
         } else if (id == R.id.surface_container) {
+            Log.e("xxx", "onClick surface_container");
             startDismissControlViewTimer();
         }
     }
+
+    protected GestureDetector gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            Log.e("xxx", "onDoubleTap");
+            if (mHadPlay) {
+                clickStartIcon();
+            }
+            return super.onDoubleTap(e);
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            if (!mChangePosition && !mChangeVolume && !mBrightness) {
+                Log.e("xxx", "onSingleTapConfirmed");
+                onClickUiToggle();
+            }
+            return super.onSingleTapConfirmed(e);
+        }
+    });
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -210,6 +232,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         if (id == R.id.surface_container) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
+                    Log.e("xxx", "onTouch surface_container down");
                     mDownX = x;
                     mDownY = y;
                     mChangeVolume = false;
@@ -218,6 +241,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
                     mFirstTouch = true;
                     break;
                 case MotionEvent.ACTION_MOVE:
+                    Log.e("xxx", "onTouch surface_container move");
                     float deltaX = x - mDownX;
                     float deltaY = y - mDownY;
 
@@ -229,6 +253,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
 
                     break;
                 case MotionEvent.ACTION_UP:
+                    Log.e("xxx", "onTouch surface_container up");
                     startDismissControlViewTimer();
                     startProgressTimer();
 
@@ -236,6 +261,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
                     break;
             }
         }
+        gestureDetector.onTouchEvent(event);
 //        else if (id == R.id.progress) {
 //
 //        }
@@ -493,6 +519,8 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     protected abstract void hideAllWidget();
 
     protected abstract void showAllWidget();
+
+    protected abstract void onClickUiToggle();
 
     protected abstract void showProgressDialog(float deltaX,
                                                String seekTime, int seekTimePosition,

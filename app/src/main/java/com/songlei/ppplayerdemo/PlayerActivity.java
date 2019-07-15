@@ -31,6 +31,18 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+//        pp_video_view.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        pp_video_view.onPause();
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
     }
