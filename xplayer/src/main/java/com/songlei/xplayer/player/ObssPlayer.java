@@ -29,7 +29,7 @@ public class ObssPlayer implements IPlayer {
     private OnObssListener onObssListener = new OnObssListener() {
         @Override
         public void onError(PlayException e) {
-
+            Log.e("xxx", "Obss onError = " + e.code);
         }
 
         @Override

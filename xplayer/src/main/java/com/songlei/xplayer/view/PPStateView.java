@@ -71,7 +71,7 @@ public abstract class PPStateView extends PPTextureRenderView {
 
         mAudioManager = (AudioManager) mContext.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         mPlayerManager = new PlayerManager(context);
-        Option.setPlayerType(Option.PLAYER_IJK);
+        Option.setPlayerType(Option.PLAYER_OBSS);
         mPlayerManager.initPlayer(null);
         mPlayerManager.setPlayerListener(playerListener);
     }
