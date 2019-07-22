@@ -4,18 +4,22 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.songlei.xplayer.R;
 import com.songlei.xplayer.base.Option;
 import com.songlei.xplayer.listener.PPPlayerViewListener;
+import com.songlei.xplayer.util.CommonUtil;
 
 /**
  * 标准播放器布局，根据该布局自定义，id不可变
@@ -42,6 +46,13 @@ public class PPVideoPlayerView extends PPOrientationView {
     protected Drawable mDialogProgressBarDrawable;
     protected int mDialogProgressHighLightColor = -11;
     protected int mDialogProgressNormalColor = -11;
+    //=================音量================
+    //音量dialog
+    protected Dialog mVolumeDialog;
+    //音量进度条的progress
+    protected ProgressBar mDialogVolumeProgressBar;
+    protected Drawable mVolumeProgressDrawable;
+    protected ImageView volumeIcon;
 
     public PPVideoPlayerView(Context context) {
         super(context);
@@ -329,8 +340,74 @@ public class PPVideoPlayerView extends PPOrientationView {
     }
 
     @Override
-    protected void dismissVolumeDialog() {
+    protected void showVolumeDialog(float deltaY, int volumePercent) {
+        if (mVolumeDialog == null) {
+            View localView = LayoutInflater.from(getContext()).inflate(getVolumeLayoutId(), null);
 
+            if (mIfCurrentIsFullScreen){
+                RelativeLayout container = localView.findViewById(R.id.volume_container);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(container.getLayoutParams());
+                lp.gravity = Gravity.TOP | Gravity.CENTER;
+                lp.height = CommonUtil.dip2px(getContext(), 80);
+                container.setLayoutParams(lp);
+            }
+            volumeIcon = localView.findViewById(R.id.volume_icon);
+            if (localView.findViewById(getVolumeProgressId()) instanceof ProgressBar) {
+                mDialogVolumeProgressBar = ((ProgressBar) localView.findViewById(getVolumeProgressId()));
+                if (mVolumeProgressDrawable != null && mDialogVolumeProgressBar != null) {
+                    mDialogVolumeProgressBar.setProgressDrawable(mVolumeProgressDrawable);
+                }
+            }
+            mVolumeDialog = new Dialog(getContext(), R.style.video_style_dialog_progress);
+            mVolumeDialog.setContentView(localView);
+            mVolumeDialog.getWindow().addFlags(8);
+            mVolumeDialog.getWindow().addFlags(32);
+            mVolumeDialog.getWindow().addFlags(16);
+            mVolumeDialog.getWindow().setLayout(-2, -2);
+            mVolumeDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            WindowManager.LayoutParams localLayoutParams = mVolumeDialog.getWindow().getAttributes();
+            localLayoutParams.gravity = Gravity.TOP | Gravity.CENTER;
+            localLayoutParams.width = getWidth();
+            localLayoutParams.height = getHeight();
+            int location[] = new int[2];
+            getLocationOnScreen(location);
+            localLayoutParams.x = location[0];
+            localLayoutParams.y = location[1];
+            mVolumeDialog.getWindow().setAttributes(localLayoutParams);
+        }
+        if (!mVolumeDialog.isShowing()) {
+            mVolumeDialog.show();
+        }
+        if (mDialogVolumeProgressBar != null) {
+            Log.e("xxx", "volumePercent = " + volumePercent);
+            mDialogVolumeProgressBar.setProgress(volumePercent);
+            if (volumePercent <= 0){
+                volumeIcon.setImageResource(R.drawable.ic_mute);
+            } else {
+                volumeIcon.setImageResource(R.drawable.ic_sound);
+            }
+        }
+    }
+
+    @Override
+    protected void dismissVolumeDialog() {
+        if (mVolumeDialog != null) {
+            mVolumeDialog.dismiss();
+            mVolumeDialog = null;
+        }
+    }
+
+    protected int getVolumeLayoutId() {
+        return R.layout.video_volume_dialog;
+    }
+
+    /**
+     * 音量dialog的百分比进度条 id
+     * 继承后重写可返回自定义，如果没有可返回空
+     * 有自定义的实现逻辑可重载showVolumeDialog方法
+     */
+    protected int getVolumeProgressId() {
+        return R.id.volume_progressbar;
     }
 
     @Override

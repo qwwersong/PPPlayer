@@ -132,6 +132,12 @@ public class ObssPlayer implements IPlayer {
         }
     }
 
+    public void surfaceChanged(Surface surface) {
+        if (surface != null) {
+            obssPlayer.surfaceChange(surface);
+        }
+    }
+
     @Override
     public void setPlayerListener(PlayerListener playerListener) {
         this.playerListener = playerListener;

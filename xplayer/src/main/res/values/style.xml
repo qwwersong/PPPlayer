@@ -26,6 +26,18 @@
         <item name="android:minWidth">1dp</item>
     </style>
 
+    <style name="video_horizontal_progressBar">
+        <item name="android:maxHeight">2dp</item>
+        <item name="android:maxWidth">130dp</item>
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:indeterminateDrawable">
+            @android:drawable/progress_indeterminate_horizontal
+        </item>
+        <item name="android:progressDrawable">@drawable/video_volume_progress_horizontal_bg</item>
+        <item name="android:indeterminateDuration">3500</item>
+        <item name="android:indeterminateBehavior">repeat</item>
+    </style>
+
 
 
 </resources>

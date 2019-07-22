@@ -70,6 +70,8 @@ public abstract class PPStateView extends PPTextureRenderView {
         mScreenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
 
         mAudioManager = (AudioManager) mContext.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        mAudioManager.requestAudioFocus(onAudioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+
         mPlayerManager = new PlayerManager(context);
         Option.setPlayerType(Option.PLAYER_OBSS);
         mPlayerManager.initPlayer(null);
@@ -84,6 +86,29 @@ public abstract class PPStateView extends PPTextureRenderView {
         }
     }
 
+    /**
+     * 监听是否有外部其他多媒体开始播放
+     */
+    protected AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            switch (focusChange) {
+                case AudioManager.AUDIOFOCUS_GAIN:
+//                    onGankAudio();
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS:
+//                    onLossAudio();
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+//                    onLossTransientAudio();
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+//                    onLossTransientCanDuck();
+                    break;
+            }
+        }
+    };
+
     protected void setUrl(String url){
         mUrl = url;
     }
@@ -92,11 +117,6 @@ public abstract class PPStateView extends PPTextureRenderView {
         if (!TextUtils.isEmpty(mUrl)) {
             mPlayerManager.prepare(mUrl);
         }
-    }
-
-    @Override
-    protected void setDisplay(Surface surface) {
-        mPlayerManager.setSurface(surface);
     }
 
     protected void start(){
@@ -121,6 +141,16 @@ public abstract class PPStateView extends PPTextureRenderView {
 
     protected void seekTo(int time){
         mPlayerManager.seekTo(time);
+    }
+
+    @Override
+    protected void setDisplay(Surface surface) {
+        mPlayerManager.setSurface(surface);
+    }
+
+    @Override
+    protected void surfaceChanged(Surface surface) {
+        mPlayerManager.surfaceChanged(surface);
     }
 
     @Override

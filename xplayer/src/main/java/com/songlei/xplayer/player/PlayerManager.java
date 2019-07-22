@@ -84,4 +84,10 @@ public class PlayerManager {
         player.setPlayerListener(playerListener);
     }
 
+    public void surfaceChanged(Surface surface){
+        if (player instanceof ObssPlayer) {
+            ((ObssPlayer)player).surfaceChanged(surface);
+        }
+    }
+
 }

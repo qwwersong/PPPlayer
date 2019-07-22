@@ -79,6 +79,7 @@ public abstract class PPTextureRenderView extends FrameLayout implements ISurfac
     @Override
     public void onSurfaceSizeChanged(Surface surface, int width, int height) {
         Log.e("xxx", "onSurfaceSizeChanged");
+        surfaceChanged(surface);
     }
 
     @Override
@@ -112,5 +113,8 @@ public abstract class PPTextureRenderView extends FrameLayout implements ISurfac
 
     //释放
     protected abstract void releaseSurface(Surface surface);
+
+    //绘制大小改变
+    protected abstract void surfaceChanged(Surface surface);
 
 }

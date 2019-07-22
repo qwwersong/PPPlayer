@@ -105,7 +105,6 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     //触摸显示消失定时任务
     protected DismissControlViewTimerTask mDismissControlViewTimerTask;
 
-
     public PPControlView(Context context) {
         super(context);
     }
@@ -191,6 +190,9 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         mSeekEndOffset = CommonUtil.dip2px(getContext(), 50);
     }
 
+    /**
+     * ===================================按键逻辑===========================================
+     */
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -241,7 +243,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
                     mFirstTouch = true;
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    Log.e("xxx", "onTouch surface_container move");
+//                    Log.e("xxx", "onTouch surface_container move");
                     float deltaX = x - mDownX;
                     float deltaY = y - mDownY;
 
@@ -272,7 +274,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     protected void touchSurfaceMoveLogic(float absDeltaX, float absDeltaY){
         int curWidth = CommonUtil.getCurrentScreenLand(CommonUtil.getActivityContext(getContext())) ? mScreenHeight : mScreenWidth;
 
-        Log.e("xxx", "absDeltaX = " + absDeltaX + " absDeltaY = " + absDeltaY);
+//        Log.e("xxx", "absDeltaX = " + absDeltaX + " absDeltaY = " + absDeltaY);
         if (absDeltaX > mThreshold || absDeltaY > mThreshold) {//超过偏差值，认定滑动
             //因为会多次调用，不能用else if会两个条件都满足
             //TODO::简化逻辑表达式
@@ -313,7 +315,15 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
             String totalTime = CommonUtil.stringForTime(duration);
             showProgressDialog(deltaX, seekTime, mSeekTimePosition, totalTime, duration);
         } else if (mChangeVolume) {//调节音量
+            deltaY = -deltaY;
+//            Log.e("xxx", "touchSurfaceMove deltaY = " + deltaY);
+            int max = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+//            Log.e("xxx", "touchSurfaceMove max = " + max);
+            int deltaV = (int) (max * deltaY * 3 / curHeight);
+            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mGestureDownVolume + deltaV, 0);
+            int volumePercent = (mGestureDownVolume * 100 / max + deltaV * 3 * 100 / curHeight);
 
+            showVolumeDialog(-deltaY, volumePercent);
         } else if (mBrightness) {//调节亮度
 
         }
@@ -356,6 +366,26 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     }
 
     @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        mHadSeekTouch = true;
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        int time = seekBar.getProgress() * getDuration() / 100;
+        seekTo(time);
+        mHadSeekTouch = false;
+    }
+
+    /**
+     * ===================================UI状态显示逻辑===========================================
+     */
+    @Override
     public void onStateLayout(int state) {
         switch (state) {
             case STATE_NO_PLAY:
@@ -391,23 +421,6 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         } else {
             imageView.setImageResource(R.drawable.ic_play);
         }
-    }
-
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-    }
-
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-        mHadSeekTouch = true;
-    }
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-        int time = seekBar.getProgress() * getDuration() / 100;
-        seekTo(time);
-        mHadSeekTouch = false;
     }
 
     //开始更新进度条
@@ -525,6 +538,8 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     protected abstract void showProgressDialog(float deltaX,
                                                String seekTime, int seekTimePosition,
                                                String totalTime, int totalTimeDuration);
+
+    protected abstract void showVolumeDialog(float deltaY, int volumePercent);
 
     protected abstract void dismissProgressDialog();
 
