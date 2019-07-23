@@ -81,8 +81,7 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        pp_video_view.stop();
-        pp_video_view.release();
+        pp_video_view.onRelease();
     }
 
     @Override

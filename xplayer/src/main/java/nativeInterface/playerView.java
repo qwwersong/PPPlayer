@@ -251,7 +251,6 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
 
     @Override
     public int getCurrentTime() {
-        playTime = nativePlayerGetPlayPos();
         return nativePlayerGetPlayPos();
     }
 
@@ -314,7 +313,6 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
 
     @Override
     public void seekTo(int ms) {
-        playTime = ms;
         nativePlayerSeek(ms);
     }
 

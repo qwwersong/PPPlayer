@@ -72,6 +72,10 @@ public class PlayerManager {
         player.seekTo(time);
     }
 
+    public void setPlayPosition(long time){
+        player.setPlayPosition((int) time);
+    }
+
     public int getCurrentVideoWidth(){
         return player.getVideoWidth();
     }

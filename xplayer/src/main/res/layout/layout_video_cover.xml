@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_video_cover_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#B5000000">
+
+    <RelativeLayout
+        android:id="@+id/rl_no_wifi_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_no_wifi_tip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:text="当前为非WiFi状态，继续播放将消耗流量"/>
+
+        <LinearLayout
+            android:id="@+id/ll_no_more_tip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="12dp"
+            android:layout_below="@+id/tv_no_wifi_tip"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/cb_no_more_tip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/selector_wifi_tip"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                android:text="本周运营商环境下不再提示"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_keep_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ll_no_more_tip"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:paddingStart="25dp"
+            android:paddingEnd="25dp"
+            android:background="@drawable/bg_go_on_play"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:text="继续播放"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_no_net"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:text="网络未连接，请检查网络设置"/>
+
+        <TextView
+            android:id="@+id/tv_error_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:text="错误码："/>
+
+        <TextView
+            android:id="@+id/tv_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="22dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:paddingStart="25dp"
+            android:paddingEnd="25dp"
+            android:background="@drawable/bg_go_on_play"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:text="刷新重试"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

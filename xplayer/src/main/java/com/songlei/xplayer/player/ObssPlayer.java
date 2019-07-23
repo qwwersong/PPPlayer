@@ -95,7 +95,6 @@ public class ObssPlayer implements IPlayer {
 
     @Override
     public void seekTo(long time) {
-        playPosition = (int) time;
         obssPlayer.seekTo((int) time);
     }
 

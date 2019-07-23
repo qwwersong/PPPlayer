@@ -45,7 +45,7 @@
 
         <TextView
             android:id="@+id/current"
-            android:layout_width="45dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="00:00"
@@ -111,6 +111,12 @@
         android:layout_marginLeft="6dp"
         android:layout_marginTop="6dp"
         android:visibility="gone" />
+
+    <com.songlei.xplayer.view.widget.VideoCover
+        android:id="@+id/video_cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/layout_top"

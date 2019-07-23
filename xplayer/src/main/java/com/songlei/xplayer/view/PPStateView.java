@@ -25,6 +25,8 @@ public abstract class PPStateView extends PPTextureRenderView {
     public static final int STATE_PAUSE = PlayerConstants.STATE_PAUSE;
     public static final int STATE_COMPLETE = PlayerConstants.STATE_COMPLETE;
     public static final int STATE_BUFFERING = PlayerConstants.STATE_BUFFERING;
+    public static final int STATE_ERROR = PlayerConstants.STATE_ERROR;
+
     //上下文
     protected Context mContext;
     //屏幕宽度
@@ -229,9 +231,7 @@ public abstract class PPStateView extends PPTextureRenderView {
         @Override
         public void onPlayerError(int error, int extra) {
             Log.e("xxx", "StateView onPlayerError error = " + error);
-            switch (error) {
-
-            }
+            onErrorLayout(error);
         }
     };
 
@@ -251,6 +251,10 @@ public abstract class PPStateView extends PPTextureRenderView {
         return duration;
     }
 
+    protected void setPlayPosition(long currentPosition){
+        mPlayerManager.setPlayPosition(currentPosition);
+    }
+
     /*
       =========================================抽象接口===============================================
      */
@@ -265,4 +269,6 @@ public abstract class PPStateView extends PPTextureRenderView {
      * @param state 播放器状态
      */
     public abstract void onStateLayout(int state);
+
+    public abstract void onErrorLayout(int errorCode);
 }

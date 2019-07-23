@@ -22,6 +22,7 @@ import com.songlei.xplayer.bean.VideoModeBean;
 import com.songlei.xplayer.listener.PPPlayerViewListener;
 import com.songlei.xplayer.util.CommonUtil;
 import com.songlei.xplayer.view.widget.SwitchModeDialog;
+import com.songlei.xplayer.view.widget.VideoCover;
 
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +69,8 @@ public class PPVideoPlayerView extends PPOrientationView {
     //切换分辨率对话框
     private SwitchModeDialog mSwitchModeDialog;
 
+    private VideoCover mVideoCover;
+
     public PPVideoPlayerView(Context context) {
         super(context);
     }
@@ -91,6 +94,8 @@ public class PPVideoPlayerView extends PPOrientationView {
         mMoreScale = findViewById(R.id.moreScale);
         mSwitchSize = findViewById(R.id.switchSize);
         mSwitchSize.setVisibility(GONE);
+
+        mVideoCover = findViewById(R.id.video_cover);
     }
 
     private void initListener(){
@@ -136,6 +141,18 @@ public class PPVideoPlayerView extends PPOrientationView {
             @Override
             public void onClick(View v) {
                 showSwitchDialog();
+            }
+        });
+
+        mVideoCover.setOnCoverListener(new VideoCover.OnCoverListener() {
+            @Override
+            public void onKeepPlay() {
+                mVideoCover.hide();
+            }
+
+            @Override
+            public void onNoWiFiKeepPlay(boolean isChecked) {
+                mVideoCover.hide();
             }
         });
     }
@@ -223,6 +240,12 @@ public class PPVideoPlayerView extends PPOrientationView {
         clickStartIcon();
     }
 
+    public void onRelease(){
+        stopProgressTimer();
+        stop();
+        release();
+    }
+
     public void setPPPlayerViewListener(PPPlayerViewListener mPPPlayerViewListener){
         this.mPPPlayerViewListener = mPPPlayerViewListener;
     }
@@ -270,6 +293,11 @@ public class PPVideoPlayerView extends PPOrientationView {
             setViewShowState(mBottomContainer, VISIBLE);
             setViewShowState(mLockScreen, (mIfCurrentIsFullScreen) ? VISIBLE : GONE);
         }
+    }
+
+    @Override
+    protected void showNetError(int errorCode) {
+        mVideoCover.showNoNet(errorCode);
     }
 
     @Override
@@ -549,13 +577,9 @@ public class PPVideoPlayerView extends PPOrientationView {
 
                 if ((mCurrentState == STATE_PLAYING || mCurrentState == STATE_PAUSE)) {
                     pause();
-                    stopProgressTimer();
-
-                    stop();
-                    release();
-
                     mSeekOnStart = getCurrentPosition();
-                    Log.e("xxx", "getCurrentPosition = " + getCurrentPosition());
+                    setPlayPosition(mSeekOnStart);
+                    onRelease();
                     setUp(url);
                     prepare();
                     start();

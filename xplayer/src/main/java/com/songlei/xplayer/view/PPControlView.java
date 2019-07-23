@@ -446,6 +446,11 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         updateStartImage();
     }
 
+    @Override
+    public void onErrorLayout(int errorCode) {
+        showNetError(errorCode);
+    }
+
     protected void updateStartImage() {
         ImageView imageView = (ImageView) mStartButton;
         if (mCurrentState == STATE_PLAYING) {
@@ -580,5 +585,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     protected abstract void dismissVolumeDialog();
 
     protected abstract void dismissBrightnessDialog();
+
+    protected abstract void showNetError(int errorCode);
 
 }
