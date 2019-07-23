@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +18,14 @@ import android.widget.TextView;
 
 import com.songlei.xplayer.R;
 import com.songlei.xplayer.base.Option;
+import com.songlei.xplayer.bean.VideoModeBean;
 import com.songlei.xplayer.listener.PPPlayerViewListener;
 import com.songlei.xplayer.util.CommonUtil;
+import com.songlei.xplayer.view.widget.SwitchModeDialog;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 标准播放器布局，根据该布局自定义，id不可变
@@ -56,6 +63,11 @@ public class PPVideoPlayerView extends PPOrientationView {
     //亮度dialog
     protected Dialog mBrightnessDialog;
 
+    //切换分辨率
+    public TextView mSwitchSize;
+    //切换分辨率对话框
+    private SwitchModeDialog mSwitchModeDialog;
+
     public PPVideoPlayerView(Context context) {
         super(context);
     }
@@ -72,11 +84,16 @@ public class PPVideoPlayerView extends PPOrientationView {
     protected void init(Context context) {
         super.init(context);
         initView();
+        initListener();
     }
 
     private void initView(){
         mMoreScale = findViewById(R.id.moreScale);
+        mSwitchSize = findViewById(R.id.switchSize);
+        mSwitchSize.setVisibility(GONE);
+    }
 
+    private void initListener(){
         mMoreScale.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,10 +131,40 @@ public class PPVideoPlayerView extends PPOrientationView {
                 }
             }
         });
+
+        mSwitchSize.setOnClickListener(new OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                showSwitchDialog();
+            }
+        });
     }
 
     public void setUp(String url){
         setUrl(url);
+    }
+
+    private Map<Integer, VideoModeBean> modeMap = new HashMap<>();
+    private int playMode;
+
+    public boolean setUp(List<VideoModeBean> list){
+        modeMap.clear();
+        for (VideoModeBean videoBean : list) {
+            modeMap.put(videoBean.video_type, videoBean);
+        }
+        if (list.size() == 0) {
+            return false;
+        }
+        playMode = list.get(0).video_type;
+        VideoModeBean modeBean = modeMap.get(playMode);
+        if (modeBean == null) {
+            return false;
+        }
+        mSwitchSize.setText(modeBean.show_name);
+
+        Log.e("xxx", "setUp url = " + modeBean.url);
+        setUp(modeBean.url);
+        return true;
     }
 
     @Override
@@ -183,11 +230,13 @@ public class PPVideoPlayerView extends PPOrientationView {
     //===============================ControlView的抽象接口=======================================
     @Override
     protected void showFullScreen() {
+        setViewShowState(mSwitchSize, VISIBLE);
         setViewShowState(mLockScreen, VISIBLE);
     }
 
     @Override
     protected void showVerticalScreen() {
+        setViewShowState(mSwitchSize, GONE);
         setViewShowState(mLockScreen, GONE);
     }
 
@@ -470,5 +519,50 @@ public class PPVideoPlayerView extends PPOrientationView {
      */
     protected int getBrightnessLayoutId() {
         return R.layout.video_volume_dialog;
+    }
+
+    /**
+     * 弹出切换清晰度
+     */
+    private void showSwitchDialog() {
+        if (!mHadPlay) {
+            return;
+        }
+
+        mSwitchModeDialog = new SwitchModeDialog(mContext, false, mSwitchSize, modeMap, playMode);
+        mSwitchModeDialog.setOnSwitchModeListener(new SwitchModeDialog.OnSwitchModeListener() {
+            @Override
+            public void onSwitchMode(int mode) {
+                playMode = mode;
+                String url = "";
+                switch (mode) {
+                    case Option.TYPE_MODE_NORMAL:
+                        url = modeMap.get(Option.TYPE_MODE_NORMAL).url;
+                        break;
+                    case Option.TYPE_MODE_SUPER_CLEAR:
+                        url = modeMap.get(Option.TYPE_MODE_SUPER_CLEAR).url;
+                        break;
+                    case Option.TYPE_MODE_HIGH_CLEAR:
+                        url = modeMap.get(Option.TYPE_MODE_HIGH_CLEAR).url;
+                        break;
+                }
+
+                if ((mCurrentState == STATE_PLAYING || mCurrentState == STATE_PAUSE)) {
+                    pause();
+                    stopProgressTimer();
+
+                    stop();
+                    release();
+
+                    mSeekOnStart = getCurrentPosition();
+                    Log.e("xxx", "getCurrentPosition = " + getCurrentPosition());
+                    setUp(url);
+                    prepare();
+                    start();
+
+                }
+            }
+        });
+        mSwitchModeDialog.show();
     }
 }

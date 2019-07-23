@@ -23,7 +23,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:background="#000000"
-        android:scaleType="fitCenter" />
+        android:scaleType="fitCenter"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/layout_bottom"
@@ -38,17 +39,15 @@
             android:id="@+id/start"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
             android:layout_gravity="center_vertical" />
 
         <TextView
             android:id="@+id/current"
-            android:layout_width="50dp"
+            android:layout_width="45dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:gravity="center"
             android:text="00:00"
             android:textColor="#ffffff" />
 
@@ -69,19 +68,31 @@
 
         <TextView
             android:id="@+id/total"
-            android:layout_width="50dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
+            android:gravity="center"
             android:text="00:00"
+            android:textColor="#ffffff" />
+
+        <TextView
+            android:id="@+id/switchSize"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:text="标准"
             android:textColor="#ffffff" />
 
         <ImageView
             android:id="@+id/fullscreen"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:paddingRight="16dp"
+            android:layout_height="match_parent"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
             android:scaleType="center"
-            android:src="@drawable/video_enlarge" />
+            android:src="@drawable/ic_zoom" />
     </LinearLayout>
 
     <ProgressBar

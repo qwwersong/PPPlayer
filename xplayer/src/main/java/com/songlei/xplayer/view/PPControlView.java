@@ -211,7 +211,6 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         if (id == R.id.start) {
             clickStartIcon();
         } else if (id == R.id.surface_container) {
-            Log.e("xxx", "onClick surface_container");
             startDismissControlViewTimer();
         }
     }
@@ -255,7 +254,6 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
                     mFirstTouch = true;
                     break;
                 case MotionEvent.ACTION_MOVE:
-//                    Log.e("xxx", "onTouch surface_container move");
                     float deltaX = x - mDownX;
                     float deltaY = y - mDownY;
 
@@ -334,9 +332,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
             showProgressDialog(deltaX, seekTime, mSeekTimePosition, totalTime, duration);
         } else if (mChangeVolume) {//调节音量
             deltaY = -deltaY;
-//            Log.e("xxx", "touchSurfaceMove deltaY = " + deltaY);
             int max = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-//            Log.e("xxx", "touchSurfaceMove max = " + max);
             int deltaV = (int) (max * deltaY * 3 / curHeight);
             mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mGestureDownVolume + deltaV, 0);
             int volumePercent = (int) (mGestureDownVolume * 100 / max + deltaY * 3 * 100 / curHeight);

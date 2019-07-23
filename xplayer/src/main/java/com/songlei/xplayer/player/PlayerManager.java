@@ -33,34 +33,42 @@ public class PlayerManager {
     }
 
     public void prepare(String url){
+        Log.e("xxx", "PlayerManager prepare");
         player.prepare(url);
     }
 
     public void setSurface(Surface surface){
+        Log.e("xxx", "PlayerManager setSurface");
         player.setSurface(surface);
     }
 
     public void start(){
+        Log.e("xxx", "PlayerManager start");
         player.start();
     }
 
     public void pause(){
+        Log.e("xxx", "PlayerManager pause");
         player.pause();
     }
 
     public void resume(){
+        Log.e("xxx", "PlayerManager resume");
         player.resume();
     }
 
     public void stop(){
+        Log.e("xxx", "PlayerManager stop");
         player.stop();
     }
 
     public void release(){
+        Log.e("xxx", "PlayerManager release");
         player.release();
     }
 
     public void seekTo(long time){
+        Log.e("xxx", "PlayerManager seekTo time = " + time);
         player.seekTo(time);
     }
 

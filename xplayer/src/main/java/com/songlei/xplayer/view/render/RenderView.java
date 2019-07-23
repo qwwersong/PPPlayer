@@ -88,7 +88,6 @@ public class RenderView {
         } else if (Option.getRenderType() == Option.VIEW_GL_SURFACE) {
             mShowView = VideoGLView.addGLView(context, textureViewContainer, rotate, surfaceListener, videoParamsListener, effect, transform, customRender, mode);
         } else {
-            Log.e("xxx", "RenderView addTextureView mVideoParamsListener = " + videoParamsListener);
             mShowView = VideoTextureView.addTextureView(context, textureViewContainer, rotate, surfaceListener, videoParamsListener);
         }
     }

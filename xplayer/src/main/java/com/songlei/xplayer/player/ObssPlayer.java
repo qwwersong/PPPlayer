@@ -36,7 +36,6 @@ public class ObssPlayer implements IPlayer {
         public void onPlayState(int code) {
             switch (code) {
                 case ObssConstants.STATE_PLAYING:
-                    Log.e("xxx", "Obss playing");
                     playerListener.onPlayerState(PlayerConstants.STATE_PLAYING);
                     break;
                 case ObssConstants.STATE_FINISH:
@@ -46,7 +45,6 @@ public class ObssPlayer implements IPlayer {
                     playerListener.onPlayerState(PlayerConstants.STATE_BUFFERING);
                     break;
                 case ObssConstants.STATE_PREPARE:
-                    Log.e("xxx", "Obss notify media info");
                     playerListener.onPlayerState(PlayerConstants.STATE_PREPARE);
                     break;
                 case ObssConstants.STATE_PAUSE:
@@ -97,6 +95,7 @@ public class ObssPlayer implements IPlayer {
 
     @Override
     public void seekTo(long time) {
+        playPosition = (int) time;
         obssPlayer.seekTo((int) time);
     }
 

@@ -37,12 +37,16 @@ public abstract class PPStateView extends PPTextureRenderView {
     protected String mUrl;
     //播放器控制类
     protected PlayerManager mPlayerManager;
+    //临时播放器控制类
+    protected PlayerManager mTmpPlayerManager;
     //当前的播放状态
     protected int mCurrentState;
-    //当前播放时间
-    protected long mCurrentPosition;
+//    //当前播放时间
+//    protected long mCurrentPosition;
     //是否播放过
     protected boolean mHadPlay = false;
+    //从哪个开始播放
+    protected long mSeekOnStart = -1;
 
     public PPStateView(Context context) {
         super(context);
@@ -178,7 +182,7 @@ public abstract class PPStateView extends PPTextureRenderView {
         return 0;
     }
 
-    private PlayerListener playerListener = new PlayerListener() {
+    protected PlayerListener playerListener = new PlayerListener() {
         @Override
         public void onPlayerState(int state) {
             switch (state) {
@@ -190,6 +194,11 @@ public abstract class PPStateView extends PPTextureRenderView {
                 case STATE_PREPARE:
                     Log.e("xxx", "准备中....");
                     mCurrentState = STATE_PREPARE;
+                    Log.e("xxx", "mSeekOnStart = " + mSeekOnStart);
+                    if (mSeekOnStart > 0) {
+                        mPlayerManager.seekTo(mSeekOnStart);
+                        mSeekOnStart = 0;
+                    }
                     addTextureView();
                     onStateLayout(mCurrentState);
                     break;
@@ -231,9 +240,9 @@ public abstract class PPStateView extends PPTextureRenderView {
         if (mCurrentState == STATE_PLAYING || mCurrentState == STATE_PAUSE) {
             position = (int) mPlayerManager.getCurrentPosition();
         }
-        if (position == 0 && mCurrentPosition > 0) {
-            return (int) mCurrentPosition;
-        }
+//        if (position == 0 && mCurrentPosition > 0) {
+//            return (int) mCurrentPosition;
+//        }
         return position;
     }
 

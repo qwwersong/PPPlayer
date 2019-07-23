@@ -225,14 +225,11 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
     @Override
     public void setVideoParamsListener(MeasureHelper.MeasureFormVideoParamsListener listener) {
         mVideoParamsListener = listener;
-        Log.e("xxx", "setVideoParamsListener mVideoParamsListener = " + mVideoParamsListener);
     }
 
     @Override
     public int getCurrentVideoWidth() {
-        Log.e("xxx", "getCurrentVideoWidth mVideoParamsListener = " + mVideoParamsListener);
         if (mVideoParamsListener != null) {
-            Log.e("xxx", "mVideoParamsListener.getCurrentVideoWidth() = " + mVideoParamsListener.getCurrentVideoWidth());
             return mVideoParamsListener.getCurrentVideoWidth();
         }
         return 0;
@@ -272,7 +269,6 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
         if (textureViewContainer.getChildCount() > 0) {
             textureViewContainer.removeAllViews();
         }
-        Log.e("xxx", "addTextureView mVideoParamsListener = " + videoParamsListener);
         VideoTextureView videoTextureView = new VideoTextureView(context);
         videoTextureView.setISurfaceListener(surfaceListener);
         videoTextureView.setVideoParamsListener(videoParamsListener);

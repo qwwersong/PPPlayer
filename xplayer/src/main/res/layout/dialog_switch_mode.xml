@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_switch_mode_root"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:background="@drawable/bg_send_gift_vertical"
+    android:gravity="center">
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/tv_normal_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="20dp"
+            android:gravity="center"
+            android:button="@null"
+            android:text="原画"
+            android:textColor="@drawable/selector_text_switch_mode"
+            android:textSize="20sp"
+            android:visibility="gone"/>
+
+        <RadioButton
+            android:id="@+id/tv_super_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="20dp"
+            android:gravity="center"
+            android:button="@null"
+            android:text="超清"
+            android:textColor="@drawable/selector_text_switch_mode"
+            android:textSize="20sp"
+            android:visibility="gone"/>
+
+        <RadioButton
+            android:id="@+id/tv_high_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="20dp"
+            android:gravity="center"
+            android:button="@null"
+            android:text="高清"
+            android:textColor="@drawable/selector_text_switch_mode"
+            android:textSize="20sp"
+            android:visibility="gone"/>
+
+        <RadioButton
+            android:id="@+id/tv_standard_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="20dp"
+            android:gravity="center"
+            android:button="@null"
+            android:text="标清"
+            android:textColor="@drawable/selector_text_switch_mode"
+            android:textSize="20sp"
+            android:visibility="gone"/>
+
+    </RadioGroup>
+
+</RelativeLayout>

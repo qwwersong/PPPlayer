@@ -77,4 +77,10 @@ public class Option {
     public static void setPlayerType(int playerType){
         sPlayerType = playerType;
     }
+
+    public static final int TYPE_MODE_NORMAL = 0;         //原画模式
+
+    public static final int TYPE_MODE_HIGH_CLEAR = 1;     //高清模式
+
+    public static final int TYPE_MODE_SUPER_CLEAR = 2;    //超清模式
 }

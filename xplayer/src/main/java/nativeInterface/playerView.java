@@ -3,15 +3,14 @@ package nativeInterface;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.Message;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Surface;
 
 import com.songlei.xplayer.base.CommonHandler;
 import com.songlei.xplayer.obssplayer.BasePlayer;
+import com.songlei.xplayer.obssplayer.ObssConstants;
 import com.songlei.xplayer.obssplayer.OnObssListener;
 import com.songlei.xplayer.obssplayer.PlayException;
-import com.songlei.xplayer.obssplayer.ObssConstants;
 
 
 /**
@@ -46,7 +45,6 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
 
     @Override
     public void handleMessage(Message msg) {
-        Log.e(TAG, "handleMessage onObssListener = " + onObssListener);
         if (onObssListener == null) {
             return;
         }
@@ -76,7 +74,6 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
                 onObssListener.onError(new PlayException(PlayException.VPC_NETWORK_ERROR, "网络错误"));
                 break;
             case ObssConstants.VPC_START_PLAY:
-                Log.e(TAG, "handleMessage Playing");
                 playState = ObssConstants.STATE_PLAYING;
                 onObssListener.onPlayState(ObssConstants.STATE_PLAYING);
                 break;
@@ -254,6 +251,7 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
 
     @Override
     public int getCurrentTime() {
+        playTime = nativePlayerGetPlayPos();
         return nativePlayerGetPlayPos();
     }
 
@@ -267,25 +265,6 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
         return nativePlayerGetBufTime();
     }
 
-    //直播
-    @Override
-    public void startPlay(String uri) {
-        if (TextUtils.isEmpty(uri)) {
-            Log.e(TAG, "url = null");
-            return;
-        }
-        this.url = uri;
-        playTime = 0;
-        Log.e(TAG, "nativePlayerStart uri = " + uri);
-
-//        if (mSurface != null) {
-            nativePlayerStart(uri, 0, 500, mSacleType);
-//        } else {
-//            Log.e(TAG, "surface = null");
-//            isStartPlay = true;
-//        }
-    }
-
     @Override
     public void startPlay(String uri, int startTime) {
         if (uri == null) {
@@ -294,7 +273,7 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
         }
         this.url = uri;
         playTime = startTime;
-        Log.e(TAG, "nativePlayerStart uri = " + uri);
+        Log.e(TAG, "nativePlayerStart uri = " + uri + " playTime = " + playTime);
 
 //        if (mSurface != null) {
             nativePlayerStart(uri, startTime, 500, mSacleType);
@@ -310,6 +289,7 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
         if (isCallBack) {
             onObssListener.onPlayState(ObssConstants.STATE_FINISH);
         }
+        playTime = 0;
         nativePlayerStop();
         nativeSetSurface(null);
     }
@@ -334,6 +314,7 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
 
     @Override
     public void seekTo(int ms) {
+        playTime = ms;
         nativePlayerSeek(ms);
     }
 
@@ -368,9 +349,9 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
         Log.e(TAG, "setSurface");
         this.mSurface = surface;
         nativeSetSurface(surface);
-        if (isStartPlay) {
-            startPlay(url, playTime);
-        }
+//        if (isStartPlay) {
+//            startPlay(url, playTime);
+//        }
     }
 
     @Override

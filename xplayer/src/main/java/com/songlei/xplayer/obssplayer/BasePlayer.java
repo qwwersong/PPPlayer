@@ -11,8 +11,6 @@ public abstract class BasePlayer {
 
     }
 
-    public abstract void startPlay(String uri);
-
     public abstract void startPlay(String uri, int startTime);
 
     public abstract void stop(boolean isCallBack);
