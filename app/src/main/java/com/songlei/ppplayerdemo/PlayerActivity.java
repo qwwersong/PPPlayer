@@ -10,6 +10,8 @@ import com.songlei.xplayer.view.PPVideoPlayerView;
  * Created by songlei on 2019/07/12.
  */
 public class PlayerActivity extends AppCompatActivity {
+    public final static String IMG_TRANSITION = "IMG_TRANSITION";
+    public final static String TRANSITION = "TRANSITION";
 
     private PPVideoPlayerView pp_video_view;
     //    private String url = "http://feichitest.yeepo.cn/video/58dd8559576d7093c48136ba55fa88b3/58dd8559576d7093c48136ba55fa88b3.vdo";

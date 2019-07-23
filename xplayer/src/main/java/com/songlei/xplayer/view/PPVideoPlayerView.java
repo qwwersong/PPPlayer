@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,6 +52,9 @@ public class PPVideoPlayerView extends PPOrientationView {
     protected ProgressBar mDialogVolumeProgressBar;
     protected Drawable mVolumeProgressDrawable;
     protected ImageView volumeIcon;
+    //=================亮度================
+    //亮度dialog
+    protected Dialog mBrightnessDialog;
 
     public PPVideoPlayerView(Context context) {
         super(context);
@@ -379,7 +381,6 @@ public class PPVideoPlayerView extends PPOrientationView {
             mVolumeDialog.show();
         }
         if (mDialogVolumeProgressBar != null) {
-            Log.e("xxx", "volumePercent = " + volumePercent);
             mDialogVolumeProgressBar.setProgress(volumePercent);
             if (volumePercent <= 0){
                 volumeIcon.setImageResource(R.drawable.ic_mute);
@@ -411,7 +412,63 @@ public class PPVideoPlayerView extends PPOrientationView {
     }
 
     @Override
-    protected void dismissBrightnessDialog() {
+    protected void showBrightnessDialog(float percent) {
+        if (mBrightnessDialog == null) {
+            View localView = LayoutInflater.from(getContext()).inflate(getBrightnessLayoutId(), null);
+            if (mIfCurrentIsFullScreen){
+                RelativeLayout container = localView.findViewById(R.id.volume_container);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(container.getLayoutParams());
+                lp.gravity = Gravity.TOP | Gravity.CENTER;
+                lp.height = CommonUtil.dip2px(getContext(), 80);
+                container.setLayoutParams(lp);
+            }
+            volumeIcon = localView.findViewById(R.id.volume_icon);
+            volumeIcon.setImageResource(R.drawable.ic_light);
+            if (localView.findViewById(getVolumeProgressId()) instanceof ProgressBar) {
+                mDialogVolumeProgressBar = ((ProgressBar) localView.findViewById(getVolumeProgressId()));
+                if (mVolumeProgressDrawable != null && mDialogVolumeProgressBar != null) {
+                    mDialogVolumeProgressBar.setProgressDrawable(mVolumeProgressDrawable);
+                }
+            }
+            mBrightnessDialog = new Dialog(getContext(), R.style.video_style_dialog_progress);
+            mBrightnessDialog.setContentView(localView);
+            mBrightnessDialog.getWindow().addFlags(8);
+            mBrightnessDialog.getWindow().addFlags(32);
+            mBrightnessDialog.getWindow().addFlags(16);
+            mBrightnessDialog.getWindow().setLayout(-2, -2);
+            mBrightnessDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            WindowManager.LayoutParams localLayoutParams = mBrightnessDialog.getWindow().getAttributes();
+            localLayoutParams.gravity = Gravity.TOP | Gravity.CENTER;
+            localLayoutParams.width = getWidth();
+            localLayoutParams.height = getHeight();
+            int location[] = new int[2];
+            getLocationOnScreen(location);
+            localLayoutParams.x = location[0];
+            localLayoutParams.y = location[1];
+            mBrightnessDialog.getWindow().setAttributes(localLayoutParams);
+        }
+        if (!mBrightnessDialog.isShowing()) {
+            mBrightnessDialog.show();
+        }
+        if (mDialogVolumeProgressBar != null) {
+            mDialogVolumeProgressBar.setProgress((int) (percent * 100));
+        }
+    }
 
+    @Override
+    protected void dismissBrightnessDialog() {
+        if (mBrightnessDialog != null) {
+            mBrightnessDialog.dismiss();
+            mBrightnessDialog = null;
+        }
+    }
+
+    /**
+     * 亮度dialog的layoutId
+     * 继承后重写可返回自定义
+     * 有自定义的实现逻辑可重载showBrightnessDialog方法
+     */
+    protected int getBrightnessLayoutId() {
+        return R.layout.video_volume_dialog;
     }
 }

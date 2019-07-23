@@ -20,8 +20,6 @@ public abstract class PPOrientationView extends PPControlView {
     //保存系统状态UI
     protected int mSystemUiVisibility;//TODO::如何显示
     protected PlayerLayoutHelper mLayoutHelper;
-    //当前是否全屏
-    public boolean mIfCurrentIsFullScreen = false;
 
     public PPOrientationView(Context context) {
         super(context);

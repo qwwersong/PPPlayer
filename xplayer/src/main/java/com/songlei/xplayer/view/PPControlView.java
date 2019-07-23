@@ -1,5 +1,6 @@
 package com.songlei.xplayer.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Handler;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -87,6 +89,16 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     protected int mGestureDownVolume;
     //触摸滑动进度的比例系数
     protected float mSeekRatio = 1;
+
+    //当前是否全屏
+    public boolean mIfCurrentIsFullScreen = false;
+    //是否支持非全屏滑动触摸有效
+    protected boolean mIsTouchWiget = true;
+    //是否支持全屏滑动触摸有效
+    protected boolean mIsTouchWigetFull = true;
+
+    //亮度
+    protected float mBrightnessData = -1;
     //==============================控制参数=============================
     //是否隐藏虚拟按键
     protected boolean mHideKey = true;
@@ -250,7 +262,13 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
                     float absDeltaX = Math.abs(deltaX);
                     float absDeltaY = Math.abs(deltaY);
 
-                    touchSurfaceMoveLogic(absDeltaX, absDeltaY);
+                    if ((mIfCurrentIsFullScreen && mIsTouchWigetFull)
+                            || (mIsTouchWiget && !mIfCurrentIsFullScreen)) {
+                        if (!mChangePosition && !mChangeVolume && !mBrightness) {
+
+                            touchSurfaceMoveLogic(absDeltaX, absDeltaY);
+                        }
+                    }
                     touchSurfaceMove(deltaX, deltaY, y);
 
                     break;
@@ -274,7 +292,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     protected void touchSurfaceMoveLogic(float absDeltaX, float absDeltaY){
         int curWidth = CommonUtil.getCurrentScreenLand(CommonUtil.getActivityContext(getContext())) ? mScreenHeight : mScreenWidth;
 
-//        Log.e("xxx", "absDeltaX = " + absDeltaX + " absDeltaY = " + absDeltaY);
+        Log.e("xxx", "absDeltaX = " + absDeltaX + " absDeltaY = " + absDeltaY);
         if (absDeltaX > mThreshold || absDeltaY > mThreshold) {//超过偏差值，认定滑动
             //因为会多次调用，不能用else if会两个条件都满足
             //TODO::简化逻辑表达式
@@ -321,11 +339,29 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
 //            Log.e("xxx", "touchSurfaceMove max = " + max);
             int deltaV = (int) (max * deltaY * 3 / curHeight);
             mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mGestureDownVolume + deltaV, 0);
-            int volumePercent = (mGestureDownVolume * 100 / max + deltaV * 3 * 100 / curHeight);
-
+            int volumePercent = (int) (mGestureDownVolume * 100 / max + deltaY * 3 * 100 / curHeight);
+            Log.e("xxx", "volumePercent = " + volumePercent);
             showVolumeDialog(-deltaY, volumePercent);
         } else if (mBrightness) {//调节亮度
+            float percent = (-deltaY / curHeight);
 
+            mBrightnessData = ((Activity) (mContext)).getWindow().getAttributes().screenBrightness;
+            if (mBrightnessData <= 0.00f) {
+                mBrightnessData = 0.50f;
+            } else if (mBrightnessData < 0.01f) {
+                mBrightnessData = 0.01f;
+            }
+            WindowManager.LayoutParams lpa = ((Activity) (mContext)).getWindow().getAttributes();
+            lpa.screenBrightness = mBrightnessData + percent;
+            if (lpa.screenBrightness > 1.0f) {
+                lpa.screenBrightness = 1.0f;
+            } else if (lpa.screenBrightness < 0.01f) {
+                lpa.screenBrightness = 0.01f;
+            }
+            showBrightnessDialog(lpa.screenBrightness);
+            ((Activity) (mContext)).getWindow().setAttributes(lpa);
+
+            mDownY = y;
         }
     }
 
@@ -540,6 +576,8 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
                                                String totalTime, int totalTimeDuration);
 
     protected abstract void showVolumeDialog(float deltaY, int volumePercent);
+
+    protected abstract void showBrightnessDialog(float percent);
 
     protected abstract void dismissProgressDialog();
 
