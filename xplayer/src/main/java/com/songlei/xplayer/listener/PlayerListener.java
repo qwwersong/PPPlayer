@@ -17,6 +17,8 @@ public interface PlayerListener {
 //
 //    void onVideoSizeChanged(int width, int height);
 
+    void onBufferingUpdate(int percent);
+
     void onPlayerState(int state);
 
     void onPlayerError(int error, int extra);

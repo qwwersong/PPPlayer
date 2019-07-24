@@ -74,6 +74,11 @@ public class SystemPlayer implements IPlayer {
     }
 
     @Override
+    public int getBufferedPercentage() {
+        return -1;
+    }
+
+    @Override
     public void setSurface(Surface surface) {
 
     }

@@ -35,6 +35,8 @@ public interface IPlayer {
 
     long getDuration();
 
+    int getBufferedPercentage();
+
     void setSurface(Surface surface);
 
     void setPlayerListener(PlayerListener playerListener);

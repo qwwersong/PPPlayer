@@ -74,6 +74,11 @@ public class MyNativePlayer implements IPlayer {
     }
 
     @Override
+    public int getBufferedPercentage() {
+        return 0;
+    }
+
+    @Override
     public void setSurface(Surface surface) {
 
     }

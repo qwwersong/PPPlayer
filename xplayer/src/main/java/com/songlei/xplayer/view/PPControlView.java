@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.songlei.xplayer.R;
 import com.songlei.xplayer.util.CommonUtil;
+import com.songlei.xplayer.util.NetUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -170,18 +171,10 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
             mTextureViewContainer.setOnTouchListener(this);
         }
 
-//        if (mProgressBar != null) {
-//            mProgressBar.setOnTouchListener(this);
-//        }
-
         if (mThumbImageViewLayout != null) {
             mThumbImageViewLayout.setVisibility(GONE);
             mThumbImageViewLayout.setOnClickListener(this);
         }
-//        if (mThumbImageView != null && !mIfCurrentIsFullscreen && mThumbImageViewLayout != null) {
-//            mThumbImageViewLayout.removeAllViews();
-//            resolveThumbImage(mThumbImageView);
-//        }
 
         if (mBackButton != null)
             mBackButton.setOnClickListener(this);
@@ -280,9 +273,6 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
             }
         }
         gestureDetector.onTouchEvent(event);
-//        else if (id == R.id.progress) {
-//
-//        }
 
         return false;
     }
@@ -385,6 +375,10 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
             return;
         }
         if (mCurrentState == STATE_NO_PLAY) {
+            if (!NetUtil.isWifiConnected(mContext)) {
+                showWifiDialog();
+                return;
+            }
             prepare();
             start();
         } else if (mCurrentState == STATE_PLAYING) {
@@ -418,7 +412,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
      * ===================================UI状态显示逻辑===========================================
      */
     @Override
-    public void onStateLayout(int state) {
+    protected void onStateLayout(int state) {
         switch (state) {
             case STATE_NO_PLAY:
                 stopProgressTimer();
@@ -447,8 +441,16 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     }
 
     @Override
-    public void onErrorLayout(int errorCode) {
+    protected void onErrorLayout(int errorCode) {
         showNetError(errorCode);
+    }
+
+    @Override
+    protected void onBufferedUpdate(int percent) {
+        if (percent != 0) {
+            Log.e("xxx", "onBufferedUpdate percent = " + percent);
+            setTextAndProgress(percent);
+        }
     }
 
     protected void updateStartImage() {
@@ -488,14 +490,18 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        int position = getCurrentPosition();
-                        int duration = getDuration();
-                        int progress = position * 100 / (duration == 0 ? 1 : duration);
-                        setProgressAndTime(progress, 0, position, duration);
+                        setTextAndProgress(0);
                     }
                 });
             }
         }
+    }
+
+    protected void setTextAndProgress(int secProgress){
+        int position = getCurrentPosition();
+        int duration = getDuration();
+        int progress = position * 100 / (duration == 0 ? 1 : duration);
+        setProgressAndTime(progress, secProgress, position, duration);
     }
 
     protected void setProgressAndTime(int progress, int secProgress, int currentTime, int totalTime){
@@ -508,6 +514,16 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         if (!mTouchProgressBar) {
             mProgressBar.setProgress(progress);
         }
+        /**
+         * 只有播放地址为mp4，才会有回调播放器BufferingUpdate
+         */
+        if (getBufferedPercentage() > 0) {
+            secProgress = getBufferedPercentage();
+        }
+        if (secProgress != 0) {
+            mProgressBar.setSecondaryProgress(secProgress);
+        }
+
         mTotalTimeTextView.setText(CommonUtil.stringForTime(totalTime));
         if (currentTime > 0 ) {
             mCurrentTimeTextView.setText(CommonUtil.stringForTime(currentTime));
@@ -571,6 +587,8 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     protected abstract void showAllWidget();
 
     protected abstract void onClickUiToggle();
+
+    protected abstract void showWifiDialog();
 
     protected abstract void showProgressDialog(float deltaX,
                                                String seekTime, int seekTimePosition,

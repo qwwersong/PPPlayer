@@ -185,6 +185,12 @@ public abstract class PPStateView extends PPTextureRenderView {
     }
 
     protected PlayerListener playerListener = new PlayerListener() {
+
+        @Override
+        public void onBufferingUpdate(int percent) {
+            onBufferedUpdate(percent);
+        }
+
         @Override
         public void onPlayerState(int state) {
             switch (state) {
@@ -251,8 +257,18 @@ public abstract class PPStateView extends PPTextureRenderView {
         return duration;
     }
 
+    public int getBufferedPercentage() {
+        int percent = mPlayerManager.getBufferedPercentage();
+        return percent;
+    }
+
     protected void setPlayPosition(long currentPosition){
         mPlayerManager.setPlayPosition(currentPosition);
+    }
+
+    protected boolean isPlaying(){
+        boolean isPlaying = mCurrentState == STATE_PLAYING;
+        return isPlaying;
     }
 
     /*
@@ -262,13 +278,15 @@ public abstract class PPStateView extends PPTextureRenderView {
     /**
      * 当前UI
      */
-    public abstract int getLayoutId();
+    protected abstract int getLayoutId();
 
     /**
      * 显示对应状态的布局
      * @param state 播放器状态
      */
-    public abstract void onStateLayout(int state);
+    protected abstract void onStateLayout(int state);
 
-    public abstract void onErrorLayout(int errorCode);
+    protected abstract void onErrorLayout(int errorCode);
+
+    protected abstract void onBufferedUpdate(int percent);
 }

@@ -160,6 +160,11 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
     }
 
     @Override
+    public int getBufferedPercentage() {
+        return -1;
+    }
+
+    @Override
     public void setSurface(Surface surface) {
         this.surface = surface;
         if (mediaPlayer != null) {
@@ -216,6 +221,7 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
 
     @Override
     public void onBufferingUpdate(IMediaPlayer iMediaPlayer, int percent) {
-
+        Log.e("xxx", "IJKPlayer onBufferingUpdate percent = " + percent);
+        playerListener.onBufferingUpdate(percent);
     }
 }

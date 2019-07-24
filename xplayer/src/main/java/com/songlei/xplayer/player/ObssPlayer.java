@@ -30,6 +30,7 @@ public class ObssPlayer implements IPlayer {
         @Override
         public void onError(PlayException e) {
             Log.e("xxx", "Obss onError = " + e.code);
+            playerListener.onPlayerError(e.code, 0);
         }
 
         @Override
@@ -51,6 +52,11 @@ public class ObssPlayer implements IPlayer {
                     playerListener.onPlayerState(PlayerConstants.STATE_PAUSE);
                     break;
             }
+        }
+
+        @Override
+        public void onBufferingUpdate(int percent) {
+            playerListener.onBufferingUpdate(percent);
         }
     };
 
@@ -121,6 +127,11 @@ public class ObssPlayer implements IPlayer {
     @Override
     public long getDuration() {
         return obssPlayer.getDuration();
+    }
+
+    @Override
+    public int getBufferedPercentage() {
+        return obssPlayer.getBufferPercentage();
     }
 
     @Override

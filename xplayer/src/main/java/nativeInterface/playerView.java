@@ -143,7 +143,7 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
      * @param buftime    缓冲时长
      * @param videoscale 填充类型
      */
-    public native void nativePlayerLoad(String url, int start, int buftime, int videoscale);
+    public native void nativePlayerLoad(String url, int start, int buftime, int videoscale);//TODO::是否能用
 
     /**
      * 暂停播放
@@ -167,7 +167,7 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
      *
      * @return 已缓存时长 时间单位毫秒
      */
-    public native int nativePlayerGetBufTime();
+    public native int nativePlayerGetBufTime();//TODO::回调出去看
 
     /**
      * 获得已播放时长
@@ -364,6 +364,7 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
                 mPercent = 1;
             }
             int m = (int) (100 * mPercent);
+            Log.e("xxx", "buffer percent = " + m);
             return getDuration() == 0 ? 0 : m;
         } else {
             return 0;

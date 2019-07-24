@@ -16,4 +16,10 @@ public interface OnObssListener {
      */
     void onPlayState(int code);
 
+    /**
+     * 缓冲更新
+     * @param percent 缓冲进度
+     */
+    void onBufferingUpdate(int percent);
+
 }

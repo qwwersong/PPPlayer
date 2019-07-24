@@ -2,7 +2,9 @@ package com.songlei.xplayer.view;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,6 +23,7 @@ import com.songlei.xplayer.base.Option;
 import com.songlei.xplayer.bean.VideoModeBean;
 import com.songlei.xplayer.listener.PPPlayerViewListener;
 import com.songlei.xplayer.util.CommonUtil;
+import com.songlei.xplayer.util.NetChangedReceiver;
 import com.songlei.xplayer.view.widget.SwitchModeDialog;
 import com.songlei.xplayer.view.widget.VideoCover;
 
@@ -68,8 +71,9 @@ public class PPVideoPlayerView extends PPOrientationView {
     public TextView mSwitchSize;
     //切换分辨率对话框
     private SwitchModeDialog mSwitchModeDialog;
-
+    //
     private VideoCover mVideoCover;
+    private NetChangedReceiver mNetChangedReceiver;
 
     public PPVideoPlayerView(Context context) {
         super(context);
@@ -88,6 +92,34 @@ public class PPVideoPlayerView extends PPOrientationView {
         super.init(context);
         initView();
         initListener();
+        registerNetReceiver();
+    }
+
+    private void registerNetReceiver(){
+        Log.e("xxx", "PPVideoPlayerView registerNetReceiver");
+        mNetChangedReceiver = new NetChangedReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        intentFilter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
+        intentFilter.addAction("android.net.wifi.STATE_CHANGE");
+        mContext.registerReceiver(mNetChangedReceiver, intentFilter);
+        mNetChangedReceiver.setOnNetChangeListener(new NetChangedReceiver.OnNetChangeListener() {
+            @Override
+            public void onNetChange(int type) {
+                if (type == ConnectivityManager.TYPE_MOBILE) {
+                    showNoWiFi();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        Log.e("xxx", "PPVideoPlayerView onDetachedFromWindow");
+        if (mNetChangedReceiver != null) {
+            mContext.unregisterReceiver(mNetChangedReceiver);
+        }
     }
 
     private void initView(){
@@ -153,6 +185,10 @@ public class PPVideoPlayerView extends PPOrientationView {
             @Override
             public void onNoWiFiKeepPlay(boolean isChecked) {
                 mVideoCover.hide();
+                if (mCurrentState == STATE_PAUSE) {
+                    resume();
+                }
+                mTextureViewContainer.setEnabled(true);
             }
         });
     }
@@ -298,6 +334,21 @@ public class PPVideoPlayerView extends PPOrientationView {
     @Override
     protected void showNetError(int errorCode) {
         mVideoCover.showNoNet(errorCode);
+    }
+
+    @Override
+    protected void showWifiDialog() {
+
+    }
+
+    protected void showNoWiFi(){
+        mVideoCover.showNoWiFiTip();
+        setViewShowState(mBottomContainer, GONE);
+        setViewShowState(mLockScreen, GONE);
+        mTextureViewContainer.setEnabled(false);
+        if (isPlaying()) {
+            pause();
+        }
     }
 
     @Override

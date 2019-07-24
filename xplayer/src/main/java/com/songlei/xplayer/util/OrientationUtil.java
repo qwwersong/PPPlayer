@@ -3,7 +3,6 @@ package com.songlei.xplayer.util;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.OrientationEventListener;
 
 
@@ -39,13 +38,11 @@ public class OrientationUtil {
             public void onOrientationChanged(int rotation) {
                 boolean autoRotateOn = (Settings.System.getInt(activity.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0) == 1);
                 //系统是否禁止旋转
-                Log.e("xxx", "autoRotateOn = " + autoRotateOn);
                 if (!autoRotateOn && mRotateWithSystem) {
                     return;
                 }
                 // 设置竖屏
                 if (((rotation >= 0) && (rotation <= 30)) || (rotation >= 330)) {
-                    Log.e("xxx", "设置竖屏");
                     if (mClick) {
                         if (mIsLand > 0 && !mClickLand) {
                             return;
@@ -65,7 +62,6 @@ public class OrientationUtil {
                 }
                 // 设置横屏
                 else if (((rotation >= 230) && (rotation <= 310))) {
-                    Log.e("xxx", "设置横屏");
                     if (mClick) {
                         if (!(mIsLand == 1) && !mClickPort) {
                             return;
@@ -85,7 +81,6 @@ public class OrientationUtil {
                 }
                 // 设置反向横屏
                 else if (rotation > 30 && rotation < 95) {
-                    Log.e("xxx", "设置反向横屏");
                     if (mClick) {
                         if (!(mIsLand == 2) && !mClickPort) {
                             return;

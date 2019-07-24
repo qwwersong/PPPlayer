@@ -92,6 +92,10 @@ public class PlayerManager {
         return player.getDuration();
     }
 
+    public int getBufferedPercentage(){
+        return player.getBufferedPercentage();
+    }
+
     public void setPlayerListener(PlayerListener playerListener){
         player.setPlayerListener(playerListener);
     }

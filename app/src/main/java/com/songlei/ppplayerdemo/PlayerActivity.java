@@ -44,6 +44,7 @@ public class PlayerActivity extends AppCompatActivity {
     private PPVideoPlayerView pp_video_view;
 
     //    private String url = "http://feichitest.yeepo.cn/video/58dd8559576d7093c48136ba55fa88b3/58dd8559576d7093c48136ba55fa88b3.vdo";
+    private String m4_url = "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4";
     private String url = "http://qvw.mvaas.cn/hls/2f03f5b30ec2f83c2f85/gs7ttsp7wbl6yukwrwbz/n_n/6414bf9903cca1299eecd7dd9bff0b94.m3u8?xstToken=888c0dc7";
     private String b_url = "http://qvw.mvaas.cn/hls/2f03f5b30ec2f83c2f85/gs7ttsp7wbl6yukwrwbz/480_25_4_500k_4_3_n/06e6ab5fdf1bd9ce4f8947e6774002f9.m3u8?xstToken=888c0dc7";
     private String h_url = "http://qvw.mvaas.cn/hls/2f03f5b30ec2f83c2f85/gs7ttsp7wbl6yukwrwbz/720_25_4_1000k_4_7_n/fa5212ef3b6da8de24bbcd845a669ba3.m3u8?xstToken=888c0dc7";
@@ -95,7 +96,7 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void initData(){
-        urlList.add(new VideoModeBean(url, "原始", 0));
+        urlList.add(new VideoModeBean(m4_url, "原始", 0));
         urlList.add(new VideoModeBean(b_url, "标清", 1));
         urlList.add(new VideoModeBean(h_url, "高清", 2));
     }
