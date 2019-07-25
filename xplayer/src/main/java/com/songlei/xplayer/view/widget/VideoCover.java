@@ -13,6 +13,7 @@ import com.songlei.xplayer.R;
 
 
 /**
+ * 状态变化展示控件
  * Created by songlei on 2019/06/06.
  */
 public class VideoCover extends RelativeLayout {

@@ -21,7 +21,9 @@ import com.songlei.xplayer.util.CommonUtil;
 
 import java.util.Map;
 
-
+/**
+ * 切换分辨率对话框
+ */
 public class SwitchModeDialog extends Dialog {
     private RadioButton tvNormalClear;
     private RadioButton tvSuperClear;

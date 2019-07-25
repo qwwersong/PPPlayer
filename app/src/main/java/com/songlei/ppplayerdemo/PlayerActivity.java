@@ -90,7 +90,6 @@ public class PlayerActivity extends AppCompatActivity {
         if (pp_video_view.mIfCurrentIsFullScreen) {
             pp_video_view.exitFullScreen();
         } else {
-            //退出activity
             super.onBackPressed();
         }
     }

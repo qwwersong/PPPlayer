@@ -24,9 +24,6 @@ public class OrientationUtil {
     //是否跟随系统
     private boolean mRotateWithSystem = true;
 
-    /**
-     * @param activity
-     */
     public OrientationUtil(Activity activity) {
         this.activity = activity;
         init();
@@ -39,6 +36,9 @@ public class OrientationUtil {
                 boolean autoRotateOn = (Settings.System.getInt(activity.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0) == 1);
                 //系统是否禁止旋转
                 if (!autoRotateOn && mRotateWithSystem) {
+                    return;
+                }
+                if (!mEnable) {
                     return;
                 }
                 // 设置竖屏

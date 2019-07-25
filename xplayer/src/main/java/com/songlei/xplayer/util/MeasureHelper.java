@@ -17,7 +17,6 @@
 
 package com.songlei.xplayer.util;
 
-import android.util.Log;
 import android.view.View;
 
 import com.songlei.xplayer.base.Option;

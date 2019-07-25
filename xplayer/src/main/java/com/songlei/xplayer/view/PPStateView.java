@@ -236,7 +236,8 @@ public abstract class PPStateView extends PPTextureRenderView {
 
         @Override
         public void onPlayerError(int error, int extra) {
-            Log.e("xxx", "StateView onPlayerError error = " + error);
+            Log.e("xxx", "播放异常 error = " + error);
+            mCurrentState = STATE_ERROR;
             onErrorLayout(error);
         }
     };

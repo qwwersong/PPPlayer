@@ -6,7 +6,6 @@ import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,13 +15,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.songlei.xplayer.R;
 import com.songlei.xplayer.base.Option;
 import com.songlei.xplayer.bean.VideoModeBean;
 import com.songlei.xplayer.listener.PPPlayerViewListener;
 import com.songlei.xplayer.util.CommonUtil;
+import com.songlei.xplayer.util.MediaUtil;
 import com.songlei.xplayer.util.NetChangedReceiver;
 import com.songlei.xplayer.view.widget.SwitchModeDialog;
 import com.songlei.xplayer.view.widget.VideoCover;
@@ -66,12 +69,19 @@ public class PPVideoPlayerView extends PPOrientationView {
     //=================亮度================
     //亮度dialog
     protected Dialog mBrightnessDialog;
-
+    //=================预览================
+    private MediaUtil mMediaUtil;
+    //预览窗口
+    private RelativeLayout mPreviewLayout;
+    private ImageView mPreView;
+    //是否打开滑动预览
+    private boolean mOpenPreView = true;
+    //=================其他功能控件================
     //切换分辨率
     public TextView mSwitchSize;
-    //切换分辨率对话框
-    private SwitchModeDialog mSwitchModeDialog;
-    //
+//    //切换分辨率对话框
+//    private SwitchModeDialog mSwitchModeDialog;
+    //状态覆盖控件
     private VideoCover mVideoCover;
     private NetChangedReceiver mNetChangedReceiver;
 
@@ -90,13 +100,13 @@ public class PPVideoPlayerView extends PPOrientationView {
     @Override
     protected void init(Context context) {
         super.init(context);
+//        mMediaUtil = MediaUtil.getInstance();
         initView();
         initListener();
         registerNetReceiver();
     }
 
     private void registerNetReceiver(){
-        Log.e("xxx", "PPVideoPlayerView registerNetReceiver");
         mNetChangedReceiver = new NetChangedReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
@@ -116,7 +126,6 @@ public class PPVideoPlayerView extends PPOrientationView {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        Log.e("xxx", "PPVideoPlayerView onDetachedFromWindow");
         if (mNetChangedReceiver != null) {
             mContext.unregisterReceiver(mNetChangedReceiver);
         }
@@ -128,6 +137,8 @@ public class PPVideoPlayerView extends PPOrientationView {
         mSwitchSize.setVisibility(GONE);
 
         mVideoCover = findViewById(R.id.video_cover);
+        mPreviewLayout = findViewById(R.id.preview_layout);
+        mPreView = findViewById(R.id.preview_image);
     }
 
     private void initListener(){
@@ -180,14 +191,13 @@ public class PPVideoPlayerView extends PPOrientationView {
             @Override
             public void onKeepPlay() {
                 mVideoCover.hide();
+                clickStartIcon();
             }
 
             @Override
             public void onNoWiFiKeepPlay(boolean isChecked) {
                 mVideoCover.hide();
-                if (mCurrentState == STATE_PAUSE) {
-                    resume();
-                }
+                clickStartIcon();
                 mTextureViewContainer.setEnabled(true);
             }
         });
@@ -215,7 +225,7 @@ public class PPVideoPlayerView extends PPOrientationView {
         }
         mSwitchSize.setText(modeBean.show_name);
 
-        Log.e("xxx", "setUp url = " + modeBean.url);
+//        mMediaUtil.setSource(modeBean.url);
         setUp(modeBean.url);
         return true;
     }
@@ -282,6 +292,14 @@ public class PPVideoPlayerView extends PPOrientationView {
         release();
     }
 
+    @Override
+    protected void onStateLayout(int state) {
+        super.onStateLayout(state);
+        if (state == STATE_PREPARE) {
+            startDownFrame(mUrl);
+        }
+    }
+
     public void setPPPlayerViewListener(PPPlayerViewListener mPPPlayerViewListener){
         this.mPPPlayerViewListener = mPPPlayerViewListener;
     }
@@ -312,6 +330,16 @@ public class PPVideoPlayerView extends PPOrientationView {
     }
 
     @Override
+    protected void lockTouchLogic() {
+        super.lockTouchLogic();
+        if (mLockCurScreen) {
+            mOrientationUtil.setEnable(false);
+        } else {
+            mOrientationUtil.setEnable(true);
+        }
+    }
+
+    @Override
     protected void onClickUiToggle() {
         //TODO::区分状态、横竖屏、操作其他控制按钮的时候重置消失时间
         if (mIfCurrentIsFullScreen && mLockCurScreen) {
@@ -338,7 +366,7 @@ public class PPVideoPlayerView extends PPOrientationView {
 
     @Override
     protected void showWifiDialog() {
-
+        showNoWiFi();
     }
 
     protected void showNoWiFi(){
@@ -608,7 +636,7 @@ public class PPVideoPlayerView extends PPOrientationView {
             return;
         }
 
-        mSwitchModeDialog = new SwitchModeDialog(mContext, false, mSwitchSize, modeMap, playMode);
+        SwitchModeDialog mSwitchModeDialog = new SwitchModeDialog(mContext, false, mSwitchSize, modeMap, playMode);
         mSwitchModeDialog.setOnSwitchModeListener(new SwitchModeDialog.OnSwitchModeListener() {
             @Override
             public void onSwitchMode(int mode) {
@@ -639,5 +667,71 @@ public class PPVideoPlayerView extends PPOrientationView {
             }
         });
         mSwitchModeDialog.show();
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        super.onProgressChanged(seekBar, progress, fromUser);
+        if (fromUser && mOpenPreView) {
+            int width = seekBar.getWidth();
+            int time = progress * getDuration() / 100;
+            int offset = (int) (width - (getResources().getDimension(R.dimen.seek_bar_image) / 2)) / 100 * progress;
+            showPreView(mUrl, time);
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mPreviewLayout.getLayoutParams();
+            layoutParams.leftMargin = offset;
+            //设置帧预览图的显示位置
+            mPreviewLayout.setLayoutParams(layoutParams);
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        super.onStartTrackingTouch(seekBar);
+        if (mOpenPreView) {
+            mPreviewLayout.setVisibility(VISIBLE);
+        }
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        super.onStopTrackingTouch(seekBar);
+        if (mOpenPreView) {
+            mPreviewLayout.setVisibility(GONE);
+        }
+    }
+
+    //显示预览
+    private void showPreView(String url, long time) {
+        int width = CommonUtil.dip2px(getContext(), 150);
+        int height = CommonUtil.dip2px(getContext(), 100);
+//        mPreView.setImageBitmap(mMediaUtil.decodeFrame(time));
+        Glide.with(getContext().getApplicationContext())
+                .setDefaultRequestOptions(
+                        new RequestOptions()
+                                //这里限制了只从缓存读取
+                                .onlyRetrieveFromCache(true)
+                                .frame(1000 * time)
+                                .override(width, height)
+                                .dontAnimate()
+                                .centerCrop())
+                .load(url)
+                .into(mPreView);
+    }
+
+    private void startDownFrame(String url) {
+        for (int i = 1; i <= 100; i++) {
+            int time = i * getDuration() / 100;
+            int width = CommonUtil.dip2px(getContext(), 150);
+            int height = CommonUtil.dip2px(getContext(), 100);
+//            mPreView.setImageBitmap(mMediaUtil.decodeFrame(time));
+
+            Glide.with(getContext().getApplicationContext())
+                    .setDefaultRequestOptions(
+                            new RequestOptions()
+                                    .frame(1000 * time)
+                                    .override(width, height)
+                                    .centerCrop())
+                    .load(url).preload(width, height);
+        }
     }
 }

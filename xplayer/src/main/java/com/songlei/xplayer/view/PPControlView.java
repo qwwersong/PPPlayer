@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -94,9 +95,9 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     //当前是否全屏
     public boolean mIfCurrentIsFullScreen = false;
     //是否支持非全屏滑动触摸有效
-    protected boolean mIsTouchWiget = true;
+    protected boolean mIsTouchWidget = true;
     //是否支持全屏滑动触摸有效
-    protected boolean mIsTouchWigetFull = true;
+    protected boolean mIsTouchWidgetFull = true;
 
     //亮度
     protected float mBrightnessData = -1;
@@ -160,6 +161,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
 
         if (mProgressBar != null) {
             mProgressBar.setOnSeekBarChangeListener(this);
+            mProgressBar.setOnTouchListener(this);
         }
 
         if (mBottomContainer != null) {
@@ -176,8 +178,9 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
             mThumbImageViewLayout.setOnClickListener(this);
         }
 
-        if (mBackButton != null)
+        if (mBackButton != null) {
             mBackButton.setOnClickListener(this);
+        }
 
         if (mLockScreen != null) {
             mLockScreen.setVisibility(GONE);
@@ -238,7 +241,6 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         if (id == R.id.surface_container) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    Log.e("xxx", "onTouch surface_container down");
                     mDownX = x;
                     mDownY = y;
                     mChangeVolume = false;
@@ -253,8 +255,8 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
                     float absDeltaX = Math.abs(deltaX);
                     float absDeltaY = Math.abs(deltaY);
 
-                    if ((mIfCurrentIsFullScreen && mIsTouchWigetFull)
-                            || (mIsTouchWiget && !mIfCurrentIsFullScreen)) {
+                    if ((mIfCurrentIsFullScreen && mIsTouchWidgetFull)
+                            || (mIsTouchWidget && !mIfCurrentIsFullScreen)) {
                         if (!mChangePosition && !mChangeVolume && !mBrightness) {
 
                             touchSurfaceMoveLogic(absDeltaX, absDeltaY);
@@ -264,11 +266,33 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
 
                     break;
                 case MotionEvent.ACTION_UP:
-                    Log.e("xxx", "onTouch surface_container up");
                     startDismissControlViewTimer();
                     startProgressTimer();
 
                     touchSurfaceUp();
+                    break;
+            }
+        } else if (id == R.id.progress) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    cancelDismissControlViewTimer();
+                case MotionEvent.ACTION_MOVE:
+                    stopProgressTimer();
+                    ViewParent vpdown = getParent();
+                    while (vpdown != null) {
+                        vpdown.requestDisallowInterceptTouchEvent(true);
+                        vpdown = vpdown.getParent();
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    startDismissControlViewTimer();
+                    startProgressTimer();
+                    ViewParent vpup = getParent();
+                    while (vpup != null) {
+                        vpup.requestDisallowInterceptTouchEvent(false);
+                        vpup = vpup.getParent();
+                    }
+                    mBrightnessData = -1f;
                     break;
             }
         }
@@ -371,24 +395,28 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
 
     public void clickStartIcon() {
         if (TextUtils.isEmpty(mUrl)) {
-            Log.e("xxx", "播放地址为空");
             return;
         }
         if (mCurrentState == STATE_NO_PLAY) {
-            if (!NetUtil.isWifiConnected(mContext)) {
-                showWifiDialog();
-                return;
-            }
-            prepare();
-            start();
+            startPlayLogic();
         } else if (mCurrentState == STATE_PLAYING) {
             pause();
         } else if (mCurrentState == STATE_PAUSE) {
             resume();
         } else if (mCurrentState == STATE_COMPLETE) {
-            prepare();
-            start();
+            startPlayLogic();
+        } else if (mCurrentState == STATE_ERROR) {
+
         }
+    }
+
+    protected void startPlayLogic(){
+        if (!NetUtil.isWifiConnected(mContext)) {
+            showWifiDialog();
+            return;
+        }
+        prepare();
+        start();
     }
 
     @Override
@@ -430,10 +458,11 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
                 break;
             case STATE_COMPLETE:
                 stopProgressTimer();
+                mProgressBar.setProgress(0);
+                mCurrentTimeTextView.setText(CommonUtil.stringForTime(0));
                 mLoadingProgressBar.setVisibility(INVISIBLE);
                 break;
             case STATE_BUFFERING:
-                Log.e("xxx", "爱地魔力转圈圈");
                 mLoadingProgressBar.setVisibility(VISIBLE);
                 break;
         }
@@ -443,12 +472,12 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     @Override
     protected void onErrorLayout(int errorCode) {
         showNetError(errorCode);
+        setViewShowState(mBottomContainer, GONE);
     }
 
     @Override
     protected void onBufferedUpdate(int percent) {
         if (percent != 0) {
-            Log.e("xxx", "onBufferedUpdate percent = " + percent);
             setTextAndProgress(percent);
         }
     }
@@ -514,9 +543,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         if (!mTouchProgressBar) {
             mProgressBar.setProgress(progress);
         }
-        /**
-         * 只有播放地址为mp4，才会有回调播放器BufferingUpdate
-         */
+        //只有播放地址为mp4，才会有回调播放器BufferingUpdate
         if (getBufferedPercentage() > 0) {
             secProgress = getBufferedPercentage();
         }

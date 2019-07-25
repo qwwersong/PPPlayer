@@ -129,7 +129,6 @@
             android:id="@+id/back"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:paddingLeft="10dp"
             android:scaleType="centerInside"
             android:src="@drawable/video_back" />
 
@@ -153,6 +152,20 @@
             android:textColor="@android:color/white"
             android:textSize="13sp" />
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/preview_layout"
+        android:layout_width="@dimen/seek_bar_image"
+        android:layout_height="100dp"
+        android:layout_above="@+id/layout_bottom"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/preview_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#000000" />
+    </RelativeLayout>
 
     <!--<moe.codeest.enviews.ENDownloadView-->
         <!--android:id="@+id/loading"-->

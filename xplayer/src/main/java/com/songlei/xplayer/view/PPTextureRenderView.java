@@ -97,6 +97,13 @@ public abstract class PPTextureRenderView extends FrameLayout implements ISurfac
 
     }
 
+    public void setEffectFilter(VideoGLView.ShaderInterface effectFilter){
+        this.mEffectFilter = effectFilter;
+        if (mTextureView != null) {
+            mTextureView.setEffectFilter(effectFilter);
+        }
+    }
+
     protected void changeViewShowType(){
         if (mTextureView != null) {
             boolean typeChanged = (Option.getShowType() != Option.SCREEN_TYPE_DEFAULT);

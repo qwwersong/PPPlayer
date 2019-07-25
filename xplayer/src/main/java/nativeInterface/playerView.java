@@ -364,7 +364,6 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
                 mPercent = 1;
             }
             int m = (int) (100 * mPercent);
-            Log.e("xxx", "buffer percent = " + m);
             return getDuration() == 0 ? 0 : m;
         } else {
             return 0;
