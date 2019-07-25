@@ -83,6 +83,7 @@ public class RenderView {
                         final MeasureHelper.MeasureFormVideoParamsListener videoParamsListener,
                         final VideoGLView.ShaderInterface effect, final float[] transform,
                         final VideoGLViewBaseRender customRender, int mode) {
+        Log.e("xxx", "RenderView addView renderType = " + Option.getRenderType());
         if (Option.getRenderType() == Option.VIEW_SURFACE) {
             mShowView = VideoSurfaceView.addSurfaceView(context, textureViewContainer, rotate, surfaceListener, videoParamsListener);
         } else if (Option.getRenderType() == Option.VIEW_GL_SURFACE) {

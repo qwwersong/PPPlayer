@@ -142,6 +142,17 @@
             android:textSize="18sp" />
 
         <TextView
+            android:id="@+id/moreEffect"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:minEms="5"
+            android:paddingLeft="10dp"
+            android:text="滤镜切换"
+            android:textColor="@android:color/white"
+            android:textSize="13sp" />
+
+        <TextView
             android:id="@+id/moreScale"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

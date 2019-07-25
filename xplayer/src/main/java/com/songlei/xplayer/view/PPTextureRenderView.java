@@ -98,9 +98,43 @@ public abstract class PPTextureRenderView extends FrameLayout implements ISurfac
     }
 
     public void setEffectFilter(VideoGLView.ShaderInterface effectFilter){
+        Log.e("xxx", "setEffectFilter");
         this.mEffectFilter = effectFilter;
         if (mTextureView != null) {
             mTextureView.setEffectFilter(effectFilter);
+        }
+    }
+
+    /**
+     * GL模式下的画面matrix效果
+     * @param matrixGL 16位长度
+     */
+    public void setMatrixGL(float[] matrixGL) {
+        this.mMatrixGL = matrixGL;
+        if (mTextureView != null) {
+            mTextureView.setMatrixGL(mMatrixGL);
+        }
+    }
+
+    /**
+     * 自定义GL的渲染render
+     */
+    public void setCustomGLRenderer(VideoGLViewBaseRender renderer) {
+        this.mRenderer = renderer;
+        if (mTextureView != null) {
+            mTextureView.setGLRenderer(renderer);
+        }
+    }
+
+    /**
+     * GL布局的绘制模式，利用布局计算大小还是使用render计算大小
+     *
+     * @param mode MODE_LAYOUT_SIZE = 0,  MODE_RENDER_SIZE = 1
+     */
+    public void setGLRenderMode(int mode) {
+        mMode = mode;
+        if (mTextureView != null) {
+            mTextureView.setGLRenderMode(mode);
         }
     }
 

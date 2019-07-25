@@ -80,6 +80,7 @@ public abstract class PPStateView extends PPTextureRenderView {
 
         mPlayerManager = new PlayerManager(context);
         Option.setPlayerType(Option.PLAYER_OBSS);
+        Option.setRenderType(Option.VIEW_GL_SURFACE);
         mPlayerManager.initPlayer(null);
         mPlayerManager.setPlayerListener(playerListener);
     }
