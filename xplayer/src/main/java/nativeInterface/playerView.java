@@ -344,7 +344,7 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
 
     @Override
     public void setSurface(Surface surface) {
-        Log.e(TAG, "setSurface");
+        Log.e(TAG, "setSurface surface = " + surface);
         this.mSurface = surface;
         nativeSetSurface(surface);
 //        if (isStartPlay) {

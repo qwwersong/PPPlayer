@@ -154,7 +154,6 @@ public class VideoGLView extends GLSurfaceView implements GLSurfaceListener, IRe
         if (gsyVideoShotListener != null) {
             setGSYVideoShotListener(gsyVideoShotListener, shotHigh);
             takeShotPic();
-
         }
     }
 
@@ -185,7 +184,6 @@ public class VideoGLView extends GLSurfaceView implements GLSurfaceListener, IRe
         return this;
     }
 
-
     @Override
     public void onRenderResume() {
         requestLayout();
@@ -196,14 +194,12 @@ public class VideoGLView extends GLSurfaceView implements GLSurfaceListener, IRe
     public void onRenderPause() {
         requestLayout();
         onPause();
-
     }
 
     @Override
     public void releaseRenderAll() {
         requestLayout();
         releaseAll();
-
     }
 
     @Override
@@ -296,7 +292,7 @@ public class VideoGLView extends GLSurfaceView implements GLSurfaceListener, IRe
     }
 
 
-    public void setGSYVideoGLRenderErrorListener(GLRenderErrorListener videoGLRenderErrorListener) {
+    public void setVideoGLRenderErrorListener(GLRenderErrorListener videoGLRenderErrorListener) {
         this.mRenderer.setGSYVideoGLRenderErrorListener(videoGLRenderErrorListener);
     }
 
@@ -373,31 +369,31 @@ public class VideoGLView extends GLSurfaceView implements GLSurfaceListener, IRe
      * 添加播放的view
      */
     public static VideoGLView addGLView(final Context context, final ViewGroup textureViewContainer, final int rotate,
-                                           final ISurfaceListener gsySurfaceListener,
+                                           final ISurfaceListener surfaceListener,
                                            final MeasureHelper.MeasureFormVideoParamsListener videoParamsListener,
                                            final ShaderInterface effect, final float[] transform,
                                            final VideoGLViewBaseRender customRender, final int renderMode) {
         if (textureViewContainer.getChildCount() > 0) {
             textureViewContainer.removeAllViews();
         }
-        final VideoGLView gsyVideoGLView = new VideoGLView(context);
+        final VideoGLView videoGLView = new VideoGLView(context);
         if (customRender != null) {
-            gsyVideoGLView.setCustomRenderer(customRender);
+            videoGLView.setCustomRenderer(customRender);
         }
-        gsyVideoGLView.setEffect(effect);
-        gsyVideoGLView.setVideoParamsListener(videoParamsListener);
-        gsyVideoGLView.setRenderMode(renderMode);
-        gsyVideoGLView.setISurfaceListener(gsySurfaceListener);
-        gsyVideoGLView.setRotation(rotate);
-        gsyVideoGLView.initRender();
-        gsyVideoGLView.setGSYVideoGLRenderErrorListener(new GLRenderErrorListener() {
+        videoGLView.setEffect(effect);
+        videoGLView.setVideoParamsListener(videoParamsListener);
+        videoGLView.setRenderMode(renderMode);
+        videoGLView.setISurfaceListener(surfaceListener);
+        videoGLView.setRotation(rotate);
+        videoGLView.initRender();
+        videoGLView.setVideoGLRenderErrorListener(new GLRenderErrorListener() {
             @Override
             public void onError(VideoGLViewBaseRender render, String Error, int code, boolean byChangedRenderError) {
                 if (byChangedRenderError)
                     addGLView(context,
                             textureViewContainer,
                             rotate,
-                            gsySurfaceListener,
+                            surfaceListener,
                             videoParamsListener,
                             render.getEffect(),
                             render.getMVPMatrix(),
@@ -406,10 +402,10 @@ public class VideoGLView extends GLSurfaceView implements GLSurfaceListener, IRe
             }
         });
         if (transform != null && transform.length == 16) {
-            gsyVideoGLView.setMVPMatrix(transform);
+            videoGLView.setMVPMatrix(transform);
         }
-        RenderView.addToParent(textureViewContainer, gsyVideoGLView);
-        return gsyVideoGLView;
+        RenderView.addToParent(textureViewContainer, videoGLView);
+        return videoGLView;
     }
 
 

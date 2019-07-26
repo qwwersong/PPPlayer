@@ -83,8 +83,7 @@ public class VideoGLViewSimpleRender extends VideoGLViewBaseRender {
 
     public VideoGLViewSimpleRender() {
         mTriangleVertices = ByteBuffer
-                .allocateDirect(
-                        mTriangleVerticesData.length * FLOAT_SIZE_BYTES)
+                .allocateDirect(mTriangleVerticesData.length * FLOAT_SIZE_BYTES)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         mTriangleVertices.put(mTriangleVerticesData).position(0);
 
@@ -125,35 +124,27 @@ public class VideoGLViewSimpleRender extends VideoGLViewBaseRender {
         if (mProgram == 0) {
             return;
         }
-        maPositionHandle = GLES20
-                .glGetAttribLocation(mProgram, "aPosition");
+        maPositionHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         checkGlError("glGetAttribLocation aPosition");
         if (maPositionHandle == -1) {
-            throw new RuntimeException(
-                    "Could not get attrib location for aPosition");
+            throw new RuntimeException("Could not get attrib location for aPosition");
         }
-        maTextureHandle = GLES20.glGetAttribLocation(mProgram,
-                "aTextureCoord");
+        maTextureHandle = GLES20.glGetAttribLocation(mProgram, "aTextureCoord");
         checkGlError("glGetAttribLocation aTextureCoord");
         if (maTextureHandle == -1) {
-            throw new RuntimeException(
-                    "Could not get attrib location for aTextureCoord");
+            throw new RuntimeException("Could not get attrib location for aTextureCoord");
         }
 
-        muMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram,
-                "uMVPMatrix");
+        muMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
         checkGlError("glGetUniformLocation uMVPMatrix");
         if (muMVPMatrixHandle == -1) {
-            throw new RuntimeException(
-                    "Could not get attrib location for uMVPMatrix");
+            throw new RuntimeException("Could not get attrib location for uMVPMatrix");
         }
 
-        muSTMatrixHandle = GLES20.glGetUniformLocation(mProgram,
-                "uSTMatrix");
+        muSTMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uSTMatrix");
         checkGlError("glGetUniformLocation uSTMatrix");
         if (muSTMatrixHandle == -1) {
-            throw new RuntimeException(
-                    "Could not get attrib location for uSTMatrix");
+            throw new RuntimeException("Could not get attrib location for uSTMatrix");
         }
 
         GLES20.glGenTextures(2, mTextureID, 0);
@@ -213,8 +204,7 @@ public class VideoGLViewSimpleRender extends VideoGLViewBaseRender {
             mChangeProgram = false;
         }
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT
-                | GLES20.GL_COLOR_BUFFER_BIT);
+        GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
 
         GLES20.glUseProgram(mProgram);
         checkGlError("glUseProgram");

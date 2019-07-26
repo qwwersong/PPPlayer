@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -280,6 +281,12 @@ public class PPVideoPlayerView extends PPOrientationView {
 //        mMediaUtil.setSource(modeBean.url);
         setUp(modeBean.url);
         return true;
+    }
+
+    public void setTitle(String title){
+        if (!TextUtils.isEmpty(title) && mTitleTextView != null) {
+            mTitleTextView.setText(title);
+        }
     }
 
     @Override

@@ -58,6 +58,7 @@ public class PlayerActivity extends AppCompatActivity {
         isTransition = getIntent().getBooleanExtra(TRANSITION, false);
         initData();
         initView();
+        initVideo();
         initListener();
         initTransition();
     }
@@ -100,10 +101,13 @@ public class PlayerActivity extends AppCompatActivity {
         urlList.add(new VideoModeBean(h_url, "高清", 2));
     }
 
+    private void initVideo(){
+        pp_video_view.setUp(urlList);
+        pp_video_view.setTitle("鸡你太美");
+    }
+
     private void initView(){
         pp_video_view = findViewById(R.id.pp_video_view);
-
-        pp_video_view.setUp(urlList);
     }
 
     private void initListener(){

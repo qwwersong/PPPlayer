@@ -76,8 +76,7 @@ public abstract class VideoGLViewBaseRender implements GLSurfaceView.Renderer, S
             GLES20.glShaderSource(shader, source);
             GLES20.glCompileShader(shader);
             int[] compiled = new int[1];
-            GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS,
-                    compiled, 0);
+            GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compiled, 0);
             if (compiled[0] == 0) {
                 GLES20.glDeleteShader(shader);
                 shader = 0;
@@ -91,8 +90,7 @@ public abstract class VideoGLViewBaseRender implements GLSurfaceView.Renderer, S
         if (vertexShader == 0) {
             return 0;
         }
-        int pixelShader = loadShader(GLES20.GL_FRAGMENT_SHADER,
-                fragmentSource);
+        int pixelShader = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentSource);
         if (pixelShader == 0) {
             return 0;
         }
@@ -105,8 +103,7 @@ public abstract class VideoGLViewBaseRender implements GLSurfaceView.Renderer, S
             checkGlError("glAttachShader");
             GLES20.glLinkProgram(program);
             int[] linkStatus = new int[1];
-            GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS,
-                    linkStatus, 0);
+            GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0);
             if (linkStatus[0] != GLES20.GL_TRUE) {
                 GLES20.glDeleteProgram(program);
                 program = 0;
@@ -140,9 +137,7 @@ public abstract class VideoGLViewBaseRender implements GLSurfaceView.Renderer, S
         IntBuffer intBuffer = IntBuffer.wrap(bitmapBuffer);
         intBuffer.position(0);
         try {
-            gl.glReadPixels(x, y, w, h, GL10.GL_RGBA, GL10.
-                            GL_UNSIGNED_BYTE,
-                    intBuffer);
+            gl.glReadPixels(x, y, w, h, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, intBuffer);
             int offset1, offset2;
             for (int i = 0; i < h; i++) {
                 offset1 = i * w;
