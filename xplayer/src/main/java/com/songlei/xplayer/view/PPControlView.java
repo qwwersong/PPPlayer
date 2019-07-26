@@ -380,6 +380,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         dismissVolumeDialog();
         dismissBrightnessDialog();
         if (mChangePosition && (mCurrentState == STATE_PLAYING || mCurrentState == STATE_PAUSE)) {
+            mLoadingProgressBar.setVisibility(VISIBLE);
             seekTo(mSeekTimePosition);
             int duration = getDuration();
             int progress = mSeekTimePosition * 100 / (duration == 0 ? 1 : duration);
@@ -404,6 +405,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         } else if (mCurrentState == STATE_PAUSE) {
             resume();
         } else if (mCurrentState == STATE_COMPLETE) {
+            initPlayer();
             startPlayLogic();
         } else if (mCurrentState == STATE_ERROR) {
 
@@ -416,7 +418,6 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
             return;
         }
         prepare();
-        start();
     }
 
     @Override
@@ -431,6 +432,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
+        mLoadingProgressBar.setVisibility(VISIBLE);
         int time = seekBar.getProgress() * getDuration() / 100;
         seekTo(time);
         mHadSeekTouch = false;
@@ -478,7 +480,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     @Override
     protected void onBufferedUpdate(int percent) {
         if (percent != 0) {
-            setTextAndProgress(percent);
+//            setTextAndProgress(percent);
         }
     }
 

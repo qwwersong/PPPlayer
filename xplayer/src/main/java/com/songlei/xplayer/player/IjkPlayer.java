@@ -221,7 +221,6 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
 
     @Override
     public void onBufferingUpdate(IMediaPlayer iMediaPlayer, int percent) {
-        Log.e("xxx", "IJKPlayer onBufferingUpdate percent = " + percent);
         playerListener.onBufferingUpdate(percent);
     }
 }

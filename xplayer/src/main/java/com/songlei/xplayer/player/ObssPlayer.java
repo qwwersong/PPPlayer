@@ -63,6 +63,7 @@ public class ObssPlayer implements IPlayer {
     @Override
     public void prepare(String url) {
         this.url = url;
+        start();
     }
 
     @Override

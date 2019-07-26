@@ -79,8 +79,14 @@ public abstract class PPStateView extends PPTextureRenderView {
         mAudioManager.requestAudioFocus(onAudioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 
         mPlayerManager = new PlayerManager(context);
-        Option.setPlayerType(Option.PLAYER_IJK);
-        Option.setRenderType(Option.VIEW_GL_SURFACE);
+        initPlayer();
+    }
+
+    protected void initPlayer(){
+//        Option.setPlayerType(Option.PLAYER_IJK);
+//        Option.setRenderType(Option.VIEW_GL_SURFACE);
+        Option.setPlayerType(Option.PLAYER_OBSS);
+        Option.setRenderType(Option.VIEW_TEXTURE);
         mPlayerManager.initPlayer(null);
         mPlayerManager.setPlayerListener(playerListener);
     }
@@ -209,6 +215,9 @@ public abstract class PPStateView extends PPTextureRenderView {
                         mSeekOnStart = 0;
                     }
                     addTextureView();
+                    if (Option.getPlayerType() != Option.PLAYER_OBSS) {
+                        start();
+                    }
                     onStateLayout(mCurrentState);
                     break;
                 case STATE_PLAYING:

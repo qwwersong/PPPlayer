@@ -354,7 +354,7 @@ public class PPVideoPlayerView extends PPOrientationView {
     @Override
     protected void onStateLayout(int state) {
         super.onStateLayout(state);
-        if (state == STATE_PREPARE) {
+        if (state == STATE_PREPARE && !mUrl.contains("m3u8")) {
             startDownFrame(mUrl);
         }
     }
@@ -718,10 +718,9 @@ public class PPVideoPlayerView extends PPOrientationView {
                     mSeekOnStart = getCurrentPosition();
                     setPlayPosition(mSeekOnStart);
                     onRelease();
+                    initPlayer();
                     setUp(url);
                     prepare();
-                    start();
-
                 }
             }
         });
@@ -731,7 +730,7 @@ public class PPVideoPlayerView extends PPOrientationView {
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         super.onProgressChanged(seekBar, progress, fromUser);
-        if (fromUser && mOpenPreView) {
+        if (fromUser && mOpenPreView && !mUrl.contains("m3u8")) {
             int width = seekBar.getWidth();
             int time = progress * getDuration() / 100;
             int offset = (int) (width - (getResources().getDimension(R.dimen.seek_bar_image) / 2)) / 100 * progress;
@@ -746,7 +745,7 @@ public class PPVideoPlayerView extends PPOrientationView {
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         super.onStartTrackingTouch(seekBar);
-        if (mOpenPreView) {
+        if (mOpenPreView && !mUrl.contains("m3u8")) {
             mPreviewLayout.setVisibility(VISIBLE);
         }
     }
@@ -754,7 +753,7 @@ public class PPVideoPlayerView extends PPOrientationView {
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         super.onStopTrackingTouch(seekBar);
-        if (mOpenPreView) {
+        if (mOpenPreView && !mUrl.contains("m3u8")) {
             mPreviewLayout.setVisibility(GONE);
         }
     }
