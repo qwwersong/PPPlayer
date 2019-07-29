@@ -12,8 +12,10 @@ import android.view.View;
 import com.songlei.xplayer.R;
 import com.songlei.xplayer.base.Option;
 import com.songlei.xplayer.listener.PlayerListener;
-import com.songlei.xplayer.player.PlayerConstants;
-import com.songlei.xplayer.player.PlayerManager;
+import com.songlei.xplayer.PlayerConstants;
+import com.songlei.xplayer.PlayerManager;
+import com.songlei.xplayer.player.IjkPlayer;
+import com.songlei.xplayer.player.PlayerFactory;
 
 /**
  * Created by songlei on 2019/07/02.
@@ -83,10 +85,11 @@ public abstract class PPStateView extends PPTextureRenderView {
     }
 
     protected void initPlayer(){
+        PlayerFactory.setPlayer(IjkPlayer.class);
 //        Option.setPlayerType(Option.PLAYER_IJK);
-//        Option.setRenderType(Option.VIEW_GL_SURFACE);
-        Option.setPlayerType(Option.PLAYER_OBSS);
-        Option.setRenderType(Option.VIEW_TEXTURE);
+        Option.setRenderType(Option.VIEW_GL_SURFACE);
+//        Option.setPlayerType(Option.PLAYER_OBSS);
+//        Option.setRenderType(Option.VIEW_TEXTURE);
         mPlayerManager.initPlayer(null);
         mPlayerManager.setPlayerListener(playerListener);
     }

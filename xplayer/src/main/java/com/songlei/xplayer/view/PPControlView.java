@@ -350,7 +350,6 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
             int deltaV = (int) (max * deltaY * 3 / curHeight);
             mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mGestureDownVolume + deltaV, 0);
             int volumePercent = (int) (mGestureDownVolume * 100 / max + deltaY * 3 * 100 / curHeight);
-            Log.e("xxx", "volumePercent = " + volumePercent);
             showVolumeDialog(-deltaY, volumePercent);
         } else if (mBrightness) {//调节亮度
             float percent = (-deltaY / curHeight);

@@ -1,4 +1,4 @@
-package com.songlei.xplayer.player;
+package com.songlei.xplayer;
 
 /**
  * 播放器常量

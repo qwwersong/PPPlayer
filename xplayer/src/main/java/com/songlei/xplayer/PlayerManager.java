@@ -1,4 +1,4 @@
-package com.songlei.xplayer.player;
+package com.songlei.xplayer;
 
 import android.content.Context;
 import android.util.Log;
@@ -6,6 +6,9 @@ import android.view.Surface;
 
 import com.songlei.xplayer.base.Option;
 import com.songlei.xplayer.listener.PlayerListener;
+import com.songlei.xplayer.player.IPlayer;
+import com.songlei.xplayer.player.ObssPlayer;
+import com.songlei.xplayer.player.PlayerFactory;
 
 /**
  * Created by songlei on 2019/07/02.
@@ -19,17 +22,8 @@ public class PlayerManager {
     }
 
     public void initPlayer(Option option){
-        switch (Option.getPlayerType()) {
-            case Option.PLAYER_IJK:
-                Log.e("xxx", "创建播放器 Ijk");
-                player = new IjkPlayer(context);
-                break;
-            case Option.PLAYER_OBSS:
-                Log.e("xxx", "创建播放器 Obss");
-                player = new ObssPlayer(context);
-                break;
-
-        }
+        player = PlayerFactory.getPlayer();
+        player.initPlayer(context);
     }
 
     public void prepare(String url){

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Surface;
 
+import com.songlei.xplayer.PlayerConstants;
 import com.songlei.xplayer.listener.PlayerListener;
 
 import java.io.IOException;
@@ -32,7 +33,8 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
     private boolean isModifyTone = false;
     private boolean isBufferCache = false;
 
-    public IjkPlayer(Context context){
+    @Override
+    public void initPlayer(Context context) {
         mediaPlayer = (ijkLibLoader == null) ? new IjkMediaPlayer() : new IjkMediaPlayer(ijkLibLoader);
         mediaPlayer.setLogEnabled(false);
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);

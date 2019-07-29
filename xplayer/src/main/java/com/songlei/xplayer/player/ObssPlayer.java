@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Surface;
 
+import com.songlei.xplayer.PlayerConstants;
 import com.songlei.xplayer.listener.PlayerListener;
 import com.songlei.xplayer.obssplayer.OnObssListener;
 import com.songlei.xplayer.obssplayer.PlayException;
@@ -21,7 +22,8 @@ public class ObssPlayer implements IPlayer {
     private int playPosition;
     private PlayerListener playerListener;
 
-    public ObssPlayer(Context context){
+    @Override
+    public void initPlayer(Context context) {
         obssPlayer = new playerView(context);
         obssPlayer.setOnObssListener(onObssListener);
     }
