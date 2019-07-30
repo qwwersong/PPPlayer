@@ -20,7 +20,7 @@ import java.io.File;
 
 public interface IRenderView {
 
-    ISurfaceListener getIGSYSurfaceListener();
+    ISurfaceListener getISurfaceListener();
 
     /**
      * Surface变化监听，必须
@@ -50,13 +50,13 @@ public interface IRenderView {
     /**
      * 截图
      */
-    void taskShotPic(VideoShotListener gsyVideoShotListener, boolean shotHigh);
+    void taskShotPic(VideoShotListener videoShotListener, boolean shotHigh);
 
     /**
      * 保存当前帧
      */
     void saveFrame(final File file, final boolean high, final VideoShotSaveListener
-            gsyVideoShotSaveListener);
+            videoShotSaveListener);
 
     /**
      * 获取当前画面的bitmap，没有返回空

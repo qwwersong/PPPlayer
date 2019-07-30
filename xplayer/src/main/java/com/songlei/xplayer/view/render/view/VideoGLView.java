@@ -11,6 +11,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.songlei.xplayer.util.FileUtil;
 import com.songlei.xplayer.util.MeasureHelper;
 import com.songlei.xplayer.view.render.IRenderView;
 import com.songlei.xplayer.view.render.RenderView;
@@ -54,9 +55,9 @@ public class VideoGLView extends GLSurfaceView implements GLSurfaceListener, IRe
 
     private MeasureHelper measureHelper;
 
-    private GLSurfaceListener mOnGSYSurfaceListener;
+    private GLSurfaceListener mOnSurfaceListener;
 
-    private ISurfaceListener mIGSYSurfaceListener;
+    private ISurfaceListener mISurfaceListener;
 
     private float[] mMVPMatrix;
 
@@ -105,20 +106,20 @@ public class VideoGLView extends GLSurfaceView implements GLSurfaceListener, IRe
     }
 
     @Override
-    public ISurfaceListener getIGSYSurfaceListener() {
-        return mIGSYSurfaceListener;
+    public ISurfaceListener getISurfaceListener() {
+        return mISurfaceListener;
     }
 
     @Override
     public void setISurfaceListener(ISurfaceListener surfaceListener) {
-        setOnGSYSurfaceListener(this);
-        mIGSYSurfaceListener = surfaceListener;
+        setOnSurfaceListener(this);
+        mISurfaceListener = surfaceListener;
     }
 
     @Override
     public void onSurfaceAvailable(Surface surface) {
-        if (mIGSYSurfaceListener != null) {
-            mIGSYSurfaceListener.onSurfaceAvailable(surface);
+        if (mISurfaceListener != null) {
+            mISurfaceListener.onSurfaceAvailable(surface);
         }
     }
 
@@ -150,9 +151,9 @@ public class VideoGLView extends GLSurfaceView implements GLSurfaceListener, IRe
      * @param shotHigh 是否需要高清的
      */
     @Override
-    public void taskShotPic(VideoShotListener gsyVideoShotListener, boolean shotHigh) {
-        if (gsyVideoShotListener != null) {
-            setGSYVideoShotListener(gsyVideoShotListener, shotHigh);
+    public void taskShotPic(VideoShotListener videoShotListener, boolean shotHigh) {
+        if (videoShotListener != null) {
+            setVideoShotListener(videoShotListener, shotHigh);
             takeShotPic();
         }
     }
@@ -163,19 +164,19 @@ public class VideoGLView extends GLSurfaceView implements GLSurfaceListener, IRe
      * @param high 是否需要高清的
      */
     @Override
-    public void saveFrame(final File file, final boolean high, final VideoShotSaveListener gsyVideoShotSaveListener) {
-        VideoShotListener gsyVideoShotListener = new VideoShotListener() {
+    public void saveFrame(final File file, final boolean high, final VideoShotSaveListener videoShotSaveListener) {
+        VideoShotListener videoShotListener = new VideoShotListener() {
             @Override
             public void getBitmap(Bitmap bitmap) {
                 if (bitmap == null) {
-                    gsyVideoShotSaveListener.result(false, file);
+                    videoShotSaveListener.result(false, file);
                 } else {
-//                    FileUtils.saveBitmap(bitmap, file);
-                    gsyVideoShotSaveListener.result(true, file);
+                    FileUtil.saveBitmap(bitmap, file);
+                    videoShotSaveListener.result(true, file);
                 }
             }
         };
-        setGSYVideoShotListener(gsyVideoShotListener, high);
+        setVideoShotListener(videoShotListener, high);
         takeShotPic();
     }
 
@@ -293,7 +294,7 @@ public class VideoGLView extends GLSurfaceView implements GLSurfaceListener, IRe
 
 
     public void setVideoGLRenderErrorListener(GLRenderErrorListener videoGLRenderErrorListener) {
-        this.mRenderer.setGSYVideoGLRenderErrorListener(videoGLRenderErrorListener);
+        this.mRenderer.setVideoGLRenderErrorListener(videoGLRenderErrorListener);
     }
 
     /**
@@ -308,9 +309,9 @@ public class VideoGLView extends GLSurfaceView implements GLSurfaceListener, IRe
         initRenderMeasure();
     }
 
-    public void setOnGSYSurfaceListener(GLSurfaceListener mGSYSurfaceListener) {
-        this.mOnGSYSurfaceListener = mGSYSurfaceListener;
-        mRenderer.setGSYSurfaceListener(this.mOnGSYSurfaceListener);
+    public void setOnSurfaceListener(GLSurfaceListener mSurfaceListener) {
+        this.mOnSurfaceListener = mSurfaceListener;
+        mRenderer.setSurfaceListener(this.mOnSurfaceListener);
     }
 
     public void setEffect(ShaderInterface shaderEffect) {
@@ -332,8 +333,8 @@ public class VideoGLView extends GLSurfaceView implements GLSurfaceListener, IRe
     }
 
 
-    public void setGSYVideoShotListener(VideoShotListener listener, boolean high) {
-        this.mRenderer.setGSYVideoShotListener(listener, high);
+    public void setVideoShotListener(VideoShotListener listener, boolean high) {
+        this.mRenderer.setVideoShotListener(listener, high);
     }
 
     public int getMode() {

@@ -26,7 +26,7 @@ import java.io.File;
 
 public class VideoSurfaceView extends SurfaceView implements SurfaceHolder.Callback2, IRenderView, MeasureHelper.MeasureFormVideoParamsListener {
 
-    private ISurfaceListener mIGSYSurfaceListener;
+    private ISurfaceListener mISurfaceListener;
 
     private MeasureHelper.MeasureFormVideoParamsListener mVideoParamsListener;
 
@@ -54,23 +54,23 @@ public class VideoSurfaceView extends SurfaceView implements SurfaceHolder.Callb
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        if (mIGSYSurfaceListener != null) {
-            mIGSYSurfaceListener.onSurfaceAvailable(holder.getSurface());
+        if (mISurfaceListener != null) {
+            mISurfaceListener.onSurfaceAvailable(holder.getSurface());
         }
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        if (mIGSYSurfaceListener != null) {
-            mIGSYSurfaceListener.onSurfaceSizeChanged(holder.getSurface(), width, height);
+        if (mISurfaceListener != null) {
+            mISurfaceListener.onSurfaceSizeChanged(holder.getSurface(), width, height);
         }
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         //清空释放
-        if (mIGSYSurfaceListener != null) {
-            mIGSYSurfaceListener.onSurfaceDestroyed(holder.getSurface());
+        if (mISurfaceListener != null) {
+            mISurfaceListener.onSurfaceDestroyed(holder.getSurface());
         }
     }
 
@@ -79,14 +79,14 @@ public class VideoSurfaceView extends SurfaceView implements SurfaceHolder.Callb
     }
 
     @Override
-    public ISurfaceListener getIGSYSurfaceListener() {
-        return mIGSYSurfaceListener;
+    public ISurfaceListener getISurfaceListener() {
+        return mISurfaceListener;
     }
 
     @Override
     public void setISurfaceListener(ISurfaceListener surfaceListener) {
         getHolder().addCallback(this);
-        this.mIGSYSurfaceListener = surfaceListener;
+        this.mISurfaceListener = surfaceListener;
     }
 
     @Override
@@ -116,7 +116,7 @@ public class VideoSurfaceView extends SurfaceView implements SurfaceHolder.Callb
      *
      * @param shotHigh 是否需要高清的
      */
-    public void taskShotPic(VideoShotListener gsyVideoShotListener, boolean shotHigh) {
+    public void taskShotPic(VideoShotListener videoShotListener, boolean shotHigh) {
 //        Debuger.printfLog(getClass().getSimpleName() + " not support taskShotPic now");
     }
 
@@ -125,7 +125,7 @@ public class VideoSurfaceView extends SurfaceView implements SurfaceHolder.Callb
      *
      * @param high 是否需要高清的
      */
-    public void saveFrame(final File file, final boolean high, final VideoShotSaveListener gsyVideoShotSaveListener) {
+    public void saveFrame(final File file, final boolean high, final VideoShotSaveListener videoShotSaveListener) {
 //        Debuger.printfLog(getClass().getSimpleName() + " not support saveFrame now");
     }
 

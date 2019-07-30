@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.transition.Transition;
 
 import com.songlei.ppplayerdemo.listener.OnTransitionListener;
+import com.songlei.xplayer.base.Option;
 import com.songlei.xplayer.bean.VideoModeBean;
 import com.songlei.xplayer.listener.PPPlayerViewListener;
 import com.songlei.xplayer.view.PPVideoPlayerView;
@@ -102,8 +103,12 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void initVideo(){
-        pp_video_view.setUp(urlList);
-        pp_video_view.setTitle("鸡你太美");
+        new Option.Builder()
+                .setTitle("鸡你太美")
+                .setUrlList(urlList)
+                .setRenderType(Option.VIEW_GL_SURFACE)
+                .setPlayerType(Option.PLAYER_IJK)
+                .build(pp_video_view);
     }
 
     private void initView(){
@@ -126,9 +131,6 @@ public class PlayerActivity extends AppCompatActivity {
             addTransitionListener();
             startPostponedEnterTransition();
         }
-//        else {
-//            pp_video_view.startPlayLogic();
-//        }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -139,7 +141,6 @@ public class PlayerActivity extends AppCompatActivity {
                 @Override
                 public void onTransitionEnd(Transition transition) {
                     super.onTransitionEnd(transition);
-//                    videoPlayer.startPlayLogic();
                     transition.removeListener(this);
                 }
             });

@@ -1,9 +1,17 @@
 package com.songlei.xplayer.base;
 
+import android.text.TextUtils;
+
+import com.songlei.xplayer.bean.VideoModeBean;
+import com.songlei.xplayer.view.PPVideoPlayerView;
+
+import java.util.List;
+
 /**
  * Created by songlei on 2019/07/02.
  */
 public class Option {
+    //===============================显示比例====================================
     //默认显示比例
     public final static int SCREEN_TYPE_DEFAULT = 0;
 
@@ -19,56 +27,41 @@ public class Option {
     //全屏拉伸显示，使用这个属性时，surface_container建议使用FrameLayout
     public final static int SCREEN_MATCH_FULL = -4;
 
-    //显示比例类型
-    private static int SHOW_TYPE = SCREEN_TYPE_DEFAULT;
-
-    public static int getShowType() {
-        return SHOW_TYPE;
-    }
-
-    /**
-     * 设置显示比例,注意，这是全局生效的
-     */
-    public static void setShowType(int type) {
-        SHOW_TYPE = type;
-    }
-
-    /**
-     * GLSurfaceView 主要用于OpenGL渲染的
-     */
+    //===============================渲染类型====================================
+    //GLSurfaceView 主要用于OpenGL渲染的
     public final static int VIEW_GL_SURFACE = 2;
 
-    /**
-     * SurfaceView，与动画全屏的效果不是很兼容
-     */
+    //SurfaceView 与动画全屏的效果不是很兼容
     public final static int VIEW_SURFACE = 1;
 
-    /**
-     * TextureView,默认
-     */
+    //TextureView 默认
     public final static int VIEW_TEXTURE = 0;
+    //===============================播放内核====================================
+    public static final int PLAYER_IJK = 0;             //IJKPlayer
 
-    //渲染类型
+    public static final int PLAYER_SYSTEM = 1;          //MediaPlayer
+
+    public static final int PLAYER_OBSS = 2;            //ObssPlayer
+
+    //===============================分辨率模式====================================
+    public static final int TYPE_MODE_NORMAL = 0;         //原画模式
+
+    public static final int TYPE_MODE_HIGH_CLEAR = 1;     //高清模式
+
+    public static final int TYPE_MODE_SUPER_CLEAR = 2;    //超清模式
+
+
+    private static int sShowType = SCREEN_TYPE_DEFAULT;
+    private static int sPlayerType = PLAYER_IJK;
     private static int sRenderType = VIEW_TEXTURE;
 
-    public static int getRenderType() {
-        return sRenderType;
+    public static int getsShowType() {
+        return sShowType;
     }
 
-    /**
-     * 渲染控件
-     */
-    public static void setRenderType(int renderType) {
-        sRenderType = renderType;
+    public static void setsShowType(int type) {
+        sShowType = type;
     }
-
-    public static final int PLAYER_IJK = 0;
-
-    public static final int PLAYER_SYSTEM = 1;
-
-    public static final int PLAYER_OBSS = 2;
-
-    private static int sPlayerType = PLAYER_IJK;
 
     public static int getPlayerType(){
         return sPlayerType;
@@ -78,9 +71,64 @@ public class Option {
         sPlayerType = playerType;
     }
 
-    public static final int TYPE_MODE_NORMAL = 0;         //原画模式
+    public static int getRenderType() {
+        return sRenderType;
+    }
 
-    public static final int TYPE_MODE_HIGH_CLEAR = 1;     //高清模式
+    public static void setRenderType(int renderType) {
+        sRenderType = renderType;
+    }
 
-    public static final int TYPE_MODE_SUPER_CLEAR = 2;    //超清模式
+    public static class Builder {
+        private String url;
+        private List<VideoModeBean> urlList;
+        private String title;
+        private int renderType;
+        private int playerType;
+
+        //设置播放地址
+        public Builder setUrl(String url){
+            this.url = url;
+            return this;
+        }
+
+        //设置多分辨率播放地址
+        public Builder setUrlList(List<VideoModeBean> urlList){
+            this.urlList = urlList;
+            return this;
+        }
+
+        //设置标题
+        public Builder setTitle(String title){
+            this.title = title;
+            return this;
+        }
+
+        //设置渲染类型
+        public Builder setRenderType(int renderType){
+            this.renderType = renderType;
+            return this;
+        }
+
+        //设置播放内核
+        public Builder setPlayerType(int playerType){
+            this.playerType = playerType;
+            return this;
+        }
+
+        public void build(PPVideoPlayerView videoPlayerView){
+            if (!TextUtils.isEmpty(title)) {
+                videoPlayerView.setTitle(title);
+            }
+            if (!TextUtils.isEmpty(url)) {
+                videoPlayerView.setUp(url);
+            }
+            if (urlList != null && urlList.size() != 0) {
+                videoPlayerView.setUp(urlList);
+            }
+            videoPlayerView.setRenderType(renderType);
+            videoPlayerView.setPlayerType(playerType);
+        }
+    }
+
 }

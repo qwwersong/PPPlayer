@@ -61,7 +61,7 @@ public abstract class PPTextureRenderView extends FrameLayout implements ISurfac
 
     /**
      * 添加播放的view
-     * 继承后重载addTextureView，继承GSYRenderView后实现自己的IGSYRenderView类，既可以使用自己自定义的显示层
+     * 继承后重载addTextureView，继承RenderView后实现自己的IRenderView类，既可以使用自己自定义的显示层
      */
     protected void addTextureView() {
         Log.e("xxx", "addTextureView");
@@ -140,7 +140,7 @@ public abstract class PPTextureRenderView extends FrameLayout implements ISurfac
 
     protected void changeViewShowType(){
         if (mTextureView != null) {
-            boolean typeChanged = (Option.getShowType() != Option.SCREEN_TYPE_DEFAULT);
+            boolean typeChanged = (Option.getsShowType() != Option.SCREEN_TYPE_DEFAULT);
             int params =  (typeChanged) ? ViewGroup.LayoutParams.WRAP_CONTENT : ViewGroup.LayoutParams.MATCH_PARENT;
             ViewGroup.LayoutParams layoutParams = mTextureView.getLayoutParams();
             layoutParams.width = params;

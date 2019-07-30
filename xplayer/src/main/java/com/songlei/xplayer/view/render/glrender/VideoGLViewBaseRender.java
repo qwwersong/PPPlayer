@@ -29,7 +29,7 @@ public abstract class VideoGLViewBaseRender implements GLSurfaceView.Renderer, S
     //是否需要高清截图
     protected boolean mHighShot = false;
 
-    protected GLSurfaceListener mGSYSurfaceListener;
+    protected GLSurfaceListener mSurfaceListener;
 
     protected GLSurfaceView mSurfaceView;
 
@@ -63,8 +63,8 @@ public abstract class VideoGLViewBaseRender implements GLSurfaceView.Renderer, S
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (mGSYSurfaceListener != null) {
-                    mGSYSurfaceListener.onSurfaceAvailable(surface);
+                if (mSurfaceListener != null) {
+                    mSurfaceListener.onSurfaceAvailable(surface);
                 }
             }
         });
@@ -161,8 +161,8 @@ public abstract class VideoGLViewBaseRender implements GLSurfaceView.Renderer, S
     }
 
 
-    public void setGSYSurfaceListener(GLSurfaceListener onSurfaceListener) {
-        this.mGSYSurfaceListener = onSurfaceListener;
+    public void setSurfaceListener(GLSurfaceListener onSurfaceListener) {
+        this.mSurfaceListener = onSurfaceListener;
     }
 
     public float[] getMVPMatrix() {
@@ -185,7 +185,7 @@ public abstract class VideoGLViewBaseRender implements GLSurfaceView.Renderer, S
     /**
      * 截图监听
      */
-    public void setGSYVideoShotListener(VideoShotListener listener, boolean high) {
+    public void setVideoShotListener(VideoShotListener listener, boolean high) {
     }
 
     /**
@@ -241,7 +241,7 @@ public abstract class VideoGLViewBaseRender implements GLSurfaceView.Renderer, S
         }
     }
 
-    public void setGSYVideoGLRenderErrorListener(GLRenderErrorListener videoGLRenderErrorListener) {
+    public void setVideoGLRenderErrorListener(GLRenderErrorListener videoGLRenderErrorListener) {
         this.mGLRenderErrorListener = videoGLRenderErrorListener;
     }
 }

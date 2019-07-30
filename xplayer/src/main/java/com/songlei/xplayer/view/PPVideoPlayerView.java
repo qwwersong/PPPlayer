@@ -3,14 +3,10 @@ package com.songlei.xplayer.view;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,35 +28,6 @@ import com.songlei.xplayer.listener.PPPlayerViewListener;
 import com.songlei.xplayer.util.CommonUtil;
 import com.songlei.xplayer.util.MediaUtil;
 import com.songlei.xplayer.util.NetChangedReceiver;
-import com.songlei.xplayer.view.render.effect.AutoFixEffect;
-import com.songlei.xplayer.view.render.effect.BarrelBlurEffect;
-import com.songlei.xplayer.view.render.effect.BitmapIconEffect;
-import com.songlei.xplayer.view.render.effect.BlackAndWhiteEffect;
-import com.songlei.xplayer.view.render.effect.BrightnessEffect;
-import com.songlei.xplayer.view.render.effect.ContrastEffect;
-import com.songlei.xplayer.view.render.effect.CrossProcessEffect;
-import com.songlei.xplayer.view.render.effect.DocumentaryEffect;
-import com.songlei.xplayer.view.render.effect.DuotoneEffect;
-import com.songlei.xplayer.view.render.effect.FillLightEffect;
-import com.songlei.xplayer.view.render.effect.GSYVideoGLViewCustomRender;
-import com.songlei.xplayer.view.render.effect.GammaEffect;
-import com.songlei.xplayer.view.render.effect.GaussianBlurEffect;
-import com.songlei.xplayer.view.render.effect.GrainEffect;
-import com.songlei.xplayer.view.render.effect.HueEffect;
-import com.songlei.xplayer.view.render.effect.InvertColorsEffect;
-import com.songlei.xplayer.view.render.effect.LamoishEffect;
-import com.songlei.xplayer.view.render.effect.NoEffect;
-import com.songlei.xplayer.view.render.effect.OverlayEffect;
-import com.songlei.xplayer.view.render.effect.PixelationEffect;
-import com.songlei.xplayer.view.render.effect.PosterizeEffect;
-import com.songlei.xplayer.view.render.effect.SampleBlurEffect;
-import com.songlei.xplayer.view.render.effect.SaturationEffect;
-import com.songlei.xplayer.view.render.effect.SepiaEffect;
-import com.songlei.xplayer.view.render.effect.SharpnessEffect;
-import com.songlei.xplayer.view.render.effect.TemperatureEffect;
-import com.songlei.xplayer.view.render.effect.TintEffect;
-import com.songlei.xplayer.view.render.effect.VignetteEffect;
-import com.songlei.xplayer.view.render.view.VideoGLView;
 import com.songlei.xplayer.view.widget.SwitchModeDialog;
 import com.songlei.xplayer.view.widget.VideoCover;
 
@@ -73,12 +40,6 @@ import java.util.Map;
  * Created by songlei on 2019/07/02.
  */
 public class PPVideoPlayerView extends PPOrientationView {
-    //切换缩放模式
-    private TextView mMoreScale;
-    //记住切换数据源类型
-    private int mShowType = 0;
-    private PPPlayerViewListener mPPPlayerViewListener;
-
     //===========播放进度dialog=======
     //触摸进度dialog
     protected Dialog mProgressDialog;
@@ -115,12 +76,11 @@ public class PPVideoPlayerView extends PPOrientationView {
     public TextView mSwitchSize;
     //状态覆盖控件
     private VideoCover mVideoCover;
-    //切换滤镜
-    private TextView mSwitchEffect;
-    private GSYVideoGLViewCustomRender mGSYVideoGLViewCustomRender;
-    private BitmapIconEffect mCustomBitmapIconEffect;
 
+    private PPPlayerViewListener mPPPlayerViewListener;
     private NetChangedReceiver mNetChangedReceiver;
+    private Map<Integer, VideoModeBean> modeMap = new HashMap<>();
+    private int playMode;
 
     public PPVideoPlayerView(Context context) {
         super(context);
@@ -168,51 +128,16 @@ public class PPVideoPlayerView extends PPOrientationView {
         }
     }
 
-    private void initView(){
-        mMoreScale = findViewById(R.id.moreScale);
+    protected void initView(){
         mSwitchSize = findViewById(R.id.switchSize);
         mSwitchSize.setVisibility(GONE);
 
         mVideoCover = findViewById(R.id.video_cover);
         mPreviewLayout = findViewById(R.id.preview_layout);
         mPreView = findViewById(R.id.preview_image);
-        mSwitchEffect = findViewById(R.id.moreEffect);
-
-        //水印图效果
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        mGSYVideoGLViewCustomRender = new GSYVideoGLViewCustomRender();
-        mCustomBitmapIconEffect = new BitmapIconEffect(bitmap, CommonUtil.dip2px(mContext,50), CommonUtil.dip2px(mContext,50), 0.6f);
-        mGSYVideoGLViewCustomRender.setBitmapEffect(mCustomBitmapIconEffect);
-        setCustomGLRenderer(mGSYVideoGLViewCustomRender);
-        setGLRenderMode(VideoGLView.MODE_RENDER_SIZE);
     }
 
-    private void initListener(){
-        mMoreScale.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mShowType == 0) {
-                    mShowType = 1;
-                } else if (mShowType == 1) {
-                    mShowType = 2;
-                } else if (mShowType == 2) {
-                    mShowType = 3;
-                } else if (mShowType == 3) {
-                    mShowType = 4;
-                } else if (mShowType == 4) {
-                    mShowType = 0;
-                }
-                resolveTypeUI();
-            }
-        });
-
-        mSwitchEffect.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchEffect();
-            }
-        });
-
+    protected void initListener(){
         mFullscreenButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -260,9 +185,6 @@ public class PPVideoPlayerView extends PPOrientationView {
         setUrl(url);
     }
 
-    private Map<Integer, VideoModeBean> modeMap = new HashMap<>();
-    private int playMode;
-
     public boolean setUp(List<VideoModeBean> list){
         modeMap.clear();
         for (VideoModeBean videoBean : list) {
@@ -292,32 +214,6 @@ public class PPVideoPlayerView extends PPOrientationView {
     @Override
     public int getLayoutId() {
         return R.layout.layout_player_base;
-    }
-
-    /**
-     * 显示比例
-     * 注意，GSYVideoType.setShowType是全局静态生效，除非重启APP。
-     */
-    private void resolveTypeUI() {
-        if (mShowType == 1) {
-            mMoreScale.setText("16:9");
-            Option.setShowType(Option.SCREEN_TYPE_16_9);
-        } else if (mShowType == 2) {
-            mMoreScale.setText("4:3");
-            Option.setShowType(Option.SCREEN_TYPE_4_3);
-        } else if (mShowType == 3) {
-            mMoreScale.setText("全屏");
-            Option.setShowType(Option.SCREEN_TYPE_FULL);
-        } else if (mShowType == 4) {
-            mMoreScale.setText("拉伸全屏");
-            Option.setShowType(Option.SCREEN_MATCH_FULL);
-        } else if (mShowType == 0) {
-            mMoreScale.setText("默认比例");
-            Option.setShowType(Option.SCREEN_TYPE_DEFAULT);
-        }
-        changeViewShowType();
-        if (mTextureView != null)
-            mTextureView.requestLayout();
     }
 
     //显示横屏
@@ -793,101 +689,4 @@ public class PPVideoPlayerView extends PPOrientationView {
         }
     }
 
-    private int type = 0;
-    /**
-     * 切换滤镜
-     */
-    private void switchEffect() {
-        Log.e("xxx", "switchEffect type = " + type);
-        VideoGLView.ShaderInterface effect = new NoEffect();
-        float deep = 0.8f;
-        switch (type) {
-            case 0:
-                effect = new AutoFixEffect(deep);
-                break;
-            case 1:
-                effect = new PixelationEffect();
-                break;
-            case 2:
-                effect = new BlackAndWhiteEffect();
-                break;
-            case 3:
-                effect = new ContrastEffect(deep);
-                break;
-            case 4:
-                effect = new CrossProcessEffect();
-                break;
-            case 5:
-                effect = new DocumentaryEffect();
-                break;
-            case 6:
-                effect = new DuotoneEffect(Color.BLUE, Color.YELLOW);
-                break;
-            case 7:
-                effect = new FillLightEffect(deep);
-                break;
-            case 8:
-                effect = new GammaEffect(deep);
-                break;
-            case 9:
-                effect = new GrainEffect(deep);
-                break;
-            case 10:
-                effect = new GrainEffect(deep);
-                break;
-            case 11:
-                effect = new HueEffect(deep);
-                break;
-            case 12:
-                effect = new InvertColorsEffect();
-                break;
-            case 13:
-                effect = new LamoishEffect();
-                break;
-            case 14:
-                effect = new PosterizeEffect();
-                break;
-            case 15:
-                effect = new BarrelBlurEffect();
-                break;
-            case 16:
-                effect = new SaturationEffect(deep);
-                break;
-            case 17:
-                effect = new SepiaEffect();
-                break;
-            case 18:
-                effect = new SharpnessEffect(deep);
-                break;
-            case 19:
-                effect = new TemperatureEffect(deep);
-                break;
-            case 20:
-                effect = new TintEffect(Color.GREEN);
-                break;
-            case 21:
-                effect = new VignetteEffect(deep);
-                break;
-            case 22:
-                effect = new NoEffect();
-                break;
-            case 23:
-                effect = new OverlayEffect();
-                break;
-            case 24:
-                effect = new SampleBlurEffect(4.0f);
-                break;
-            case 25:
-                effect = new GaussianBlurEffect(6.0f, GaussianBlurEffect.TYPEXY);
-                break;
-            case 26:
-                effect = new BrightnessEffect(deep);
-                break;
-        }
-        setEffectFilter(effect);
-        type++;
-        if (type > 25) {
-            type = 0;
-        }
-    }
 }

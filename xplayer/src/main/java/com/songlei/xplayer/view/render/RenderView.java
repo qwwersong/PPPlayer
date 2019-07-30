@@ -31,7 +31,6 @@ public class RenderView {
 
     protected IRenderView mShowView;
 
-    /*************************RenderView function start *************************/
     public void requestLayout() {
         if (mShowView != null) {
             mShowView.getRenderView().requestLayout();
@@ -126,8 +125,8 @@ public class RenderView {
     /**
      * 获取截图
      */
-    public void taskShotPic(VideoShotListener gsyVideoShotListener) {
-        this.taskShotPic(gsyVideoShotListener, false);
+    public void taskShotPic(VideoShotListener videoShotListener) {
+        this.taskShotPic(videoShotListener, false);
     }
 
 
@@ -136,16 +135,16 @@ public class RenderView {
      *
      * @param shotHigh 是否需要高清的
      */
-    public void taskShotPic(VideoShotListener gsyVideoShotListener, boolean shotHigh) {
+    public void taskShotPic(VideoShotListener videoShotListener, boolean shotHigh) {
         if (mShowView != null)
-            mShowView.taskShotPic(gsyVideoShotListener, shotHigh);
+            mShowView.taskShotPic(videoShotListener, shotHigh);
     }
 
     /**
      * 保存截图
      */
-    public void saveFrame(final File file, VideoShotSaveListener gsyVideoShotSaveListener) {
-        saveFrame(file, false, gsyVideoShotSaveListener);
+    public void saveFrame(final File file, VideoShotSaveListener videoShotSaveListener) {
+        saveFrame(file, false, videoShotSaveListener);
     }
 
     /**
@@ -153,9 +152,9 @@ public class RenderView {
      *
      * @param high 是否需要高清的
      */
-    public void saveFrame(final File file, final boolean high, final VideoShotSaveListener gsyVideoShotSaveListener) {
+    public void saveFrame(final File file, final boolean high, final VideoShotSaveListener videoShotSaveListener) {
         if (mShowView != null)
-            mShowView.saveFrame(file, high, gsyVideoShotSaveListener);
+            mShowView.saveFrame(file, high, videoShotSaveListener);
     }
 
     /**
@@ -241,7 +240,7 @@ public class RenderView {
      * @return
      */
     public static int getTextureParams() {
-        boolean typeChanged = (Option.getShowType() != Option.SCREEN_TYPE_DEFAULT);
+        boolean typeChanged = (Option.getsShowType() != Option.SCREEN_TYPE_DEFAULT);
         return (typeChanged) ? ViewGroup.LayoutParams.WRAP_CONTENT : ViewGroup.LayoutParams.MATCH_PARENT;
     }
 

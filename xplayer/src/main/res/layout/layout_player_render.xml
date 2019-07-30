@@ -141,27 +141,27 @@
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 
-        <!--<TextView-->
-            <!--android:id="@+id/moreEffect"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:gravity="center"-->
-            <!--android:minEms="5"-->
-            <!--android:paddingLeft="10dp"-->
-            <!--android:text="滤镜切换"-->
-            <!--android:textColor="@android:color/white"-->
-            <!--android:textSize="13sp" />-->
+        <TextView
+            android:id="@+id/moreEffect"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:minEms="5"
+            android:paddingLeft="10dp"
+            android:text="滤镜切换"
+            android:textColor="@android:color/white"
+            android:textSize="13sp" />
 
-        <!--<TextView-->
-            <!--android:id="@+id/moreScale"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:gravity="center"-->
-            <!--android:minEms="5"-->
-            <!--android:paddingLeft="10dp"-->
-            <!--android:text="默认比例"-->
-            <!--android:textColor="@android:color/white"-->
-            <!--android:textSize="13sp" />-->
+        <TextView
+            android:id="@+id/moreScale"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:minEms="5"
+            android:paddingLeft="10dp"
+            android:text="默认比例"
+            android:textColor="@android:color/white"
+            android:textSize="13sp" />
     </LinearLayout>
 
     <RelativeLayout
@@ -179,20 +179,20 @@
     </RelativeLayout>
 
     <!--<moe.codeest.enviews.ENDownloadView-->
-        <!--android:id="@+id/loading"-->
-        <!--android:layout_width="28dp"-->
-        <!--android:layout_height="28dp"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_centerVertical="true"-->
-        <!--android:visibility="invisible" />-->
+    <!--android:id="@+id/loading"-->
+    <!--android:layout_width="28dp"-->
+    <!--android:layout_height="28dp"-->
+    <!--android:layout_centerHorizontal="true"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--android:visibility="invisible" />-->
 
     <!--<moe.codeest.enviews.ENPlayView-->
-        <!--android:id="@+id/start"-->
-        <!--android:layout_width="60dp"-->
-        <!--android:layout_height="60dp"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_centerVertical="true"-->
-        <!--android:layout_gravity="center_vertical" />-->
+    <!--android:id="@+id/start"-->
+    <!--android:layout_width="60dp"-->
+    <!--android:layout_height="60dp"-->
+    <!--android:layout_centerHorizontal="true"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--android:layout_gravity="center_vertical" />-->
 
     <RelativeLayout
         android:id="@+id/loading"

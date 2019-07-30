@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.songlei.xplayer.view.PPVideoPlayerView
+    <com.songlei.xplayer.view.PPRenderView
         android:id="@+id/pp_video_view"
         android:layout_width="match_parent"
         android:layout_height="200dp"/>

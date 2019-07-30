@@ -9,12 +9,13 @@ import android.view.InflateException;
 import android.view.Surface;
 import android.view.View;
 
+import com.songlei.xplayer.PlayerConstants;
+import com.songlei.xplayer.PlayerManager;
 import com.songlei.xplayer.R;
 import com.songlei.xplayer.base.Option;
 import com.songlei.xplayer.listener.PlayerListener;
-import com.songlei.xplayer.PlayerConstants;
-import com.songlei.xplayer.PlayerManager;
 import com.songlei.xplayer.player.IjkPlayer;
+import com.songlei.xplayer.player.ObssPlayer;
 import com.songlei.xplayer.player.PlayerFactory;
 
 /**
@@ -85,12 +86,7 @@ public abstract class PPStateView extends PPTextureRenderView {
     }
 
     protected void initPlayer(){
-        PlayerFactory.setPlayer(IjkPlayer.class);
-//        Option.setPlayerType(Option.PLAYER_IJK);
-        Option.setRenderType(Option.VIEW_GL_SURFACE);
-//        Option.setPlayerType(Option.PLAYER_OBSS);
-//        Option.setRenderType(Option.VIEW_TEXTURE);
-        mPlayerManager.initPlayer(null);
+        mPlayerManager.initPlayer();
         mPlayerManager.setPlayerListener(playerListener);
     }
 
@@ -283,6 +279,24 @@ public abstract class PPStateView extends PPTextureRenderView {
     protected boolean isPlaying(){
         boolean isPlaying = mCurrentState == STATE_PLAYING;
         return isPlaying;
+    }
+
+    public void setRenderType(int renderType){
+        Option.setRenderType(renderType);
+    }
+
+    public void setPlayerType(int playerType){
+        switch (playerType) {
+            case Option.PLAYER_IJK:
+                PlayerFactory.setPlayer(IjkPlayer.class);
+                break;
+            case Option.PLAYER_OBSS:
+                PlayerFactory.setPlayer(ObssPlayer.class);
+                break;
+            case Option.PLAYER_SYSTEM:
+
+                break;
+        }
     }
 
     /*

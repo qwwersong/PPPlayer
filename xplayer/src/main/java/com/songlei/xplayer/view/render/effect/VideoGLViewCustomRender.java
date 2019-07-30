@@ -21,7 +21,7 @@ import javax.microedition.khronos.opengles.GL10;
  * 自定义实现水印
  */
 @SuppressLint("ViewConstructor")
-public class GSYVideoGLViewCustomRender extends VideoGLViewSimpleRender {
+public class VideoGLViewCustomRender extends VideoGLViewSimpleRender {
 
     private static final int FLOAT_SIZE_BYTES = 4;
 
@@ -60,21 +60,21 @@ public class GSYVideoGLViewCustomRender extends VideoGLViewSimpleRender {
     //水印圖
     private BitmapIconEffect mBitmapEffect;
 
-    public GSYVideoGLViewCustomRender() {
+    public VideoGLViewCustomRender() {
         super();
         init();
     }
 
-    public GSYVideoGLViewCustomRender(Bitmap bitmap) {
+    public VideoGLViewCustomRender(Bitmap bitmap) {
         this(bitmap, bitmap.getWidth(), bitmap.getHeight());
 
     }
 
-    public GSYVideoGLViewCustomRender(Bitmap bitmap, int width, int height) {
+    public VideoGLViewCustomRender(Bitmap bitmap, int width, int height) {
         this(bitmap, width, height, 1.0f);
     }
 
-    public GSYVideoGLViewCustomRender(Bitmap bitmap, int width, int height, float alpha) {
+    public VideoGLViewCustomRender(Bitmap bitmap, int width, int height, float alpha) {
         super();
         init();
 

@@ -74,7 +74,7 @@ public final class MeasureHelper {
      */
     public void doMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 
-        mCurrentAspectRatio = Option.getShowType();
+        mCurrentAspectRatio = Option.getsShowType();
 
         if (mVideoRotationDegree == 90 || mVideoRotationDegree == 270) {
             int tempSpec = widthMeasureSpec;
@@ -109,7 +109,7 @@ public final class MeasureHelper {
                         break;
                     case Option.SCREEN_TYPE_DEFAULT:
                     case Option.SCREEN_TYPE_FULL:
-                        //case GSYVideoType.AR_ASPECT_WRAP_CONTENT:
+                        //case VideoType.AR_ASPECT_WRAP_CONTENT:
                     default:
                         displayAspectRatio = (float) mVideoWidth / (float) mVideoHeight;
                         if (mVideoSarNum > 0 && mVideoSarDen > 0)
@@ -143,7 +143,7 @@ public final class MeasureHelper {
                             height = (int) (width / displayAspectRatio);
                         }
                         break;
-                    //case GSYVideoType.AR_ASPECT_WRAP_CONTENT:
+                    //case VideoType.AR_ASPECT_WRAP_CONTENT:
                     default:
                         if (shouldBeWider) {
                             // too wide, fix width

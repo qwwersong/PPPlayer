@@ -77,7 +77,7 @@ public class VideoGLViewSimpleRender extends VideoGLViewBaseRender {
 
     private SurfaceTexture mSurface;
 
-    private VideoShotListener mGSYVideoShotListener;
+    private VideoShotListener mVideoShotListener;
 
     private VideoGLView.ShaderInterface mEffect = new NoEffect();
 
@@ -220,9 +220,9 @@ public class VideoGLViewSimpleRender extends VideoGLViewBaseRender {
     protected void takeBitmap(GL10 glUnused) {
         if (mTakeShotPic) {
             mTakeShotPic = false;
-            if (mGSYVideoShotListener != null) {
+            if (mVideoShotListener != null) {
                 Bitmap bitmap = createBitmapFromGLSurface(0, 0, mSurfaceView.getWidth(), mSurfaceView.getHeight(), glUnused);
-                mGSYVideoShotListener.getBitmap(bitmap);
+                mVideoShotListener.getBitmap(bitmap);
             }
         }
     }
@@ -300,8 +300,8 @@ public class VideoGLViewSimpleRender extends VideoGLViewBaseRender {
     /**
      * 截图监听
      */
-    public void setGSYVideoShotListener(VideoShotListener listener, boolean high) {
-        this.mGSYVideoShotListener = listener;
+    public void setVideoShotListener(VideoShotListener listener, boolean high) {
+        this.mVideoShotListener = listener;
         this.mHighShot = high;
     }
 }

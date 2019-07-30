@@ -82,7 +82,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     //手动改变滑动的位置
     protected int mSeekTimePosition;
     //手势偏差值
-    protected int mThreshold = 80;
+    protected int mThreshold = 50;
     //手指放下时播放的位置
     protected int mDownPosition;
     //手动滑动的起始偏移位置
@@ -455,9 +455,11 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
                 startDismissControlViewTimer();
                 break;
             case STATE_PAUSE:
+                showAllWidget();
                 cancelDismissControlViewTimer();
                 break;
             case STATE_COMPLETE:
+                showAllWidget();
                 stopProgressTimer();
                 mProgressBar.setProgress(0);
                 mCurrentTimeTextView.setText(CommonUtil.stringForTime(0));

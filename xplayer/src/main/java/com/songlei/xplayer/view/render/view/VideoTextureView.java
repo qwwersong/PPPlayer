@@ -5,12 +5,12 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.songlei.xplayer.util.FileUtil;
 import com.songlei.xplayer.util.MeasureHelper;
 import com.songlei.xplayer.view.render.IRenderView;
 import com.songlei.xplayer.view.render.RenderView;
@@ -28,7 +28,7 @@ import java.io.File;
 
 public class VideoTextureView extends TextureView implements TextureView.SurfaceTextureListener, IRenderView, MeasureHelper.MeasureFormVideoParamsListener {
 
-    private ISurfaceListener mIGSYSurfaceListener;
+    private ISurfaceListener mISurfaceListener;
 
     private MeasureHelper.MeasureFormVideoParamsListener mVideoParamsListener;
 
@@ -59,23 +59,23 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         mSurface = new Surface(surface);
-        if (mIGSYSurfaceListener != null) {
-            mIGSYSurfaceListener.onSurfaceAvailable(mSurface);
+        if (mISurfaceListener != null) {
+            mISurfaceListener.onSurfaceAvailable(mSurface);
         }
     }
 
     @Override
     public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-        if (mIGSYSurfaceListener != null) {
-            mIGSYSurfaceListener.onSurfaceSizeChanged(mSurface, width, height);
+        if (mISurfaceListener != null) {
+            mISurfaceListener.onSurfaceSizeChanged(mSurface, width, height);
         }
     }
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
         //清空释放
-        if (mIGSYSurfaceListener != null) {
-            mIGSYSurfaceListener.onSurfaceDestroyed(mSurface);
+        if (mISurfaceListener != null) {
+            mISurfaceListener.onSurfaceDestroyed(mSurface);
         }
         return true;
     }
@@ -83,20 +83,20 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
         //如果播放的是暂停全屏了
-        if (mIGSYSurfaceListener != null) {
-            mIGSYSurfaceListener.onSurfaceUpdated(mSurface);
+        if (mISurfaceListener != null) {
+            mISurfaceListener.onSurfaceUpdated(mSurface);
         }
     }
 
     @Override
-    public ISurfaceListener getIGSYSurfaceListener() {
-        return mIGSYSurfaceListener;
+    public ISurfaceListener getISurfaceListener() {
+        return mISurfaceListener;
     }
 
     @Override
     public void setISurfaceListener(ISurfaceListener surfaceListener) {
         setSurfaceTextureListener(this);
-        mIGSYSurfaceListener = surfaceListener;
+        mISurfaceListener = surfaceListener;
     }
 
     @Override
@@ -138,11 +138,11 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
      * @param shotHigh 是否需要高清的
      */
     @Override
-    public void taskShotPic(VideoShotListener gsyVideoShotListener, boolean shotHigh) {
+    public void taskShotPic(VideoShotListener videoShotListener, boolean shotHigh) {
         if (shotHigh) {
-            gsyVideoShotListener.getBitmap(initCoverHigh());
+            videoShotListener.getBitmap(initCoverHigh());
         } else {
-            gsyVideoShotListener.getBitmap(initCover());
+            videoShotListener.getBitmap(initCover());
         }
     }
 
@@ -152,22 +152,22 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
      * @param high 是否需要高清的
      */
     @Override
-    public void saveFrame(final File file, final boolean high, final VideoShotSaveListener gsyVideoShotSaveListener) {
-        VideoShotListener gsyVideoShotListener = new VideoShotListener() {
+    public void saveFrame(final File file, final boolean high, final VideoShotSaveListener videoShotSaveListener) {
+        VideoShotListener videoShotListener = new VideoShotListener() {
             @Override
             public void getBitmap(Bitmap bitmap) {
                 if (bitmap == null) {
-                    gsyVideoShotSaveListener.result(false, file);
+                    videoShotSaveListener.result(false, file);
                 } else {
-//                    FileUtils.saveBitmap(bitmap, file);
-                    gsyVideoShotSaveListener.result(true, file);
+                    FileUtil.saveBitmap(bitmap, file);
+                    videoShotSaveListener.result(true, file);
                 }
             }
         };
         if (high) {
-            gsyVideoShotListener.getBitmap(initCoverHigh());
+            videoShotListener.getBitmap(initCoverHigh());
         } else {
-            gsyVideoShotListener.getBitmap(initCover());
+            videoShotListener.getBitmap(initCover());
         }
 
     }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 import android.view.Surface;
 
-import com.songlei.xplayer.base.Option;
 import com.songlei.xplayer.listener.PlayerListener;
 import com.songlei.xplayer.player.IPlayer;
 import com.songlei.xplayer.player.ObssPlayer;
@@ -21,7 +20,8 @@ public class PlayerManager {
         this.context = context;
     }
 
-    public void initPlayer(Option option){
+    public void initPlayer(){
+        Log.e("xxx", "PlayerManager initPlayer");
         player = PlayerFactory.getPlayer();
         player.initPlayer(context);
     }
