@@ -1,8 +1,6 @@
 package com.songlei.xplayer.view;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -11,10 +9,8 @@ import android.widget.TextView;
 
 import com.songlei.xplayer.R;
 import com.songlei.xplayer.base.Option;
-import com.songlei.xplayer.util.CommonUtil;
 import com.songlei.xplayer.view.render.effect.AutoFixEffect;
 import com.songlei.xplayer.view.render.effect.BarrelBlurEffect;
-import com.songlei.xplayer.view.render.effect.BitmapIconEffect;
 import com.songlei.xplayer.view.render.effect.BlackAndWhiteEffect;
 import com.songlei.xplayer.view.render.effect.BrightnessEffect;
 import com.songlei.xplayer.view.render.effect.ContrastEffect;
@@ -38,7 +34,6 @@ import com.songlei.xplayer.view.render.effect.SepiaEffect;
 import com.songlei.xplayer.view.render.effect.SharpnessEffect;
 import com.songlei.xplayer.view.render.effect.TemperatureEffect;
 import com.songlei.xplayer.view.render.effect.TintEffect;
-import com.songlei.xplayer.view.render.effect.VideoGLViewCustomRender;
 import com.songlei.xplayer.view.render.effect.VignetteEffect;
 import com.songlei.xplayer.view.render.view.VideoGLView;
 
@@ -79,13 +74,14 @@ public class PPRenderView extends PPVideoPlayerView {
         mMoreScale = findViewById(R.id.moreScale);
         mSwitchEffect = findViewById(R.id.moreEffect);
 
-        //水印图效果
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        VideoGLViewCustomRender mVideoGLViewCustomRender = new VideoGLViewCustomRender();
-        BitmapIconEffect mCustomBitmapIconEffect = new BitmapIconEffect(bitmap, CommonUtil.dip2px(mContext,50), CommonUtil.dip2px(mContext,50), 0.6f);
-        mVideoGLViewCustomRender.setBitmapEffect(mCustomBitmapIconEffect);
-        setCustomGLRenderer(mVideoGLViewCustomRender);
-        setGLRenderMode(VideoGLView.MODE_RENDER_SIZE);
+//        //水印图效果
+//        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+//        VideoGLViewCustomRender mVideoGLViewCustomRender = new VideoGLViewCustomRender();
+//        BitmapIconEffect mCustomBitmapIconEffect = new BitmapIconEffect(bitmap, CommonUtil.dip2px(mContext,50), CommonUtil.dip2px(mContext,50), 0.6f);
+//        mVideoGLViewCustomRender.setBitmapEffect(mCustomBitmapIconEffect);
+//
+//        setCustomGLRenderer(mVideoGLViewCustomRender);
+//        setGLRenderMode(VideoGLView.MODE_RENDER_SIZE);
     }
 
     @Override

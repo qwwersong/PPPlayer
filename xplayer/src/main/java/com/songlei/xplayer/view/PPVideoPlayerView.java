@@ -390,11 +390,11 @@ public class PPVideoPlayerView extends PPOrientationView {
             }
         if (deltaX > 0) {
             if (mDialogIcon != null) {
-                mDialogIcon.setBackgroundResource(R.drawable.video_forward_icon);
+                mDialogIcon.setBackgroundResource(R.drawable.ic_video_forward);
             }
         } else {
             if (mDialogIcon != null) {
-                mDialogIcon.setBackgroundResource(R.drawable.video_backward_icon);
+                mDialogIcon.setBackgroundResource(R.drawable.ic_video_backward);
             }
         }
     }
@@ -405,7 +405,7 @@ public class PPVideoPlayerView extends PPOrientationView {
      * 有自定义的实现逻辑可重载showProgressDialog方法
      */
     protected int getProgressDialogLayoutId() {
-        return R.layout.video_progress_dialog;
+        return R.layout.dialog_video_progress;
     }
 
     /**
@@ -510,7 +510,7 @@ public class PPVideoPlayerView extends PPOrientationView {
     }
 
     protected int getVolumeLayoutId() {
-        return R.layout.video_volume_dialog;
+        return R.layout.dialog_video_volume;
     }
 
     /**
@@ -580,7 +580,7 @@ public class PPVideoPlayerView extends PPOrientationView {
      * 有自定义的实现逻辑可重载showBrightnessDialog方法
      */
     protected int getBrightnessLayoutId() {
-        return R.layout.video_volume_dialog;
+        return R.layout.dialog_video_volume;
     }
 
     /**

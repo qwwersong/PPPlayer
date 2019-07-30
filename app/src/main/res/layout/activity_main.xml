@@ -1,16 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/tv_decode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="软硬解码："/>
+
+        <RadioGroup
+            android:id="@+id/rg_decode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_toEndOf="@+id/tv_decode">
+
+            <RadioButton
+                android:id="@+id/rg_hard_decode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="硬解码"/>
+
+            <RadioButton
+                android:id="@+id/rg_soft_decode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="软解码"/>
+
+        </RadioGroup>
+
+    </RelativeLayout>
+
+    <VideoView
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/tv_render"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="渲染类型："/>
+
+        <RadioGroup
+            android:id="@+id/rg_render"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_toEndOf="@+id/tv_render">
+
+            <RadioButton
+                android:id="@+id/rb_render_texture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="TextureView"/>
+
+            <RadioButton
+                android:id="@+id/rb_render_surface"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SurfaceView"/>
+
+            <RadioButton
+                android:id="@+id/rb_render_glsurface"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GLSurfaceView"/>
+
+        </RadioGroup>
+
+    </RelativeLayout>
+
+    <VideoView
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/tv_player_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="播放内核："/>
+
+        <RadioGroup
+            android:id="@+id/rg_player_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_toEndOf="@+id/tv_player_type">
+
+            <RadioButton
+                android:id="@+id/rb_ijkPlayer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="IjkPlayer"/>
+
+            <RadioButton
+                android:id="@+id/rb_ObssPlayer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ObssPlayer"/>
+
+        </RadioGroup>
+
+    </RelativeLayout>
+
+    <VideoView
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
     <Button
-        android:id="@+id/bt_play"
+        android:id="@+id/bt_normal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="打开播放器"/>
+        android:layout_gravity="center_horizontal"
+        android:text="基础播放器"/>
 
-</RelativeLayout>
+    <Button
+        android:id="@+id/bt_render"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="GL渲染播放器"/>
+
+</LinearLayout>

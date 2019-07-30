@@ -12,41 +12,24 @@ import com.songlei.ppplayerdemo.listener.OnTransitionListener;
 import com.songlei.xplayer.base.Option;
 import com.songlei.xplayer.bean.VideoModeBean;
 import com.songlei.xplayer.listener.PPPlayerViewListener;
-import com.songlei.xplayer.view.PPVideoPlayerView;
+import com.songlei.xplayer.view.PPRenderView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by songlei on 2019/07/12.
+ * Created by songlei on 2019/07/30.
  */
-public class PlayerActivity extends BaseActivity<PPVideoPlayerView> {
-    /**
-     * "urls": [{
-     * 			"type": 0,
-     * 			"typeName": "原始",
-     * 			"url": "http://qvw.mvaas.cn/hls/2f03f5b30ec2f83c2f85/gs7ttsp7wbl6yukwrwbz/n_n/6414bf9903cca1299eecd7dd9bff0b94.m3u8?xstToken=888c0dc7"
-     *                }, {
-     * 			"type": 1,
-     * 			"typeName": "标清",
-     * 			"url": "http://qvw.mvaas.cn/hls/2f03f5b30ec2f83c2f85/gs7ttsp7wbl6yukwrwbz/480_25_4_500k_4_3_n/06e6ab5fdf1bd9ce4f8947e6774002f9.m3u8?xstToken=888c0dc7"
-     *        }, {
-     * 			"type": 2,
-     * 			"typeName": "高清",
-     * 			"url": "http://qvw.mvaas.cn/hls/2f03f5b30ec2f83c2f85/gs7ttsp7wbl6yukwrwbz/720_25_4_1000k_4_7_n/fa5212ef3b6da8de24bbcd845a669ba3.m3u8?xstToken=888c0dc7"
-     *        }],
-     */
-
+public class RenderActivity extends BaseActivity<PPRenderView> {
     private boolean isTransition;
     private Transition transition;
+
+    private PPRenderView renderView;
 
     private boolean decode_type = false;
     private int render_type = Constants.RENDER_TEXTURE;
     private int player_type = Constants.PLAYER_IJK;
 
-    private PPVideoPlayerView pp_video_view;
-
-    //    private String url = "http://feichitest.yeepo.cn/video/58dd8559576d7093c48136ba55fa88b3/58dd8559576d7093c48136ba55fa88b3.vdo";
     private String m4_url = "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4";
     private String url = "http://qvw.mvaas.cn/hls/2f03f5b30ec2f83c2f85/gs7ttsp7wbl6yukwrwbz/n_n/6414bf9903cca1299eecd7dd9bff0b94.m3u8?xstToken=888c0dc7";
     private String b_url = "http://qvw.mvaas.cn/hls/2f03f5b30ec2f83c2f85/gs7ttsp7wbl6yukwrwbz/480_25_4_500k_4_3_n/06e6ab5fdf1bd9ce4f8947e6774002f9.m3u8?xstToken=888c0dc7";
@@ -56,7 +39,7 @@ public class PlayerActivity extends BaseActivity<PPVideoPlayerView> {
 
     @Override
     int getLayoutId() {
-        return R.layout.activity_player;
+        return R.layout.activity_render;
     }
 
     @Override
@@ -75,19 +58,24 @@ public class PlayerActivity extends BaseActivity<PPVideoPlayerView> {
 
     @Override
     void initView() {
-        pp_video_view = findViewById(R.id.pp_video_view);
+        renderView = findViewById(R.id.pp_video_view);
         initVideo();
         initTransition();
     }
 
     @Override
     void initListener() {
-        pp_video_view.setPPPlayerViewListener(new PPPlayerViewListener() {
+        renderView.setPPPlayerViewListener(new PPPlayerViewListener() {
             @Override
             public void onClickBack() {
                 onBackPressed();
             }
         });
+    }
+
+    @Override
+    PPRenderView getVideoView() {
+        return renderView;
     }
 
     private void initVideo(){
@@ -99,18 +87,13 @@ public class PlayerActivity extends BaseActivity<PPVideoPlayerView> {
                 .setPlayerType(player_type)
                 .setMediaCodec(decode_type)
                 .setWaterMarkBitmap(bitmap)
-                .build(pp_video_view);
-    }
-
-    @Override
-    PPVideoPlayerView getVideoView() {
-        return pp_video_view;
+                .build(renderView);
     }
 
     private void initTransition() {
         if (isTransition && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             postponeEnterTransition();
-            ViewCompat.setTransitionName(pp_video_view, Constants.IMG_TRANSITION);
+            ViewCompat.setTransitionName(renderView, Constants.IMG_TRANSITION);
             addTransitionListener();
             startPostponedEnterTransition();
         }

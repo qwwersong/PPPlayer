@@ -603,11 +603,11 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     protected void lockTouchLogic(){
         if (mLockCurScreen) {
             mLockCurScreen = false;
-            mLockScreen.setImageResource(R.drawable.unlock);
+            mLockScreen.setImageResource(R.drawable.ic_unlock);
             showAllWidget();
         } else {
             mLockCurScreen = true;
-            mLockScreen.setImageResource(R.drawable.lock);
+            mLockScreen.setImageResource(R.drawable.ic_lock);
             hideAllWidget();
         }
     }

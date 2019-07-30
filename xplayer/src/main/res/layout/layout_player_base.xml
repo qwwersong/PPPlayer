@@ -130,7 +130,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:scaleType="centerInside"
-            android:src="@drawable/video_back" />
+            android:src="@drawable/ic_video_back" />
 
         <TextView
             android:id="@+id/title"
@@ -229,7 +229,7 @@
         android:paddingLeft="10dp"
         android:paddingTop="10dp"
         android:scaleType="centerInside"
-        android:src="@drawable/video_small_close"
+        android:src="@drawable/ic_video_close"
         android:visibility="gone" />
 
     <ImageView
@@ -241,6 +241,6 @@
         android:layout_marginRight="50dp"
         android:visibility="gone"
         android:scaleType="centerInside"
-        android:src="@drawable/unlock" />
+        android:src="@drawable/ic_unlock" />
 
 </RelativeLayout>

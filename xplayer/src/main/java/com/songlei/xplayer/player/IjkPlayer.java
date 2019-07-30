@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Surface;
 
 import com.songlei.xplayer.PlayerConstants;
+import com.songlei.xplayer.base.Option;
 import com.songlei.xplayer.listener.PlayerListener;
 
 import java.io.IOException;
@@ -45,6 +46,15 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
             }
         });
         mediaPlayer.native_setLogLevel(logLevel);
+
+        //开启硬解码
+        if (Option.isMediaCodec()) {
+            Log.e("xxx", "硬解码");
+            mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1);
+            mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 1);
+            mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", 1);
+        }
+        Log.e("xxx", "软解码");
 
         mediaPlayer.setScreenOnWhilePlaying(true);
 

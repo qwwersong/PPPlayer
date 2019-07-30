@@ -9,9 +9,12 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.songlei.xplayer.base.Option;
+import com.songlei.xplayer.util.CommonUtil;
 import com.songlei.xplayer.util.MeasureHelper;
 import com.songlei.xplayer.view.render.RenderView;
+import com.songlei.xplayer.view.render.effect.BitmapIconEffect;
 import com.songlei.xplayer.view.render.effect.NoEffect;
+import com.songlei.xplayer.view.render.effect.VideoGLViewCustomRender;
 import com.songlei.xplayer.view.render.glrender.VideoGLViewBaseRender;
 import com.songlei.xplayer.view.render.listener.ISurfaceListener;
 import com.songlei.xplayer.view.render.view.VideoGLView;
@@ -114,6 +117,18 @@ public abstract class PPTextureRenderView extends FrameLayout implements ISurfac
         if (mTextureView != null) {
             mTextureView.setMatrixGL(mMatrixGL);
         }
+    }
+
+    /**
+     * 设置水印
+     */
+    public void setBitmapRender(Bitmap bitmap){
+        VideoGLViewCustomRender mVideoGLViewCustomRender = new VideoGLViewCustomRender();
+        BitmapIconEffect mCustomBitmapIconEffect = new BitmapIconEffect(bitmap, CommonUtil.dip2px(getContext(),50), CommonUtil.dip2px(getContext(),50), 0.6f);
+        mVideoGLViewCustomRender.setBitmapEffect(mCustomBitmapIconEffect);
+
+        setCustomGLRenderer(mVideoGLViewCustomRender);
+        setGLRenderMode(VideoGLView.MODE_RENDER_SIZE);
     }
 
     /**

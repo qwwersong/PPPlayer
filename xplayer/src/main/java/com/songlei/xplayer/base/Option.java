@@ -1,6 +1,8 @@
 package com.songlei.xplayer.base;
 
+import android.graphics.Bitmap;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.songlei.xplayer.bean.VideoModeBean;
 import com.songlei.xplayer.view.PPVideoPlayerView;
@@ -54,6 +56,7 @@ public class Option {
     private static int sShowType = SCREEN_TYPE_DEFAULT;
     private static int sPlayerType = PLAYER_IJK;
     private static int sRenderType = VIEW_TEXTURE;
+    private static boolean media_codec_flag = false;
 
     public static int getsShowType() {
         return sShowType;
@@ -79,12 +82,24 @@ public class Option {
         sRenderType = renderType;
     }
 
+    public static void setPlayerMediaCodec(boolean isMediaCodec){
+        Log.e("xxx", "设置硬解码 isMediaCodec = " + isMediaCodec);
+        media_codec_flag = isMediaCodec;
+    }
+
+    public static boolean isMediaCodec(){
+        Log.e("xxx", "是否硬解码 isMediaCodec = " + media_codec_flag);
+        return media_codec_flag;
+    }
+
     public static class Builder {
         private String url;
         private List<VideoModeBean> urlList;
         private String title;
         private int renderType;
         private int playerType;
+        private Bitmap bitmap;
+        private boolean isMediaCodec;
 
         //设置播放地址
         public Builder setUrl(String url){
@@ -116,6 +131,19 @@ public class Option {
             return this;
         }
 
+        public Builder setMediaCodec(boolean isMediaCodec){
+            Log.e("xxx", "Builder 设置硬解码 isMediaCodec = " + isMediaCodec);
+            this.isMediaCodec = isMediaCodec;
+            setPlayerMediaCodec(isMediaCodec);
+            return this;
+        }
+
+        //设置水印
+        public Builder setWaterMarkBitmap(Bitmap bitmap){
+            this.bitmap = bitmap;
+            return this;
+        }
+
         public void build(PPVideoPlayerView videoPlayerView){
             if (!TextUtils.isEmpty(title)) {
                 videoPlayerView.setTitle(title);
@@ -126,8 +154,12 @@ public class Option {
             if (urlList != null && urlList.size() != 0) {
                 videoPlayerView.setUp(urlList);
             }
+            if (bitmap != null) {
+                videoPlayerView.setBitmapRender(bitmap);
+            }
             videoPlayerView.setRenderType(renderType);
             videoPlayerView.setPlayerType(playerType);
+//            videoPlayerView.setMediaCodec(isMediaCodec);
         }
     }
 

@@ -299,6 +299,10 @@ public abstract class PPStateView extends PPTextureRenderView {
         }
     }
 
+//    public void setMediaCodec(boolean isMediaCodec){
+//        Option.setPlayerMediaCodec(isMediaCodec);
+//    }
+
     /*
       =========================================抽象接口===============================================
      */
