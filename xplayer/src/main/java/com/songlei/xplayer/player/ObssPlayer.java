@@ -65,7 +65,12 @@ public class ObssPlayer implements IPlayer {
     @Override
     public void prepare(String url) {
         this.url = url;
-        start();
+        if (!TextUtils.isEmpty(url)) {
+            obssPlayer.prepare(url, playPosition);
+//        start();
+        } else {
+            Log.e("xxx", "url为空，准备失败");
+        }
     }
 
     @Override
@@ -105,6 +110,11 @@ public class ObssPlayer implements IPlayer {
     @Override
     public void seekTo(long time) {
         obssPlayer.seekTo((int) time);
+    }
+
+    @Override
+    public void setSpeedPlaying(float speed, boolean soundTouch) {
+
     }
 
     @Override

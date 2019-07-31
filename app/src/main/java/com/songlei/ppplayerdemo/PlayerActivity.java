@@ -7,6 +7,8 @@ import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.transition.Transition;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.songlei.ppplayerdemo.listener.OnTransitionListener;
 import com.songlei.xplayer.base.Option;
@@ -43,8 +45,10 @@ public class PlayerActivity extends BaseActivity<PPVideoPlayerView> {
     private boolean decode_type = false;
     private int render_type = Constants.RENDER_TEXTURE;
     private int player_type = Constants.PLAYER_IJK;
+    private float speed = 1;
 
     private PPVideoPlayerView pp_video_view;
+    private Button bt_speed;
 
     //    private String url = "http://feichitest.yeepo.cn/video/58dd8559576d7093c48136ba55fa88b3/58dd8559576d7093c48136ba55fa88b3.vdo";
     private String m4_url = "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4";
@@ -76,6 +80,7 @@ public class PlayerActivity extends BaseActivity<PPVideoPlayerView> {
     @Override
     void initView() {
         pp_video_view = findViewById(R.id.pp_video_view);
+        bt_speed = findViewById(R.id.bt_speed);
         initVideo();
         initTransition();
     }
@@ -86,6 +91,12 @@ public class PlayerActivity extends BaseActivity<PPVideoPlayerView> {
             @Override
             public void onClickBack() {
                 onBackPressed();
+            }
+        });
+        bt_speed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resolveTypeUI();
             }
         });
     }
@@ -105,6 +116,22 @@ public class PlayerActivity extends BaseActivity<PPVideoPlayerView> {
     @Override
     PPVideoPlayerView getVideoView() {
         return pp_video_view;
+    }
+
+    private void resolveTypeUI() {
+        if (speed == 1) {
+            speed = 1.5f;
+        } else if (speed == 1.5f) {
+            speed = 2f;
+        } else if (speed == 2) {
+            speed = 0.5f;
+        } else if (speed == 0.5f) {
+            speed = 0.25f;
+        } else if (speed == 0.25f) {
+            speed = 1;
+        }
+        bt_speed.setText("播放速度：" + speed);
+        pp_video_view.setSpeedPlaying(speed, true);
     }
 
     private void initTransition() {

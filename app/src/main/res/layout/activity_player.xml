@@ -9,4 +9,11 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"/>
 
+    <Button
+        android:id="@+id/bt_speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pp_video_view"
+        android:text="播放速度"/>
+
 </RelativeLayout>

@@ -66,6 +66,10 @@ public class PlayerManager {
         player.seekTo(time);
     }
 
+    public void setSpeedPlaying(float speed, boolean soundTouch){
+        player.setSpeedPlaying(speed, soundTouch);
+    }
+
     public void setPlayPosition(long time){
         player.setPlayPosition((int) time);
     }

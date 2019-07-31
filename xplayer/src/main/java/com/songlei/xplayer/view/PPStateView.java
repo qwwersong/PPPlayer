@@ -82,7 +82,7 @@ public abstract class PPStateView extends PPTextureRenderView {
         mAudioManager.requestAudioFocus(onAudioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 
         mPlayerManager = new PlayerManager(context);
-        initPlayer();
+//        initPlayer();
     }
 
     protected void initPlayer(){
@@ -214,6 +214,7 @@ public abstract class PPStateView extends PPTextureRenderView {
                         mSeekOnStart = 0;
                     }
                     addTextureView();
+                    Log.e("xxx", "准备中.... playerType = " + Option.getPlayerType());
                     if (Option.getPlayerType() != Option.PLAYER_OBSS) {
                         start();
                     }
@@ -289,14 +290,20 @@ public abstract class PPStateView extends PPTextureRenderView {
         switch (playerType) {
             case Option.PLAYER_IJK:
                 PlayerFactory.setPlayer(IjkPlayer.class);
+                Option.setPlayerType(Option.PLAYER_IJK);
                 break;
             case Option.PLAYER_OBSS:
                 PlayerFactory.setPlayer(ObssPlayer.class);
+                Option.setPlayerType(Option.PLAYER_OBSS);
                 break;
             case Option.PLAYER_SYSTEM:
 
                 break;
         }
+    }
+
+    public void setSpeedPlaying(float speed, boolean soundTouch){
+        mPlayerManager.setSpeedPlaying(speed, soundTouch);
     }
 
 //    public void setMediaCodec(boolean isMediaCodec){

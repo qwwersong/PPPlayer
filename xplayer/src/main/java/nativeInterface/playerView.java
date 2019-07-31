@@ -167,7 +167,7 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
      *
      * @return 已缓存时长 时间单位毫秒
      */
-    public native int nativePlayerGetBufTime();//TODO::回调出去看
+    public native int nativePlayerGetBufTime();
 
     /**
      * 获得已播放时长
@@ -262,6 +262,18 @@ public class playerView extends BasePlayer implements CommonHandler.HandlerCallB
     @Override
     public int getBufferTime() {
         return nativePlayerGetBufTime();
+    }
+
+    public void prepare(String uri, int startTime){
+        if (uri == null) {
+            Log.e(TAG, "url = null");
+            return;
+        }
+        this.url = uri;
+        playTime = startTime;
+        Log.e(TAG, "nativePlayerLoad uri = " + uri + " playTime = " + playTime);
+
+        nativePlayerLoad(uri, startTime, 500, mSacleType);
     }
 
     @Override

@@ -28,6 +28,8 @@ public interface IPlayer {
 
     void seekTo(long time);
 
+    void setSpeedPlaying(float speed, boolean soundTouch);
+
     int getVideoWidth();
 
     int getVideoHeight();

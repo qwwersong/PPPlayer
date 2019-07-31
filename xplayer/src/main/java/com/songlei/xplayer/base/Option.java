@@ -121,12 +121,14 @@ public class Option {
 
         //设置渲染类型
         public Builder setRenderType(int renderType){
+            Log.e("xxx", "Builder 设置渲染类型 renderType = " + renderType);
             this.renderType = renderType;
             return this;
         }
 
         //设置播放内核
         public Builder setPlayerType(int playerType){
+            Log.e("xxx", "Builder 设置播放内核 PlayerType = " + playerType);
             this.playerType = playerType;
             return this;
         }

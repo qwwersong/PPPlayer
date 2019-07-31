@@ -398,6 +398,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
             return;
         }
         if (mCurrentState == STATE_NO_PLAY) {
+            initPlayer();
             startPlayLogic();
         } else if (mCurrentState == STATE_PLAYING) {
             pause();

@@ -7,6 +7,8 @@ import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.transition.Transition;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.songlei.ppplayerdemo.listener.OnTransitionListener;
 import com.songlei.xplayer.base.Option;
@@ -25,10 +27,12 @@ public class RenderActivity extends BaseActivity<PPRenderView> {
     private Transition transition;
 
     private PPRenderView renderView;
+    private Button bt_speed;
 
     private boolean decode_type = false;
     private int render_type = Constants.RENDER_TEXTURE;
     private int player_type = Constants.PLAYER_IJK;
+    private float speed = 1;
 
     private String m4_url = "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4";
     private String url = "http://qvw.mvaas.cn/hls/2f03f5b30ec2f83c2f85/gs7ttsp7wbl6yukwrwbz/n_n/6414bf9903cca1299eecd7dd9bff0b94.m3u8?xstToken=888c0dc7";
@@ -53,12 +57,15 @@ public class RenderActivity extends BaseActivity<PPRenderView> {
         urlList.add(new VideoModeBean(h_url, "高清", 2));
 
         Log.e("xxx", "onCreate decode_type = " + decode_type);
+        Log.e("xxx", "onCreate render_type = " + render_type);
+        Log.e("xxx", "onCreate player_type = " + player_type);
         Option.setPlayerMediaCodec(decode_type);
     }
 
     @Override
     void initView() {
         renderView = findViewById(R.id.pp_video_view);
+        bt_speed = findViewById(R.id.bt_speed);
         initVideo();
         initTransition();
     }
@@ -69,6 +76,12 @@ public class RenderActivity extends BaseActivity<PPRenderView> {
             @Override
             public void onClickBack() {
                 onBackPressed();
+            }
+        });
+        bt_speed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resolveTypeUI();
             }
         });
     }
@@ -88,6 +101,22 @@ public class RenderActivity extends BaseActivity<PPRenderView> {
                 .setMediaCodec(decode_type)
                 .setWaterMarkBitmap(bitmap)
                 .build(renderView);
+    }
+
+    private void resolveTypeUI() {
+        if (speed == 1) {
+            speed = 1.5f;
+        } else if (speed == 1.5f) {
+            speed = 2f;
+        } else if (speed == 2) {
+            speed = 0.5f;
+        } else if (speed == 0.5f) {
+            speed = 0.25f;
+        } else if (speed == 0.25f) {
+            speed = 1;
+        }
+        bt_speed.setText("播放速度：" + speed);
+        renderView.setSpeedPlaying(speed, true);
     }
 
     private void initTransition() {

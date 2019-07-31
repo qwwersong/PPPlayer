@@ -132,6 +132,14 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
     }
 
     @Override
+    public void setSpeedPlaying(float speed, boolean soundTouch) {
+        if (mediaPlayer != null) {
+            mediaPlayer.setSpeed(speed);
+            mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "soundtouch", (soundTouch) ? 1 : 0);
+        }
+    }
+
+    @Override
     public int getVideoWidth() {
         if (mediaPlayer != null) {
             return mediaPlayer.getVideoWidth();
