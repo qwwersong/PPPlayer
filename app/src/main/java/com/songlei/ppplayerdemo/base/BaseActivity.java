@@ -1,4 +1,4 @@
-package com.songlei.ppplayerdemo;
+package com.songlei.ppplayerdemo.base;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -41,13 +41,13 @@ public abstract class BaseActivity<T extends PPVideoPlayerView> extends AppCompa
         }
     }
 
-    abstract int getLayoutId();
+    public abstract int getLayoutId();
 
-    abstract void initData();
+    public abstract void initData();
 
-    abstract void initView();
+    public abstract void initView();
 
-    abstract void initListener();
+    public abstract void initListener();
 
-    abstract T getVideoView();
+    public abstract T getVideoView();
 }

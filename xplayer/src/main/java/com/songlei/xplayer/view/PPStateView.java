@@ -82,7 +82,6 @@ public abstract class PPStateView extends PPTextureRenderView {
         mAudioManager.requestAudioFocus(onAudioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 
         mPlayerManager = new PlayerManager(context);
-//        initPlayer();
     }
 
     protected void initPlayer(){

@@ -448,11 +448,15 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
                 stopProgressTimer();
                 break;
             case STATE_PREPARE:
-                mLoadingProgressBar.setVisibility(VISIBLE);
+                if (mLoadingProgressBar != null) {
+                    mLoadingProgressBar.setVisibility(VISIBLE);
+                }
                 break;
             case STATE_PLAYING:
                 startProgressTimer();
-                mLoadingProgressBar.setVisibility(INVISIBLE);
+                if (mLoadingProgressBar != null) {
+                    mLoadingProgressBar.setVisibility(INVISIBLE);
+                }
                 startDismissControlViewTimer();
                 break;
             case STATE_PAUSE:

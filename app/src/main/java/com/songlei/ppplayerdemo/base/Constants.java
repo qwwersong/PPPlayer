@@ -1,4 +1,4 @@
-package com.songlei.ppplayerdemo;
+package com.songlei.ppplayerdemo.base;
 
 import com.songlei.xplayer.base.Option;
 

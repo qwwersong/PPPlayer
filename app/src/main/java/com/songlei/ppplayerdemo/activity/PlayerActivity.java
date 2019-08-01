@@ -1,4 +1,4 @@
-package com.songlei.ppplayerdemo;
+package com.songlei.ppplayerdemo.activity;
 
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
@@ -10,6 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.songlei.ppplayerdemo.R;
+import com.songlei.ppplayerdemo.base.BaseActivity;
+import com.songlei.ppplayerdemo.base.Constants;
 import com.songlei.ppplayerdemo.listener.OnTransitionListener;
 import com.songlei.xplayer.base.Option;
 import com.songlei.xplayer.bean.VideoModeBean;
@@ -59,12 +62,12 @@ public class PlayerActivity extends BaseActivity<PPVideoPlayerView> {
     private List<VideoModeBean> urlList = new ArrayList<>();
 
     @Override
-    int getLayoutId() {
+    public int getLayoutId() {
         return R.layout.activity_player;
     }
 
     @Override
-    void initData() {
+    public void initData() {
         isTransition = getIntent().getBooleanExtra(Constants.TRANSITION, false);
         decode_type = getIntent().getBooleanExtra(Constants.DECODE_TYPE, false);
         render_type = getIntent().getIntExtra(Constants.RENDER_TYPE, Constants.RENDER_TEXTURE);
@@ -78,7 +81,7 @@ public class PlayerActivity extends BaseActivity<PPVideoPlayerView> {
     }
 
     @Override
-    void initView() {
+    public void initView() {
         pp_video_view = findViewById(R.id.pp_video_view);
         bt_speed = findViewById(R.id.bt_speed);
         initVideo();
@@ -86,7 +89,7 @@ public class PlayerActivity extends BaseActivity<PPVideoPlayerView> {
     }
 
     @Override
-    void initListener() {
+    public void initListener() {
         pp_video_view.setPPPlayerViewListener(new PPPlayerViewListener() {
             @Override
             public void onClickBack() {
@@ -114,7 +117,7 @@ public class PlayerActivity extends BaseActivity<PPVideoPlayerView> {
     }
 
     @Override
-    PPVideoPlayerView getVideoView() {
+    public PPVideoPlayerView getVideoView() {
         return pp_video_view;
     }
 

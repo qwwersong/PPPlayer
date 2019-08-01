@@ -100,6 +100,10 @@ public class Option {
         private int playerType;
         private Bitmap bitmap;
         private boolean isMediaCodec;
+        private boolean isTouchWidget;//是否支持手势操作
+        private boolean isTouchVolume;//是否改变音量
+        private boolean isTouchBright;//是否改变亮度
+
 
         //设置播放地址
         public Builder setUrl(String url){

@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -23,16 +25,17 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".PlayerActivity"
+        <activity android:name=".activity.PlayerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
 
         </activity>
-        <activity android:name=".RenderActivity"
+        <activity android:name=".activity.RenderActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
 
         </activity>
+        <activity android:name=".activity.WindowActivity" />
     </application>
 
 </manifest>

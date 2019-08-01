@@ -148,4 +148,11 @@
         android:layout_gravity="center_horizontal"
         android:text="GL渲染播放器"/>
 
+    <Button
+        android:id="@+id/bt_window"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="悬浮窗口"/>
+
 </LinearLayout>
