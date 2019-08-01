@@ -48,6 +48,9 @@ public class WindowActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
+        if (FloatWindow.get().getView() instanceof FloatPlayerView) {
+            ((FloatPlayerView)FloatWindow.get().getView()).onRelease();
+        }
         FloatWindow.destroy();
     }
 
@@ -85,6 +88,7 @@ public class WindowActivity extends AppCompatActivity {
                 .setMoveType(MoveType.slide)//可拖动悬浮窗
                 .setMoveStyle(500, new BounceInterpolator())//贴边动画
                 .setFilter(false)
+                .setDesktopShow(true)
                 .build();
         FloatWindow.get().show();
     }

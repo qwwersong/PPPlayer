@@ -44,10 +44,7 @@ public class FloatPlayerView extends FrameLayout {
 
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        Log.e("xxx", "FloatPlayerView onDetachedFromWindow");
+    public void onRelease(){
         floatVideoView.onRelease();
     }
 }
