@@ -213,7 +213,6 @@ public abstract class PPStateView extends PPTextureRenderView {
                         mSeekOnStart = 0;
                     }
                     addTextureView();
-                    Log.e("xxx", "准备中.... playerType = " + Option.getPlayerType());
                     if (Option.getPlayerType() != Option.PLAYER_OBSS) {
                         start();
                     }

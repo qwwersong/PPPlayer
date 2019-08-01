@@ -23,83 +23,122 @@ public class PlayerManager {
     public void initPlayer(){
         Log.e("xxx", "PlayerManager initPlayer");
         player = PlayerFactory.getPlayer();
-        player.initPlayer(context);
+        if (player != null) {
+            player.initPlayer(context);
+        }
     }
 
     public void prepare(String url){
         Log.e("xxx", "PlayerManager prepare");
-        player.prepare(url);
+        if (player != null) {
+            player.prepare(url);
+        }
     }
 
     public void setSurface(Surface surface){
         Log.e("xxx", "PlayerManager setSurface");
-        player.setSurface(surface);
+        if (player != null) {
+            player.setSurface(surface);
+        }
     }
 
     public void start(){
         Log.e("xxx", "PlayerManager start");
-        player.start();
+        if (player != null) {
+            player.start();
+        }
     }
 
     public void pause(){
         Log.e("xxx", "PlayerManager pause");
-        player.pause();
+        if (player != null) {
+            player.pause();
+        }
     }
 
     public void resume(){
         Log.e("xxx", "PlayerManager resume");
-        player.resume();
+        if (player != null) {
+            player.resume();
+        }
     }
 
     public void stop(){
         Log.e("xxx", "PlayerManager stop");
-        player.stop();
+        if (player != null) {
+            player.stop();
+        }
     }
 
     public void release(){
         Log.e("xxx", "PlayerManager release");
-        player.release();
+        if (player != null) {
+            player.release();
+        }
     }
 
     public void seekTo(long time){
         Log.e("xxx", "PlayerManager seekTo time = " + time);
-        player.seekTo(time);
+        if (player != null) {
+            player.seekTo(time);
+        }
     }
 
     public void setSpeedPlaying(float speed, boolean soundTouch){
-        player.setSpeedPlaying(speed, soundTouch);
+        if (player != null) {
+            player.setSpeedPlaying(speed, soundTouch);
+        }
     }
 
     public void setPlayPosition(long time){
-        player.setPlayPosition((int) time);
+        if (player != null) {
+            player.setPlayPosition((int) time);
+        }
     }
 
     public int getCurrentVideoWidth(){
-        return player.getVideoWidth();
+        if (player != null) {
+            return player.getVideoWidth();
+        }
+        return 0;
     }
 
     public int getCurrentVideoHeight() {
-        return player.getVideoHeight();
+        if (player != null) {
+            return player.getVideoHeight();
+        }
+        return 0;
     }
 
     public long getCurrentPosition(){
-        return player.getCurrentPosition();
+        if (player != null) {
+            return player.getCurrentPosition();
+        }
+        return 0;
     }
 
     public long getDuration(){
-        return player.getDuration();
+        if (player != null) {
+            return player.getDuration();
+        }
+        return 0;
     }
 
     public int getBufferedPercentage(){
-        return player.getBufferedPercentage();
+        if (player != null) {
+            return player.getBufferedPercentage();
+        }
+        return 0;
     }
 
     public void setPlayerListener(PlayerListener playerListener){
-        player.setPlayerListener(playerListener);
+        if (player != null) {
+            player.setPlayerListener(playerListener);
+        }
     }
 
     public void surfaceChanged(Surface surface){
-        if (player instanceof ObssPlayer) {
+        if (player != null && player instanceof ObssPlayer) {
             ((ObssPlayer)player).surfaceChanged(surface);
         }
     }
