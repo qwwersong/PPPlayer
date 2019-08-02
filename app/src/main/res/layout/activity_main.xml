@@ -155,4 +155,11 @@
         android:layout_gravity="center_horizontal"
         android:text="悬浮窗口"/>
 
+    <Button
+        android:id="@+id/bt_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="列表详情切换"/>
+
 </LinearLayout>

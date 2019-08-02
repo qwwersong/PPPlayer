@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -177,6 +178,10 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
             mThumbImageViewLayout.setVisibility(GONE);
             mThumbImageViewLayout.setOnClickListener(this);
         }
+        if (mThumbImageView != null && !mIfCurrentIsFullScreen && mThumbImageViewLayout != null) {
+            mThumbImageViewLayout.removeAllViews();
+            resolveThumbImage(mThumbImageView);
+        }
 
         if (mBackButton != null) {
             mBackButton.setOnClickListener(this);
@@ -315,8 +320,6 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
             } else {//认定纵向滑动
                 Log.e("xxx", "纵向滑动");
                 int screenHeight = CommonUtil.getScreenHeight(getContext());
-                Log.e("xxx", "screenHeight = " + screenHeight + " mDownY = " + mDownY + " 差值 = " + Math.abs(screenHeight - mDownY));
-                Log.e("xxx", "mSeekEndOffset = " + mSeekEndOffset);
                 boolean noEnd = Math.abs(screenHeight - mDownY) > mSeekEndOffset;//TODO::这个表达式是什么意思?
                 if (mFirstTouch) {
                     mBrightness = (mDownX < curWidth * 0.5f) && noEnd;//是否调节亮度，在左边屏幕且？
@@ -446,17 +449,16 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         switch (state) {
             case STATE_NO_PLAY:
                 stopProgressTimer();
+                mThumbImageViewLayout.setVisibility(VISIBLE);
                 break;
             case STATE_PREPARE:
-                if (mLoadingProgressBar != null) {
-                    mLoadingProgressBar.setVisibility(VISIBLE);
-                }
+                setViewShowState(mLoadingProgressBar, VISIBLE);
+                setViewShowState(mThumbImageViewLayout, GONE);
                 break;
             case STATE_PLAYING:
                 startProgressTimer();
-                if (mLoadingProgressBar != null) {
-                    mLoadingProgressBar.setVisibility(INVISIBLE);
-                }
+                setViewShowState(mLoadingProgressBar, GONE);
+                setViewShowState(mThumbImageViewLayout, GONE);
                 startDismissControlViewTimer();
                 break;
             case STATE_PAUSE:
@@ -468,10 +470,11 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
                 stopProgressTimer();
                 mProgressBar.setProgress(0);
                 mCurrentTimeTextView.setText(CommonUtil.stringForTime(0));
-                mLoadingProgressBar.setVisibility(INVISIBLE);
+                setViewShowState(mLoadingProgressBar, GONE);
+                setViewShowState(mThumbImageViewLayout, VISIBLE);
                 break;
             case STATE_BUFFERING:
-                mLoadingProgressBar.setVisibility(VISIBLE);
+                setViewShowState(mLoadingProgressBar, VISIBLE);
                 break;
         }
         updateStartImage();
@@ -615,6 +618,52 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
             mLockScreen.setImageResource(R.drawable.ic_lock);
             hideAllWidget();
         }
+    }
+
+    protected void resolveThumbImage(View thumb){
+        if (mThumbImageViewLayout != null) {
+            mThumbImageViewLayout.removeAllViews();
+            mThumbImageViewLayout.addView(thumb);
+            ViewGroup.LayoutParams layoutParams = thumb.getLayoutParams();
+            layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            thumb.setLayoutParams(layoutParams);
+        }
+    }
+
+    /**
+     * 封面布局
+     */
+    public RelativeLayout getThumbImageViewLayout(){
+        return mThumbImageViewLayout;
+    }
+
+    /**
+     * 设置封面
+     */
+    public void setThumbImageView(View view){
+        if (mThumbImageViewLayout != null) {
+            mThumbImageView = view;
+            resolveThumbImage(view);
+        }
+    }
+
+    public void clearThumbImageView(){
+        if (mThumbImageViewLayout != null) {
+            mThumbImageViewLayout.removeAllViews();
+        }
+    }
+
+    public TextView getTitleTextView(){
+        return mTitleTextView;
+    }
+
+    public ImageView getBackButton(){
+        return mBackButton;
+    }
+
+    public void setIsTouchWidget(boolean isTouchWidget){
+        mIsTouchWidget = isTouchWidget;
     }
 
     protected abstract void hideAllWidget();

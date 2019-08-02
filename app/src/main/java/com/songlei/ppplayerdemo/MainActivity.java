@@ -14,6 +14,7 @@ import android.widget.RadioGroup;
 
 import com.songlei.ppplayerdemo.activity.PlayerActivity;
 import com.songlei.ppplayerdemo.activity.RenderActivity;
+import com.songlei.ppplayerdemo.activity.SwitchListVideoActivity;
 import com.songlei.ppplayerdemo.activity.WindowActivity;
 import com.songlei.ppplayerdemo.base.Constants;
 
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button bt_normal;
     private Button bt_render;
     private Button bt_window;
+    private Button bt_switch;
 
     private static boolean decode_type = false;
     private static int render_type = Constants.RENDER_TEXTURE;
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_normal = findViewById(R.id.bt_normal);
         bt_render = findViewById(R.id.bt_render);
         bt_window = findViewById(R.id.bt_window);
+        bt_switch = findViewById(R.id.bt_switch);
 
         RadioGroup rg_decode = findViewById(R.id.rg_decode);
         RadioGroup rg_render = findViewById(R.id.rg_render);
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_normal.setOnClickListener(this);
         bt_render.setOnClickListener(this);
         bt_window.setOnClickListener(this);
+        bt_switch.setOnClickListener(this);
 
         rg_decode.setOnCheckedChangeListener(this);
         rg_render.setOnCheckedChangeListener(this);
@@ -59,7 +63,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 goToVideoPlayer(MainActivity.this, bt_render, RenderActivity.class);
                 break;
             case R.id.bt_window:
-                goToVideoPlayer(MainActivity.this, bt_render, WindowActivity.class);
+                goToVideoPlayer(MainActivity.this, bt_window, WindowActivity.class);
+                break;
+            case R.id.bt_switch:
+                goToVideoPlayer(MainActivity.this, bt_switch, SwitchListVideoActivity.class);
                 break;
         }
     }

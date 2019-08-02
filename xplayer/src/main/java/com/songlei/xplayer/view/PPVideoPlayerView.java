@@ -100,7 +100,7 @@ public class PPVideoPlayerView extends PPOrientationView {
 //        mMediaUtil = MediaUtil.getInstance();
         initView();
         initListener();
-        registerNetReceiver();
+//        registerNetReceiver();
     }
 
     private void registerNetReceiver(){
