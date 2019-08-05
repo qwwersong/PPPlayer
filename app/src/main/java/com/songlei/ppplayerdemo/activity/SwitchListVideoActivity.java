@@ -3,11 +3,13 @@ package com.songlei.ppplayerdemo.activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.songlei.ppplayerdemo.R;
 import com.songlei.ppplayerdemo.adapter.SwitchListVideoAdapter;
+import com.songlei.xplayer.PlayerManager;
 
 /**
  * Created by songlei on 2019/08/02.
@@ -36,6 +38,15 @@ public class SwitchListVideoActivity extends AppCompatActivity {
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 int lastVisibleItem = firstVisibleItem + visibleItemCount;
 
+                int playerPosition = PlayerManager.getInstance().getPlayerPosition();
+                Log.e("xxx", "onScroll playerPosition = " + playerPosition + " firstVisibleItem = "
+                        + firstVisibleItem + " lastVisibleItem = " + lastVisibleItem);
+                if (playerPosition >= 0) {
+                    if ((playerPosition < firstVisibleItem ||playerPosition > lastVisibleItem)) {
+                        release();
+                        listVideoAdapter.notifyDataSetChanged();
+                    }
+                }
             }
         });
     }
@@ -48,5 +59,11 @@ public class SwitchListVideoActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        release();
+    }
+
+    private void release(){
+        PlayerManager.getInstance().stop();
+        PlayerManager.getInstance().release();
     }
 }

@@ -6,7 +6,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.songlei.ppplayerdemo.R;
-import com.songlei.xplayer.PlayerManager;
 import com.songlei.xplayer.view.PPVideoPlayerView;
 
 /**
@@ -38,8 +37,6 @@ public class FloatVideoView extends PPVideoPlayerView {
 
         mAudioManager = (AudioManager) mContext.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         mAudioManager.requestAudioFocus(onAudioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
-
-        mPlayerManager = new PlayerManager(context);
 
         mTextureViewContainer = findViewById(R.id.surface_container);
         mStartButton = findViewById(R.id.start);

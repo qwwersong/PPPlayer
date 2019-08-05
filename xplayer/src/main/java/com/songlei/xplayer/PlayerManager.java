@@ -9,18 +9,25 @@ import com.songlei.xplayer.player.IPlayer;
 import com.songlei.xplayer.player.ObssPlayer;
 import com.songlei.xplayer.player.PlayerFactory;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Created by songlei on 2019/07/02.
  */
 public class PlayerManager {
     private IPlayer player;
-    private Context context;
+    private static PlayerManager playerManager;
+    protected int playerPosition = -22;
+    protected WeakReference<PlayerListener> mPlayerListener;
 
-    public PlayerManager(Context context){
-        this.context = context;
+    public static synchronized PlayerManager getInstance() {
+        if (playerManager == null) {
+            playerManager = new PlayerManager();
+        }
+        return playerManager;
     }
 
-    public void initPlayer(){
+    public void initPlayer(Context context){
         Log.e("xxx", "PlayerManager initPlayer");
         player = PlayerFactory.getPlayer();
         if (player != null) {
@@ -73,6 +80,7 @@ public class PlayerManager {
     public void release(){
         Log.e("xxx", "PlayerManager release");
         if (player != null) {
+            mPlayerListener.get().onPlayerState(PlayerConstants.STATE_COMPLETE);
             player.release();
         }
     }
@@ -132,8 +140,11 @@ public class PlayerManager {
     }
 
     public void setPlayerListener(PlayerListener playerListener){
-        if (player != null) {
-            player.setPlayerListener(playerListener);
+        if (playerListener != null) {
+            this.mPlayerListener = new WeakReference<>(playerListener);
+            if (player != null) {
+                player.setPlayerListener(playerListener);
+            }
         }
     }
 
@@ -141,6 +152,14 @@ public class PlayerManager {
         if (player != null && player instanceof ObssPlayer) {
             ((ObssPlayer)player).surfaceChanged(surface);
         }
+    }
+
+    public void setPlayerPosition(int playerPosition){
+        this.playerPosition = playerPosition;
+    }
+
+    public int getPlayerPosition(){
+        return playerPosition;
     }
 
 }

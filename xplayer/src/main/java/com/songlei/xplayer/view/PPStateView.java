@@ -52,6 +52,8 @@ public abstract class PPStateView extends PPTextureRenderView {
     protected boolean mHadPlay = false;
     //从哪个开始播放
     protected long mSeekOnStart = -1;
+    //用于记录列表播放，播放器在列表中的位置
+    protected int playerPosition = -22;
 
     public PPStateView(Context context) {
         super(context);
@@ -81,11 +83,11 @@ public abstract class PPStateView extends PPTextureRenderView {
         mAudioManager = (AudioManager) mContext.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         mAudioManager.requestAudioFocus(onAudioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 
-        mPlayerManager = new PlayerManager(context);
     }
 
     protected void initPlayer(){
-        mPlayerManager.initPlayer();
+        mPlayerManager = PlayerManager.getInstance();
+        mPlayerManager.initPlayer(mContext);
         mPlayerManager.setPlayerListener(playerListener);
     }
 
@@ -125,43 +127,63 @@ public abstract class PPStateView extends PPTextureRenderView {
     }
 
     protected void prepare(){
+        if (mPlayerManager == null) {
+            return;
+        }
         if (!TextUtils.isEmpty(mUrl)) {
             mPlayerManager.prepare(mUrl);
         }
+        mPlayerManager.setPlayerPosition(playerPosition);
     }
 
     protected void start(){
-        mPlayerManager.start();
+        if (mPlayerManager != null) {
+            mPlayerManager.start();
+        }
     }
 
     protected void pause(){
-        mPlayerManager.pause();
+        if (mPlayerManager != null) {
+            mPlayerManager.pause();
+        }
     }
 
     protected void resume(){
-        mPlayerManager.resume();
+        if (mPlayerManager != null) {
+            mPlayerManager.resume();
+        }
     }
 
     public void stop(){
-        mPlayerManager.stop();
+        if (mPlayerManager != null) {
+            mPlayerManager.stop();
+        }
     }
 
     public void release(){
-        mPlayerManager.release();
+        if (mPlayerManager != null) {
+            mPlayerManager.release();
+        }
     }
 
     protected void seekTo(int time){
-        mPlayerManager.seekTo(time);
+        if (mPlayerManager != null) {
+            mPlayerManager.seekTo(time);
+        }
     }
 
     @Override
     protected void setDisplay(Surface surface) {
-        mPlayerManager.setSurface(surface);
+        if (mPlayerManager != null) {
+            mPlayerManager.setSurface(surface);
+        }
     }
 
     @Override
     protected void surfaceChanged(Surface surface) {
-        mPlayerManager.surfaceChanged(surface);
+        if (mPlayerManager != null) {
+            mPlayerManager.surfaceChanged(surface);
+        }
     }
 
     @Override
@@ -171,12 +193,18 @@ public abstract class PPStateView extends PPTextureRenderView {
 
     @Override
     public int getCurrentVideoWidth() {
-        return mPlayerManager.getCurrentVideoWidth();
+        if (mPlayerManager != null) {
+            return mPlayerManager.getCurrentVideoWidth();
+        }
+        return 0;
     }
 
     @Override
     public int getCurrentVideoHeight() {
-        return mPlayerManager.getCurrentVideoHeight();
+        if (mPlayerManager != null) {
+            return mPlayerManager.getCurrentVideoHeight();
+        }
+        return 0;
     }
 
     @Override
@@ -253,7 +281,9 @@ public abstract class PPStateView extends PPTextureRenderView {
     public int getCurrentPosition(){
         int position = 0;
         if (mCurrentState == STATE_PLAYING || mCurrentState == STATE_PAUSE) {
-            position = (int) mPlayerManager.getCurrentPosition();
+            if (mPlayerManager != null) {
+                position = (int) mPlayerManager.getCurrentPosition();
+            }
         }
 //        if (position == 0 && mCurrentPosition > 0) {
 //            return (int) mCurrentPosition;
@@ -262,17 +292,23 @@ public abstract class PPStateView extends PPTextureRenderView {
     }
 
     public int getDuration() {
-        int duration = (int) mPlayerManager.getDuration();
-        return duration;
+        if (mPlayerManager != null) {
+            return (int) mPlayerManager.getDuration();
+        }
+        return 0;
     }
 
     public int getBufferedPercentage() {
-        int percent = mPlayerManager.getBufferedPercentage();
-        return percent;
+        if (mPlayerManager != null) {
+            return mPlayerManager.getBufferedPercentage();
+        }
+        return 0;
     }
 
     protected void setPlayPosition(long currentPosition){
-        mPlayerManager.setPlayPosition(currentPosition);
+        if (mPlayerManager != null) {
+            mPlayerManager.setPlayPosition(currentPosition);
+        }
     }
 
     protected boolean isPlaying(){
@@ -301,7 +337,13 @@ public abstract class PPStateView extends PPTextureRenderView {
     }
 
     public void setSpeedPlaying(float speed, boolean soundTouch){
-        mPlayerManager.setSpeedPlaying(speed, soundTouch);
+        if (mPlayerManager != null) {
+            mPlayerManager.setSpeedPlaying(speed, soundTouch);
+        }
+    }
+
+    public void setPlayerPosition(int playerPosition){
+        this.playerPosition = playerPosition;
     }
 
 //    public void setMediaCodec(boolean isMediaCodec){

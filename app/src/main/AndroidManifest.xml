@@ -37,6 +37,7 @@
         </activity>
         <activity android:name=".activity.WindowActivity" />
         <activity android:name=".activity.SwitchListVideoActivity" />
+        <activity android:name=".activity.SwitchDetailActivity" />
     </application>
 
 </manifest>
