@@ -73,6 +73,7 @@ public class PlayerManager {
     public void stop(){
         Log.e("xxx", "PlayerManager stop");
         if (player != null) {
+            playerPosition = -22;
             player.stop();
         }
     }

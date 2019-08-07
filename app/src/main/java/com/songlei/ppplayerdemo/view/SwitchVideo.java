@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import com.songlei.ppplayerdemo.R;
 import com.songlei.ppplayerdemo.activity.SwitchDetailActivity;
+import com.songlei.ppplayerdemo.util.SmallVideoHelper;
+import com.songlei.ppplayerdemo.util.SwitchUtil;
 import com.songlei.xplayer.view.PPVideoPlayerView;
 
 /**
@@ -15,7 +17,7 @@ import com.songlei.xplayer.view.PPVideoPlayerView;
  */
 public class SwitchVideo extends PPVideoPlayerView {
     private TextView detailBtn;
-    private int playPosition;//列表播放的位置
+    private SmallVideoHelper smallVideoHelper;
 
     public SwitchVideo(Context context) {
         super(context);
@@ -32,9 +34,14 @@ public class SwitchVideo extends PPVideoPlayerView {
         detailBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                SwitchUtil.savePlayerState(SwitchVideo.this);
+
                 SwitchDetailActivity.startDetailActivity((Activity) getContext(), SwitchVideo.this);
             }
         });
+        if (mIfCurrentIsFullScreen) {
+            detailBtn.setVisibility(GONE);
+        }
 
         updateStartImage();
     }
@@ -44,12 +51,28 @@ public class SwitchVideo extends PPVideoPlayerView {
         return R.layout.switch_video;
     }
 
-    public void setPlayPosition(int playPosition){
-        this.playPosition = playPosition;
+    public void setSmallVideoHelper(SmallVideoHelper smallVideoHelper){
+        this.smallVideoHelper = smallVideoHelper;
     }
 
-    public int getPlayPosition(){
-        return playPosition;
+    public SwitchVideo saveState(){
+        SwitchVideo switchVideo = new SwitchVideo(getContext());
+        cloneParams(this, switchVideo);
+        return switchVideo;
     }
 
+    public void cloneState(SwitchVideo switchVideo){
+        cloneParams(switchVideo, this);
+    }
+
+    public void setSurfaceToPlay(){
+//        clickStartIcon();
+        addTextureView();
+    }
+
+    @Override
+    public void clickStartIcon() {
+        super.clickStartIcon();
+        smallVideoHelper.setVideoPlayer(SwitchVideo.this);
+    }
 }

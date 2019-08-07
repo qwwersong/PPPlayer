@@ -9,8 +9,10 @@ import android.widget.ImageView;
 
 import com.songlei.ppplayerdemo.R;
 import com.songlei.ppplayerdemo.bean.VideoModel;
+import com.songlei.ppplayerdemo.util.SmallVideoHelper;
 import com.songlei.ppplayerdemo.util.SwitchUtil;
 import com.songlei.ppplayerdemo.view.SwitchVideo;
+import com.songlei.xplayer.PlayerManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +24,11 @@ public class SwitchListVideoAdapter extends BaseAdapter {
     private List<VideoModel> list = new ArrayList<>();
     private LayoutInflater inflater;
     private Context context;
+    private SmallVideoHelper smallVideoHelper;
 
-    public SwitchListVideoAdapter(Context context){
+    public SwitchListVideoAdapter(Context context, SmallVideoHelper smallVideoHelper){
         this.context = context;
+        this.smallVideoHelper = smallVideoHelper;
         inflater = LayoutInflater.from(context);
         for (int i = 0; i < 40; i++) {
             list.add(new VideoModel());
@@ -67,14 +71,20 @@ public class SwitchListVideoAdapter extends BaseAdapter {
             viewGroup.removeView(holder.imageView);
         }
         holder.switchVideo.setThumbImageView(holder.imageView);
+        holder.switchVideo.setSmallVideoHelper(smallVideoHelper);
 
         String urlH = "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4";
         String urlV = "http://wdquan-space.b0.upaiyun.com/VIDEO/2018/11/22/ae0645396048_hls_time10.m3u8";
         String url = (position % 2 == 0) ? urlH : urlV;
         SwitchUtil.optionPlayer(holder.switchVideo, url, "你大爷");
-        holder.switchVideo.setPlayPosition(position);
+        holder.switchVideo.setPlayerPosition(position);
 
-        holder.switchVideo.getThumbImageViewLayout().setVisibility(View.VISIBLE);
+        if (position == PlayerManager.getInstance().getPlayerPosition()) {
+            holder.switchVideo.getThumbImageViewLayout().setVisibility(View.GONE);
+        } else {
+            holder.switchVideo.getThumbImageViewLayout().setVisibility(View.VISIBLE);
+            holder.switchVideo.getBottomContainer().setVisibility(View.INVISIBLE);
+        }
         return convertView;
     }
 

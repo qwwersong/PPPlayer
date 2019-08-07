@@ -8,6 +8,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import com.songlei.ppplayerdemo.R;
@@ -40,8 +41,10 @@ public class SwitchDetailActivity extends AppCompatActivity {
         detailPlayer = findViewById(R.id.detail_player);
 
         String url = getIntent().getStringExtra(URL);
-        SwitchUtil.optionPlayer(detailPlayer, url, "这是坤");
+        Log.e("xxx", "SwitchDetailActivity url = " + url);
+//        SwitchUtil.optionPlayer(detailPlayer, url, "这是坤");
         detailPlayer.setIsTouchWidget(true);
+        SwitchUtil.clonePlayerState(detailPlayer);
 
         detailPlayer.setPPPlayerViewListener(new PPPlayerViewListener() {
             @Override
@@ -49,6 +52,8 @@ public class SwitchDetailActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
+        detailPlayer.setSurfaceToPlay();
 
         ViewCompat.setTransitionName(detailPlayer, OPTION_VIEW);
     }
@@ -66,5 +71,6 @@ public class SwitchDetailActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         detailPlayer.onRelease();
+        SwitchUtil.release();
     }
 }

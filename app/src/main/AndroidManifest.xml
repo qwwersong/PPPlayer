@@ -35,9 +35,20 @@
             android:screenOrientation="portrait">
 
         </activity>
-        <activity android:name=".activity.WindowActivity" />
-        <activity android:name=".activity.SwitchListVideoActivity" />
-        <activity android:name=".activity.SwitchDetailActivity" />
+
+        <activity android:name=".activity.WindowActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activity.SwitchListVideoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/Theme.AppCompat.Transitions"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activity.SwitchDetailActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"/>
+
     </application>
 
 </manifest>

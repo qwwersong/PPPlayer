@@ -17,6 +17,7 @@ import com.songlei.xplayer.listener.PlayerListener;
 import com.songlei.xplayer.player.IjkPlayer;
 import com.songlei.xplayer.player.ObssPlayer;
 import com.songlei.xplayer.player.PlayerFactory;
+import com.songlei.xplayer.util.CommonUtil;
 
 /**
  * Created by songlei on 2019/07/02.
@@ -53,7 +54,7 @@ public abstract class PPStateView extends PPTextureRenderView {
     //从哪个开始播放
     protected long mSeekOnStart = -1;
     //用于记录列表播放，播放器在列表中的位置
-    protected int playerPosition = -22;
+    protected int mPlayerPosition = -22;
 
     public PPStateView(Context context) {
         super(context);
@@ -133,7 +134,7 @@ public abstract class PPStateView extends PPTextureRenderView {
         if (!TextUtils.isEmpty(mUrl)) {
             mPlayerManager.prepare(mUrl);
         }
-        mPlayerManager.setPlayerPosition(playerPosition);
+        mPlayerManager.setPlayerPosition(mPlayerPosition);
     }
 
     protected void start(){
@@ -174,6 +175,7 @@ public abstract class PPStateView extends PPTextureRenderView {
 
     @Override
     protected void setDisplay(Surface surface) {
+        Log.e("xxx", "setDisplay mPlayerManager = " + mPlayerManager);
         if (mPlayerManager != null) {
             mPlayerManager.setSurface(surface);
         }
@@ -342,13 +344,17 @@ public abstract class PPStateView extends PPTextureRenderView {
         }
     }
 
-    public void setPlayerPosition(int playerPosition){
-        this.playerPosition = playerPosition;
+    public void setPlayerPosition(int mPlayerPosition){
+        this.mPlayerPosition = mPlayerPosition;
     }
 
 //    public void setMediaCodec(boolean isMediaCodec){
 //        Option.setPlayerMediaCodec(isMediaCodec);
 //    }
+
+    protected Context getActivityContext(){
+        return CommonUtil.getActivityContext(getContext());
+    }
 
     /*
       =========================================抽象接口===============================================

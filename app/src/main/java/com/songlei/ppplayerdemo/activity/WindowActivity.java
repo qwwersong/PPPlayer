@@ -48,7 +48,7 @@ public class WindowActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (FloatWindow.get().getView() instanceof FloatPlayerView) {
+        if (FloatWindow.get() != null && FloatWindow.get().getView() instanceof FloatPlayerView) {
             ((FloatPlayerView)FloatWindow.get().getView()).onRelease();
         }
         FloatWindow.destroy();

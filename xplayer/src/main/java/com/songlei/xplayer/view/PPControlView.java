@@ -2,6 +2,7 @@ package com.songlei.xplayer.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Point;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,7 +14,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -22,11 +25,16 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.songlei.xplayer.R;
+import com.songlei.xplayer.listener.SmallVideoTouchListener;
 import com.songlei.xplayer.util.CommonUtil;
 import com.songlei.xplayer.util.NetUtil;
 
+import java.lang.reflect.Constructor;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static com.songlei.xplayer.util.CommonUtil.getActionBarHeight;
+import static com.songlei.xplayer.util.CommonUtil.getStatusBarHeight;
 
 /**
  * 处理控件操作、界面显示状态
@@ -34,6 +42,7 @@ import java.util.TimerTask;
  */
 public abstract class PPControlView extends PPStateView implements View.OnClickListener,
         View.OnTouchListener, SeekBar.OnSeekBarChangeListener {
+    public static final int SMALL_ID = R.id.small_id;
     //==============================布局控件=============================
     //播放按键
     protected View mStartButton;
@@ -59,6 +68,8 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     protected RelativeLayout mThumbImageViewLayout;
     //底部进度调
     protected ProgressBar mBottomProgressBar;
+    //小窗口关闭按键
+    protected View mSmallClose;
     //==============================onTouch参数==========================
     //触摸的X
     protected float mDownX;
@@ -147,6 +158,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         mBottomProgressBar = findViewById(R.id.bottom_progressbar);
         mThumbImageViewLayout = findViewById(R.id.thumb);
         mLockScreen = findViewById(R.id.lock_screen);
+        mSmallClose = findViewById(R.id.small_close);
 
         mLoadingProgressBar = findViewById(R.id.loading);
 
@@ -277,7 +289,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
                     touchSurfaceUp();
                     break;
             }
-        } else if (id == R.id.progress) {
+        } else if (id == R.id.progress) {//滑动进度条的时候，不会影响下一个层级surface_container的滑动
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     cancelDismissControlViewTimer();
@@ -448,24 +460,28 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     protected void onStateLayout(int state) {
         switch (state) {
             case STATE_NO_PLAY:
-                stopProgressTimer();
-                mThumbImageViewLayout.setVisibility(VISIBLE);
+                Log.e("xxx", "PPControlView 未播放。。。");
+//                stopProgressTimer();
+//                mThumbImageViewLayout.setVisibility(VISIBLE);
                 break;
             case STATE_PREPARE:
                 setViewShowState(mLoadingProgressBar, VISIBLE);
                 setViewShowState(mThumbImageViewLayout, GONE);
                 break;
             case STATE_PLAYING:
+                Log.e("xxx", "onStateLayout CURRENT_STATE_PLAYING");
                 startProgressTimer();
                 setViewShowState(mLoadingProgressBar, GONE);
                 setViewShowState(mThumbImageViewLayout, GONE);
                 startDismissControlViewTimer();
                 break;
             case STATE_PAUSE:
+                Log.e("xxx", "ControlView onStateLayout Pause");
                 showAllWidget();
                 cancelDismissControlViewTimer();
                 break;
             case STATE_COMPLETE:
+                Log.e("xxx", "ControlView onStateLayout Complete");
                 showAllWidget();
                 stopProgressTimer();
                 mProgressBar.setProgress(0);
@@ -569,6 +585,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     }
 
     protected void startDismissControlViewTimer(){
+        Log.e("xxx", "startDismissControlViewTimer");
         cancelDismissControlViewTimer();
         mDismissControlViewTimer = new Timer();
         mDismissControlViewTimerTask = new DismissControlViewTimerTask();
@@ -576,6 +593,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
     }
 
     protected void cancelDismissControlViewTimer(){
+        Log.e("xxx", "cancelDismissControlViewTimer");
         if (mDismissControlViewTimer != null) {
             mDismissControlViewTimer.cancel();
             mDismissControlViewTimer = null;
@@ -594,6 +612,7 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
+                        Log.e("xxx", "DismissControlViewTimerTask hideAllWidget");
                         hideAllWidget();
                         setViewShowState(mLockScreen, GONE);
                     }
@@ -612,10 +631,12 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         if (mLockCurScreen) {
             mLockCurScreen = false;
             mLockScreen.setImageResource(R.drawable.ic_unlock);
+            Log.e("xxx", "lockTouchLogic mLockCurScreen = " + mLockCurScreen);
             showAllWidget();
         } else {
             mLockCurScreen = true;
             mLockScreen.setImageResource(R.drawable.ic_lock);
+            Log.e("xxx", "lockTouchLogic mLockCurScreen = " + mLockCurScreen);
             hideAllWidget();
         }
     }
@@ -631,6 +652,153 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         }
     }
 
+    protected void cloneParams(PPControlView from, PPControlView to){
+        to.mHadPlay = from.mHadPlay;
+        to.mPlayerPosition = from.mPlayerPosition;
+        to.mEffectFilter = from.mEffectFilter;
+        to.mFullPauseBitmap = from.mFullPauseBitmap;
+        to.mRotate = from.mRotate;
+        to.mSeekRatio = from.mSeekRatio;
+        to.mRenderer = from.mRenderer;
+        to.mMode = from.mMode;
+        to.mUrl = from.mUrl;
+        to.mCurrentState = from.mCurrentState;
+        to.mPlayerManager = from.mPlayerManager;
+        to.setUrl(from.mUrl);
+        Log.e("xxx", "cloneParams mCurrentState = " + from.mCurrentState);
+        to.onStateLayout(from.mCurrentState);
+    }
+
+    public PPControlView showSmallVideo(Point size, boolean actionBar, boolean statusBar){
+        ViewGroup vp = getViewGroup();
+        removeVideo(vp, SMALL_ID);
+
+        if (mTextureViewContainer.getChildCount() > 0) {
+            mTextureViewContainer.removeAllViews();
+        }
+
+        try {
+            Constructor<PPControlView> constructor = (Constructor<PPControlView>) PPControlView.this.getClass().getConstructor(Context.class);
+            PPControlView videoPlayer = constructor.newInstance(getActivityContext());
+            videoPlayer.setId(SMALL_ID);
+
+            LayoutParams lpParent = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            FrameLayout frameLayout = new FrameLayout(mContext);
+
+            LayoutParams lp = new LayoutParams(size.x, size.y);
+            int marginLeft = CommonUtil.getScreenWidth(mContext) - size.x;
+            int marginTop = CommonUtil.getScreenHeight(mContext) - size.y;
+
+            if (actionBar) {
+                marginTop = marginTop - getActionBarHeight((Activity) mContext);
+            }
+
+            if (statusBar) {
+                marginTop = marginTop - getStatusBarHeight(mContext);
+            }
+
+            lp.setMargins(marginLeft, marginTop, 0, 0);
+            frameLayout.addView(videoPlayer, lp);
+
+            vp.addView(frameLayout, lpParent);
+
+            cloneParams(this, videoPlayer);
+
+            videoPlayer.setIsTouchWidget(false);//小窗口不能点击
+
+            videoPlayer.addTextureView();
+            //隐藏掉所有的弹出状态哟
+            videoPlayer.onClickUiToggle();
+//            videoPlayer.setVideoAllCallBack(mVideoAllCallBack);
+            videoPlayer.setSmallVideoTextureView(new SmallVideoTouchListener(videoPlayer, marginLeft, marginTop));
+
+//            getGSYVideoManager().setLastListener(this);
+//            getGSYVideoManager().setListener(videoPlayer);
+//            if (mVideoAllCallBack != null) {
+//                Debuger.printfError("onEnterSmallWidget");
+//                mVideoAllCallBack.onEnterSmallWidget(mOriginUrl, mTitle, videoPlayer);
+//            }
+
+            return videoPlayer;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void hideSmallVideo(){
+        ViewGroup vp = getViewGroup();
+        PPControlView videoPlayer = vp.findViewById(SMALL_ID);
+        removeVideo(vp, SMALL_ID);
+//        mCurrentState = getGSYVideoManager().getLastState();
+        if (videoPlayer != null) {
+            cloneParams(videoPlayer, this);
+        }
+//        getGSYVideoManager().setListener(getGSYVideoManager().lastListener());
+//        getGSYVideoManager().setLastListener(null);
+        onStateLayout(mCurrentState);
+        addTextureView();
+//        mSaveChangeViewTIme = System.currentTimeMillis();
+//        if (mVideoAllCallBack != null) {
+//            Debuger.printfLog("onQuitSmallWidget");
+//            mVideoAllCallBack.onQuitSmallWidget(mOriginUrl, mTitle, this);
+//        }
+    }
+
+    private ViewGroup getViewGroup(){
+        return (ViewGroup) CommonUtil.scanForActivity(getContext()).findViewById(Window.ID_ANDROID_CONTENT);
+    }
+
+    private void removeVideo(ViewGroup vp, int id){
+        View old = vp.findViewById(id);
+        if (old != null) {
+            if (old.getParent() != null) {
+                ViewGroup viewGroup = (ViewGroup) old.getParent();
+                vp.removeView(viewGroup);
+            }
+        }
+    }
+
+    protected void setSmallVideoTextureView(OnTouchListener onTouchListener){
+        mTextureViewContainer.setOnTouchListener(onTouchListener);
+        mTextureViewContainer.setOnClickListener(null);
+        if (mProgressBar != null) {
+            mProgressBar.setOnTouchListener(null);
+            mProgressBar.setVisibility(INVISIBLE);
+        }
+        if (mFullscreenButton != null) {
+            mFullscreenButton.setOnTouchListener(null);
+            mFullscreenButton.setVisibility(INVISIBLE);
+        }
+        if (mCurrentTimeTextView != null) {
+            mCurrentTimeTextView.setVisibility(INVISIBLE);
+        }
+        if (mTextureViewContainer != null) {
+            mTextureViewContainer.setOnClickListener(null);
+        }
+        if (mSmallClose != null) {
+            mSmallClose.setVisibility(VISIBLE);
+            mSmallClose.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    hideSmallVideo();
+                    releaseVideos();
+                }
+            });
+        }
+    }
+
+    public TextView getTitleTextView(){
+        return mTitleTextView;
+    }
+
+    public ImageView getBackButton(){
+        return mBackButton;
+    }
+
+    public LinearLayout getBottomContainer(){
+        return mBottomContainer;
+    }
     /**
      * 封面布局
      */
@@ -654,12 +822,11 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
         }
     }
 
-    public TextView getTitleTextView(){
-        return mTitleTextView;
-    }
-
-    public ImageView getBackButton(){
-        return mBackButton;
+    protected void releaseVideos(){
+        if (mPlayerManager != null) {
+            mPlayerManager.stop();
+            mPlayerManager.release();
+        }
     }
 
     public void setIsTouchWidget(boolean isTouchWidget){

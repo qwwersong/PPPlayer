@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -260,6 +261,16 @@ public class PPVideoPlayerView extends PPOrientationView {
     }
 
     //===============================ControlView的抽象接口=======================================
+
+
+//    @Override
+//    public void clickStartIcon() {
+//        super.clickStartIcon();
+//        if (mPPPlayerViewListener != null) {
+//            mPPPlayerViewListener.onClickStart();
+//        }
+//    }
+
     @Override
     protected void showFullScreen() {
         setViewShowState(mSwitchSize, VISIBLE);
@@ -274,12 +285,16 @@ public class PPVideoPlayerView extends PPOrientationView {
 
     @Override
     protected void hideAllWidget() {
+        Log.e("xxx", "hideAllWidget");
+        setViewShowState(mStartButton, INVISIBLE);
         setViewShowState(mBottomContainer, INVISIBLE);
         setViewShowState(mTopContainer, INVISIBLE);
     }
 
     @Override
     protected void showAllWidget() {
+        Log.e("xxx", "showAllWidget");
+        setViewShowState(mStartButton, VISIBLE);
         setViewShowState(mBottomContainer, VISIBLE);
         setViewShowState(mTopContainer, VISIBLE);
     }
@@ -303,11 +318,13 @@ public class PPVideoPlayerView extends PPOrientationView {
         }
         if (mBottomContainer.getVisibility() == VISIBLE) {
             //隐藏
+            setViewShowState(mStartButton, INVISIBLE);
             setViewShowState(mTopContainer, INVISIBLE);
             setViewShowState(mBottomContainer, INVISIBLE);
             setViewShowState(mLockScreen, GONE);
         } else {
             //显示
+            setViewShowState(mStartButton, VISIBLE);
             setViewShowState(mTopContainer, VISIBLE);
             setViewShowState(mBottomContainer, VISIBLE);
             setViewShowState(mLockScreen, (mIfCurrentIsFullScreen) ? VISIBLE : GONE);
@@ -689,4 +706,18 @@ public class PPVideoPlayerView extends PPOrientationView {
         }
     }
 
+    @Override
+    protected void cloneParams(PPControlView from, PPControlView to) {
+        super.cloneParams(from, to);
+        if (to.mProgressBar != null && from.mProgressBar != null) {
+            to.mProgressBar.setProgress(from.mProgressBar.getProgress());
+            to.mProgressBar.setSecondaryProgress(from.mProgressBar.getSecondaryProgress());
+        }
+        if (to.mTotalTimeTextView != null && from.mTotalTimeTextView != null) {
+            to.mTotalTimeTextView.setText(from.mTotalTimeTextView.getText());
+        }
+        if (to.mCurrentTimeTextView != null && from.mCurrentTimeTextView != null) {
+            to.mCurrentTimeTextView.setText(from.mCurrentTimeTextView.getText());
+        }
+    }
 }

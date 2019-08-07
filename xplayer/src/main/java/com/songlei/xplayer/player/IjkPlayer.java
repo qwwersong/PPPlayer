@@ -186,6 +186,7 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
 
     @Override
     public void setSurface(Surface surface) {
+        Log.e("xxx", "IjkPlayer setSurface = " + surface);
         this.surface = surface;
         if (mediaPlayer != null) {
             mediaPlayer.setSurface(surface);

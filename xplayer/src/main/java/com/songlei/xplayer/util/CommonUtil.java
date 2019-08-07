@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.support.v7.widget.TintContextWrapper;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Surface;
 import android.view.WindowManager;
 
@@ -34,6 +35,19 @@ public class CommonUtil {
     }
 
     /**
+     * 获取屏幕的宽度px
+     *
+     * @param context 上下文
+     * @return 屏幕宽px
+     */
+    public static int getScreenWidth(Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics outMetrics = new DisplayMetrics();// 创建了一张白纸
+        windowManager.getDefaultDisplay().getMetrics(outMetrics);// 给白纸设置宽高
+        return outMetrics.widthPixels;
+    }
+
+    /**
      * 获取屏幕的高度px
      *
      * @param context 上下文
@@ -44,6 +58,36 @@ public class CommonUtil {
         DisplayMetrics outMetrics = new DisplayMetrics();// 创建了一张白纸
         windowManager.getDefaultDisplay().getMetrics(outMetrics);// 给白纸设置宽高
         return outMetrics.heightPixels;
+    }
+
+    /**
+     * 获取状态栏高度
+     *
+     * @param context 上下文
+     * @return 状态栏高度
+     */
+    public static int getStatusBarHeight(Context context) {
+        int result = 0;
+        int resourceId = context.getResources()
+                .getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    /**
+     * 获取ActionBar高度
+     *
+     * @param activity activity
+     * @return ActionBar高度
+     */
+    public static int getActionBarHeight(Activity activity) {
+        TypedValue tv = new TypedValue();
+        if (activity.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+            return TypedValue.complexToDimensionPixelSize(tv.data, activity.getResources().getDisplayMetrics());
+        }
+        return 0;
     }
 
     /**
