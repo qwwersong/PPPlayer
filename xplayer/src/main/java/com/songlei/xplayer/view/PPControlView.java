@@ -484,8 +484,12 @@ public abstract class PPControlView extends PPStateView implements View.OnClickL
                 Log.e("xxx", "ControlView onStateLayout Complete");
                 showAllWidget();
                 stopProgressTimer();
-                mProgressBar.setProgress(0);
-                mCurrentTimeTextView.setText(CommonUtil.stringForTime(0));
+                if (mProgressBar != null) {
+                    mProgressBar.setProgress(0);
+                }
+                if (mCurrentTimeTextView != null) {
+                    mCurrentTimeTextView.setText(CommonUtil.stringForTime(0));
+                }
                 setViewShowState(mLoadingProgressBar, GONE);
                 setViewShowState(mThumbImageViewLayout, VISIBLE);
                 break;
