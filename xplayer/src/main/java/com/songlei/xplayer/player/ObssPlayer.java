@@ -5,13 +5,14 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Surface;
 
+import com.songlei.obssplayer.ObssConstants;
+import com.songlei.obssplayer.OnObssListener;
+import com.songlei.obssplayer.PlayException;
 import com.songlei.xplayer.PlayerConstants;
 import com.songlei.xplayer.listener.PlayerListener;
-import com.songlei.xplayer.obssplayer.OnObssListener;
-import com.songlei.xplayer.obssplayer.PlayException;
-import com.songlei.xplayer.obssplayer.ObssConstants;
 
 import nativeInterface.playerView;
+
 
 /**
  * Created by songlei on 2019/07/04.

@@ -14,6 +14,7 @@ import com.songlei.xplayer.util.PlayerLayoutHelper;
  * 处理横竖屏逻辑
  * Created by songlei on 2019/07/02.
  */
+//TODO::这个横竖屏切换还是有点问题，应当想GSY那样创建一个新的播放器放在content_id下
 public abstract class PPOrientationView extends PPControlView {
     //旋转工具类
     protected OrientationUtil mOrientationUtil;

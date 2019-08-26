@@ -252,7 +252,7 @@ public class PPVideoPlayerView extends PPOrientationView {
     protected void onStateLayout(int state) {
         super.onStateLayout(state);
         if (state == STATE_PREPARE && !mUrl.contains("m3u8")) {
-            startDownFrame(mUrl);
+//            startDownFrame(mUrl);
         }
     }
 
