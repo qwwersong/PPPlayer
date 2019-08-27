@@ -4,7 +4,7 @@
 /************************************************************************/
 //						internal function
 /************************************************************************/
-
+#define LOG_TAG "playercore"
 /*process audio or video*/
 static int audio_stream_process(struct media_stream *s, TIME_TYPE ps, int eof);
 static int video_stream_process(struct media_stream *s, TIME_TYPE ps, int eof);
@@ -443,6 +443,7 @@ void shrink_buffer( fmp_context *ptx, TIME_TYPE delete_buffer_ms )
 /*render thread*/
 int master_entry(fmp_context *ptx)
 {
+	LOGE("播放流程 master_entry");
 	/*need_cpu_cap -->sleep time*/
 	media_stream *s;
 	int i,need_cpu_cap = 10;
@@ -825,6 +826,7 @@ int player_buffer_moniter(void *key)
 
 void vpc_start(void *pc,player_parameter*pp)
 {
+	LOGE("开始播放了 vpc_start");
 	fmp_context *ptx = (fmp_context *)pc;
 	if( !ptx ) return;
 	if(ptx->vpc_cur_ps == VPC_PS_STOP && pp )
@@ -2360,6 +2362,7 @@ void do_internal_state_shift(fmp_context *ptx, int req )
 
 int process_status(fmp_context*ptx)
 {
+	LOGE("process_status");
 	req_msg msg = {VPC_PS_UNKNOWN};
 	int cur = ptx->vpc_cur_ps;
 	if(!ptx) return VPC_PS_UNKNOWN;
@@ -2381,7 +2384,7 @@ int process_status(fmp_context*ptx)
 	}
 	
     //vpc_printf("req--%s <fact:%s>----->%s\r\n",status_tostring(msg.cur),status_tostring(cur),status_tostring(msg.req));
-    
+    //TODO::这里为什么这么写？获取矩阵中非零值，调用其函数
     if( !msg.cur ) msg.cur = cur;
 	if( (msg.cur == cur) && state_func[cur][msg.req])
 	{
@@ -2991,8 +2994,10 @@ void *find_source_filter(fmp_context *ptx,const char *url,int av_format)
 
 void start_up_play(fmp_context *ptx)
 {
+	LOGE("重要  开始播放的流程");
 	source_layer *source;
 	if ( !ptx->urlinfo ) return;
+
 	source = find_source_filter(ptx, (char*)ptx->urlinfo->play_url, ptx->urlinfo->format_selector );
 	if( !source )
 	{
@@ -3007,8 +3012,9 @@ void start_up_play(fmp_context *ptx)
 	source->set_notify(source, msg_gateway, ptx);
 
 	/*start run data source*/
+	LOGE("start_up_play 开始解复用");
  	source->start(source,ptx->urlinfo->start_pos);
-	
+
 	ptx->do_seek_point = ptx->urlinfo->start_pos;
 	/*save source demux*/
 	ptx->source = source;

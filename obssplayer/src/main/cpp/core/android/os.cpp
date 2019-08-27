@@ -194,6 +194,7 @@ void* slave_linux(void *p)
 
 void *run_player(void *ptx,task_entry_t master, task_entry_t me,task_entry_t slave,task_entry_t se)
 {
+	LOGE("开始 run_player");
 	droid_player *phd = (droid_player *)vpc_mem_alloc(sizeof(droid_player));
 	if(!phd) return 0;
 	phd->ptx = ptx;

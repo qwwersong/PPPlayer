@@ -41,7 +41,7 @@
 
 #define _INTRE_AUDIO_FRAMEBUFSIZE_  (4096)
 
-
+#define LOG_TAG "demux_FFMPEG"
 
 char * nowTime()
 {
@@ -204,6 +204,7 @@ static int avformat_Available( const long parm )
 
 static void* avformat_CreateDevice(const void * parm, int size )
 {
+	LOGE("");
 	source_layer *pl = vpc_mem_alloc(sizeof(source_layer));
 	if( pl ) 
 	{
