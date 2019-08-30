@@ -122,6 +122,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e("xxx", "ObssPlayer");
                 player_type = Constants.PLAYER_OBSS;
                 break;
+            case R.id.rb_SLPlayer:
+                Log.e("xxx", "SLPlayer");
+                player_type = Constants.PLAYER_SL;
+                break;
         }
     }
 }

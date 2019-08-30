@@ -17,6 +17,7 @@ import com.songlei.xplayer.listener.PlayerListener;
 import com.songlei.xplayer.player.IjkPlayer;
 import com.songlei.xplayer.player.ObssPlayer;
 import com.songlei.xplayer.player.PlayerFactory;
+import com.songlei.xplayer.player.SLPlayer;
 import com.songlei.xplayer.util.CommonUtil;
 
 /**
@@ -334,6 +335,10 @@ public abstract class PPStateView extends PPTextureRenderView {
                 break;
             case Option.PLAYER_SYSTEM:
 
+                break;
+            case Option.PLAYER_SL:
+                PlayerFactory.setPlayer(SLPlayer.class);
+                Option.setPlayerType(Option.PLAYER_SL);
                 break;
         }
     }

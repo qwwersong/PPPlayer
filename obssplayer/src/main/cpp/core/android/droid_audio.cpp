@@ -253,6 +253,7 @@ on_error:
 
 int  wave_open_audio(audio_device *dev, audio_out_spec *spec)
 {
+	LOGE("打开音频设备AudioTrack");
 	WaveOut_droid* p_droid = (WaveOut_droid*)vpc_mem_alloc(sizeof(WaveOut_droid));
 	if( !p_droid)
 		return 0;

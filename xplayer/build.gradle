@@ -47,4 +47,5 @@ dependencies {
 
     implementation project(":basemodule")
     implementation project(":obssplayer")
+    implementation project(":slplayer")
 }

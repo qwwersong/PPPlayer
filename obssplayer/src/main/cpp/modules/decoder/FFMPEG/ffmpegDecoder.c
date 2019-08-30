@@ -1,3 +1,4 @@
+#include <android/log.h>
 #include "common.h"
 
 #if ENABLE_FFMPEG
@@ -5,6 +6,8 @@
 #define  inline __inline
 #include "inttypes.h"
 #include "common/FFMPEG_lib/include/libavcodec/avcodec.h"
+
+#define LOG_TAG "FFmpegDecoder"
 
 #define MAX_FRAME_SIZE 128*1024//32*1024
 
@@ -175,6 +178,7 @@ static int processH264(FFMpegDec*dt, unsigned char *buf, int size)
 
 static int32_t MP10_decode(codec_layer *codec, decode_context *dc)
 {
+	LOGE("用H264解码？");
 	FFMpegDec	*dt = (FFMpegDec*)codec->plug_pri_data;
 	int got_picture = 0;
 	int consumed = 0;
@@ -507,6 +511,7 @@ static void aout_Interleave_int16( void *dst, const void *const *srcv, unsigned 
 
 static int32_t FFMpeg_audio_decode(codec_layer *codec, decode_context *dc)
 {
+	LOGE("MP3音频解码？");
 	FFMpegAudioDec	*dt = (FFMpegAudioDec*)codec->plug_pri_data;
 	int got_frame = 0;
 	int consumed = 0;

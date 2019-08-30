@@ -1,3 +1,4 @@
+#include <android/log.h>
 #include "../../../core/common.h"
 
 #if ENABLE_FFMPEG
@@ -565,7 +566,7 @@ static void ff_fillsample(FFMPEG_demux *p,AVPacket *packet,int64_t pts,int64_t d
             s->isFirstPkt = 0;
             s->prev_dts = (TIME_TYPE)dts;
         }
-        
+        //音视频同步差值？
         av_diff = (int)(dts - s->prev_dts);
         if(abs(av_diff)>500){//500 ms
             av_diff = s->av_diff;
@@ -769,6 +770,7 @@ int near_to_eof(FFMPEG_demux *p)
 
 THREAD_RETURN_TYPE VPC_API DemuxStreamThread(  THREAD_PARAM_TYPE lpParameter )
 {
+    LOGE("解码线程 开始 利用FFmpeg");
 	source_layer *pl = (source_layer*)lpParameter;
 	FFMPEG_demux *p = (FFMPEG_demux*)pl->plug_pri_data;
 
@@ -1122,6 +1124,7 @@ int plugin_set_notify_avformat(source_layer*pl,MSG_GATEWAY notify, void *key )
 
 int plugin_start_avformat(source_layer*pl,int mspos)
 {
+    LOGE("开始解码线程");
 	FFMPEG_demux *s = (FFMPEG_demux *)pl->plug_pri_data;
 	if( !s ) return 0;
 	if( mspos )

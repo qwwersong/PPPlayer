@@ -102,6 +102,7 @@ static void destroy(DisplayContext *ctx) {
 
 static bool initialize(DisplayContext *ctx)
 {
+	LOGE("创建EGL环境");
     static const EGLint attribs[] = {
         EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
         EGL_BLUE_SIZE, 8,
@@ -227,6 +228,7 @@ void Android_Video_register(void *ptx)
 
 int Android_open_video(video_device *dev, int w, int h)
 {
+	LOGE("打开视频设备");
 	DisplayContext *p_display_data = (DisplayContext*)vpc_mem_alloc(sizeof(DisplayContext));
 	vpc_android_video *android_video = (vpc_android_video*)dev->extern_parm;
 	if(!p_display_data) return 0;
@@ -272,6 +274,14 @@ void Android_close_video(video_device *dev)
 //  	}
 // }
 
+/**
+ * 渲染
+ * @param dev
+ * @param src
+ * @param stride
+ * @param w
+ * @param h
+ */
 void Android_render_video(video_device *dev, uint8_t *src[3], int stride[3], int w, int h)
 {
 	DisplayContext *p_display_data = (DisplayContext*)(dev->device_pdd);

@@ -1,4 +1,5 @@
 
+#include <android/log.h>
 #include "common.h"
 
 /************************************************************************/
@@ -443,7 +444,7 @@ void shrink_buffer( fmp_context *ptx, TIME_TYPE delete_buffer_ms )
 /*render thread*/
 int master_entry(fmp_context *ptx)
 {
-	LOGE("播放流程 master_entry");
+	LOGE("渲染线程？ master_entry");
 	/*need_cpu_cap -->sleep time*/
 	media_stream *s;
 	int i,need_cpu_cap = 10;
@@ -569,6 +570,7 @@ int master_entry(fmp_context *ptx)
 int master_exit(fmp_context *ptx)
 {
 	//delete stream
+	LOGE("删除流");
 	int i;
 	media_stream *s;
 	for (i=0;i<MAX_STREAM_NUM;i++)
@@ -605,6 +607,7 @@ int estimate_buffer_pending(fmp_context *ptx)
 /*decode thread*/
 int slave_entry(fmp_context *ptx)
 {
+	LOGE("解码线程？ slave_entry");
 	media_stream *s;
 	int	data_warning = 0;
 	int i, ret, need_cpu_cap = 16, both_full = 0;
@@ -717,6 +720,7 @@ int slave_exit(fmp_context *ptx)
 
 void*  vpc_init(NOTIFY_CALLBACK func, void *user_data, void *platform_data)
 {
+	LOGE("VPC Init");
 	fmp_context *ptx = (fmp_context *)vpc_mem_alloc(sizeof(fmp_context));
 	if( !ptx ) return 0;
 	memset( ptx, 0, sizeof(fmp_context));

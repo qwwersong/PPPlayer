@@ -440,7 +440,8 @@ int video_render_img(media_stream *stream,TIME_TYPE ps, int bShow)
 		stride[0] = pFrame->stride;
 		stride[1] = pFrame->stride>>1;
 		stride[2] = pFrame->stride>>1;
-        
+
+		//在这里将视频数据渲染到屏幕上
 		dev->render_img(dev,pFrame->src,stride, vp->width,vp->height );
 		
 		if( ps != INVALID_TS )

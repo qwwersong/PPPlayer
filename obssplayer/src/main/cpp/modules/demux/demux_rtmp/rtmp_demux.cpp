@@ -5,6 +5,8 @@
 #include "../../../core/common.h"
 #include "rmH265InfoCheck.c"
 
+#define LOG_TAG "rtmpDemux"
+
 extern "C" {
 #define  inline __inline
 #include "inttypes.h"
@@ -885,6 +887,7 @@ int plugin_set_notify_rtmp(source_layer*pl,MSG_GATEWAY notify, void *key )
 
 int plugin_start_rtmp(source_layer*pl,int mspos)
 {
+	LOGE("开始rtmp初始化");
 	rtmp_client *s = (rtmp_client *)pl->plug_pri_data;
 	if( !s ) return 0;
 	if( s->running )

@@ -45,6 +45,8 @@ public class Option {
 
     public static final int PLAYER_OBSS = 2;            //ObssPlayer
 
+    public static final int PLAYER_SL = 3;              //SLPlayer
+
     //===============================分辨率模式====================================
     public static final int TYPE_MODE_NORMAL = 0;         //原画模式
 

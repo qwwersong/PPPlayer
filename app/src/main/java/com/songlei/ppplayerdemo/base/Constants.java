@@ -23,5 +23,6 @@ public class Constants {
 
     public final static int PLAYER_IJK = Option.PLAYER_IJK;
     public final static int PLAYER_OBSS = Option.PLAYER_OBSS;
+    public final static int PLAYER_SL = Option.PLAYER_SL;
 
 }
