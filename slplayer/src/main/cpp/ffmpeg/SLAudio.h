@@ -57,7 +57,7 @@ public:
     CallJava *callJava = NULL;
 
     int streamIndex = - 1;
-    int duration = 0;
+    int64_t duration = 0;
     int sample_rate = 0;
 
     uint8_t *buffer = NULL;
@@ -83,7 +83,7 @@ public:
     void initOpenSLES();
 
     void play();
-    int resampleAudio(void **pcmBuffer);
+    int resampleAudio();
     void pause();
     void resume();
     void stop();

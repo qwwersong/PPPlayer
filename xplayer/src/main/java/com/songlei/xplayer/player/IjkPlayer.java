@@ -24,7 +24,7 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
         IMediaPlayer.OnPreparedListener, IMediaPlayer.OnSeekCompleteListener,
         IMediaPlayer.OnErrorListener, IMediaPlayer.OnInfoListener,
         IMediaPlayer.OnVideoSizeChangedListener, IMediaPlayer.OnBufferingUpdateListener {
-    private static int logLevel = IjkMediaPlayer.IJK_LOG_SILENT;
+    private static int logLevel = IjkMediaPlayer.IJK_LOG_DEBUG;
     private static IjkLibLoader ijkLibLoader;
     private IjkMediaPlayer mediaPlayer;
     private Surface surface;
@@ -37,7 +37,7 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
     @Override
     public void initPlayer(Context context) {
         mediaPlayer = (ijkLibLoader == null) ? new IjkMediaPlayer() : new IjkMediaPlayer(ijkLibLoader);
-        mediaPlayer.setLogEnabled(false);
+        mediaPlayer.setLogEnabled(true);
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setOnNativeInvokeListener(new IjkMediaPlayer.OnNativeInvokeListener() {
             @Override
@@ -166,6 +166,7 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
     @Override
     public long getCurrentPosition() {
         if (mediaPlayer != null) {
+            Log.e("xxx", "getCurrent = " + mediaPlayer.getCurrentPosition());
             return mediaPlayer.getCurrentPosition();
         }
         return 0;
@@ -174,6 +175,7 @@ public class IjkPlayer implements IPlayer, IMediaPlayer.OnCompletionListener,
     @Override
     public long getDuration() {
         if (mediaPlayer != null) {
+            Log.e("xxx", "getDuration = " + mediaPlayer.getDuration());
             return mediaPlayer.getDuration();
         }
         return 0;

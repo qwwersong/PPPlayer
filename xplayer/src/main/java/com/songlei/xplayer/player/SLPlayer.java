@@ -37,6 +37,7 @@ public class SLPlayer implements IPlayer, OnCompleteListener, OnErrorListener, O
     @Override
     public void start() {
         player.startPlay();
+        playerListener.onPlayerState(PlayerConstants.STATE_PLAYING);
     }
 
     @Override
@@ -47,11 +48,13 @@ public class SLPlayer implements IPlayer, OnCompleteListener, OnErrorListener, O
     @Override
     public void pause() {
         player.pause();
+        playerListener.onPlayerState(PlayerConstants.STATE_PAUSE);
     }
 
     @Override
     public void resume() {
         player.resume();
+        playerListener.onPlayerState(PlayerConstants.STATE_PLAYING);
     }
 
     @Override

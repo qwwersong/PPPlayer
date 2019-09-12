@@ -135,6 +135,7 @@ public class ObssPlayer implements IPlayer {
 
     @Override
     public long getCurrentPosition() {
+        Log.e("xxx", "currentTime = " + obssPlayer.getCurrentTime());
         return obssPlayer.getCurrentTime();
     }
 

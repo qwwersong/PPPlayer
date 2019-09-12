@@ -2,9 +2,11 @@ package com.songlei.slplayer.player;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
+import android.os.Message;
 import android.util.Log;
 import android.view.Surface;
 
+import com.songlei.basemodule.CommonHandler;
 import com.songlei.slplayer.listener.OnCompleteListener;
 import com.songlei.slplayer.listener.OnErrorListener;
 import com.songlei.slplayer.listener.OnPrepareListener;
@@ -17,7 +19,12 @@ import java.nio.ByteBuffer;
 /**
  * Created by songlei on 2019/02/25.
  */
-public class Player {
+public class Player implements CommonHandler.HandlerCallBack {
+    private static final int MSG_PREPARE = 0;
+    private static final int MSG_COMPLETE = 1;
+    private static final int MSG_ERROR = 2;
+    private static final int MSG_TIME = 3;
+
     private OnTimeInfoListener onTimeInfoListener;
     private OnCompleteListener onCompleteListener;
     private OnErrorListener onErrorListener;
@@ -44,6 +51,35 @@ public class Player {
         System.loadLibrary("postproc-54");
         System.loadLibrary("swresample-2");
         System.loadLibrary("swscale-4");
+    }
+
+    private CommonHandler handler = new CommonHandler(this);
+
+    @Override
+    public void handleMessage(Message msg) {
+        switch (msg.what) {
+            case MSG_PREPARE:
+                if (onPrepareListener != null) {
+                    onPrepareListener.onPrepare();
+                }
+                break;
+            case MSG_COMPLETE:
+                if (onCompleteListener != null) {
+                    onCompleteListener.onComplete();
+                }
+                break;
+            case MSG_ERROR:
+                if (onErrorListener != null) {
+                    onErrorListener.onError(msg.arg1, "错误码 = " + msg.arg1);
+                }
+                break;
+            case MSG_TIME:
+                if (onTimeInfoListener != null) {
+                    Log.e("xxx", "onTimeInfo currentTime = " + currentTime + " duration = " + duration);
+                    onTimeInfoListener.onTimeInfo(currentTime, duration);
+                }
+                break;
+        }
     }
 
     public void setOnPrepareListener(OnPrepareListener onPrepareListener){
@@ -75,8 +111,8 @@ public class Player {
 //    }
 
     public void startPlay(){
-        seekVolume(volume);
-        setChannelMute(channelType);
+//        seekVolume(volume);
+//        setChannelMute(channelType);
         start();
     }
 
@@ -85,10 +121,12 @@ public class Player {
     }
 
     public int getCurrentTime(){
+//        Log.e("xxx", "getCurrentTime = " + currentTime);
         return currentTime;
     }
 
     public int getDuration(){
+//        Log.e("xxx", "getDuration = " + duration);
         return duration;
     }
 
@@ -121,29 +159,40 @@ public class Player {
 
     //C++回调java方法
     public void onCallTimeInfo(int currentTime, int totalTime){
+//        Log.e("xxx", "onCallTimeInfo thread name = " + Thread.currentThread().getName());
         this.currentTime = currentTime;
         this.duration = totalTime;
-        if (onTimeInfoListener != null) {
-            onTimeInfoListener.onTimeInfo(currentTime, totalTime);
-        }
+        handler.sendEmptyMessage(MSG_TIME);
+//        if (onTimeInfoListener != null) {
+//            onTimeInfoListener.onTimeInfo(currentTime, totalTime);
+//        }
     }
 
     public void onCallError(int code, String msg){
-        if (onErrorListener != null) {
-            onErrorListener.onError(code, msg);
-        }
+        Log.e("xxx", "onCallError thread name = " + Thread.currentThread().getName());
+        Message message = new Message();
+        message.what = MSG_ERROR;
+        message.arg1 = code;
+        handler.sendMessage(message);
+//        if (onErrorListener != null) {
+//            onErrorListener.onError(code, msg);
+//        }
     }
 
     public void onCallComplete(){
-        if (onCompleteListener != null) {
-            onCompleteListener.onComplete();
-        }
+        Log.e("xxx", "onCallComplete thread name = " + Thread.currentThread().getName());
+        handler.sendEmptyMessage(MSG_COMPLETE);
+//        if (onCompleteListener != null) {
+//            onCompleteListener.onComplete();
+//        }
     }
 
     public void onCallPrepare(){
-        if (onPrepareListener != null) {
-            onPrepareListener.onPrepare();
-        }
+        Log.e("xxx", "onCallPrepare thread name = " + Thread.currentThread().getName());
+        handler.sendEmptyMessage(MSG_PREPARE);
+//        if (onPrepareListener != null) {
+//            onPrepareListener.onPrepare();
+//        }
     }
 
     public boolean onCallSupportMediaDecode(String codecName){

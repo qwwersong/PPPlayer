@@ -17,6 +17,10 @@ SLVideo::~SLVideo() {
     pthread_mutex_destroy(&codecMutex);
 }
 
+void SLVideo::setSurface(BaseSurface *surface) {
+    this->baseSurface = surface;
+}
+
 //avPacket解码获取avFrame
 void *playVideo(void *data) {
     LOGE("SLVideo::playVideo")
@@ -135,10 +139,12 @@ void SLVideo::decodeHard(AVPacket *avPacket) {
 //软解码
 void SLVideo::decodeSoft(AVFrame *avFrame) {
     if (avFrame->format == AV_PIX_FMT_YUV420P) {//是YUV420P格式"
-//        LOGE("decodeSoft YUV420P");
         // avFrame->key_frame判断是否是I帧
         double diff = getFrameDiffTime(avFrame, NULL);
-        av_usleep(getDelayTime(diff) * 1000000);
+        LOGE("decodeSoft diff = %f", diff)
+        double delayTime = getDelayTime(diff) * 1000000;
+        LOGE("最后睡眠时间 = %f", delayTime);
+        av_usleep(delayTime);
         baseSurface->drawFrame(avCodecContext, avFrame);
     } else {//当前视频不是YUV420P格式
         LOGE("decodeSoft 重采样");
@@ -238,9 +244,11 @@ void SLVideo::release() {
 double SLVideo::getFrameDiffTime(AVFrame *avFrame, AVPacket *avPacket) {
     double pts = 0;
     if (avFrame != NULL) {
+        LOGE("getFrameDiffTime 获取avFrame的pts = %f", pts)
         pts = av_frame_get_best_effort_timestamp(avFrame);
     }
     if (avPacket != NULL) {
+        LOGE("getFrameDiffTime 获取avPacket的pts = %f", pts)
         pts = avPacket->pts;
     }
     //判断是否有有效的pts，这个pts不一定有值
@@ -262,6 +270,9 @@ double SLVideo::getFrameDiffTime(AVFrame *avFrame, AVPacket *avPacket) {
 double SLVideo::getDelayTime(double diff) {
     //这个地方研究一下，加注释
     //单位是秒
+    LOGE("getDelayTime diff = %f  delayTime = %f", diff, delayTime)
+    //TODO::这个策略有问题，diff通过上面getFrameDiffTime方法计算获得，第一帧是0.09，最后delayTime计算得到0.027
+    //TODO::逐渐相加越来越大，
     if (diff > 0.003) {//视频慢 3ms
         delayTime = delayTime * 2 / 3;//休眠时间要短一点
         if (delayTime < defaultDelayTime / 2) {
@@ -288,6 +299,7 @@ double SLVideo::getDelayTime(double diff) {
     if (fabs(diff) >= 10) {
         delayTime = defaultDelayTime;
     }
+    LOGE("最后延时时间 = %f", delayTime);
     return delayTime;
 }
 

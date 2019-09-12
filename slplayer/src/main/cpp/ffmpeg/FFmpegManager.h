@@ -42,6 +42,7 @@ public:
     ~FFmpegManager();
 
     void initFFmpeg();
+    void setSurface(BaseSurface *surface);
     void connect(const char *url);
     void decode();
     void getStreamInfo();

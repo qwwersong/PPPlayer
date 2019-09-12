@@ -40,7 +40,9 @@ void pcmBufferCallBack(SLAndroidSimpleBufferQueueItf bf, void *context) {//循�
 //    LOGE("SLAudio::pcmBufferCallBack")
     SLAudio *audio = static_cast<SLAudio *>(context);
     if (audio != NULL) {
-        int bufferSize = audio->getSoundTouch();
+//        int bufferSize = audio->getSoundTouch();
+
+        int bufferSize = audio->resampleAudio();
         if (bufferSize > 0) {
             // time = bufferSize / audio->sample_rate * 2 * 2; 这个time表示是pcm理论上播放的时间
             // 这个clock就是理论上每个AVframe播放时间 + 这个pcm播放所消耗的时间。
@@ -51,17 +53,18 @@ void pcmBufferCallBack(SLAndroidSimpleBufferQueueItf bf, void *context) {//循�
             if (audio->clock - audio->last_time >= 0.1) {
                 audio->last_time = audio->clock;
 //                LOGE("onCallTimeInfo clock = %lf duration = %d", audio->clock, audio->duration);
+                LOGE("Native currentTime = %f duration = %f", audio->clock, audio->duration);
                 audio->callJava->onCallTimeInfo(CHILD_THREAD, audio->clock, audio->duration);
             }
             //循环入队，放入到这个队列后，OpenSLES会循环从这个队列取数据，并将数据放到mic播放
             //这里用soundTouch后为什么就变为sampleBuffer，bufferSize也变了
-            (*audio->pcmBufferQueue)->Enqueue(audio->pcmBufferQueue, (char *) audio->sampleBuffer, bufferSize * 2 * 2);
+            (*audio->pcmBufferQueue)->Enqueue(audio->pcmBufferQueue, (char *) audio->buffer, bufferSize);
         }
     }
 }
 
 void SLAudio::initOpenSLES() {
-    LOGE("SLAudio::initOpenSLES")
+    LOGE("SLAudio::initOpenSLES");
     //第一步，创建引擎
     SLresult result;
     result = slCreateEngine(&engineObj, 0, 0, 0, 0, 0);
@@ -102,11 +105,16 @@ void SLAudio::initOpenSLES() {
             SL_BYTEORDER_LITTLEENDIAN//结束标志
     };
     SLDataSource slDataSource = {&android_queue, &pcmFormat};
-    const SLInterfaceID ids[3] = {SL_IID_BUFFERQUEUE, SL_IID_VOLUME, SL_IID_MUTESOLO};
-    const SLboolean req[3] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
 
-    //第四步，创建播放器
-    (*engineItf)->CreateAudioPlayer(engineItf, &pcmObj, &slDataSource, &audioSnk, 3, ids, req);
+    //TODO::这里为什么是三个？
+//    const SLInterfaceID ids[3] = {SL_IID_BUFFERQUEUE, SL_IID_VOLUME, SL_IID_MUTESOLO};
+//    const SLboolean req[3] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
+
+    const SLInterfaceID ids[2] = {SL_IID_BUFFERQUEUE, SL_IID_PLAYBACKRATE};
+    const SLboolean req[2] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
+
+    //第四步，创建播放器 TODO::这里的参数为什么也是3？
+    (*engineItf)->CreateAudioPlayer(engineItf, &pcmObj, &slDataSource, &audioSnk, 2, ids, req);
     //初始化播放器
     (*pcmObj)->Realize(pcmObj, SL_BOOLEAN_FALSE);
 
@@ -126,7 +134,7 @@ void SLAudio::initOpenSLES() {
     pcmBufferCallBack(pcmBufferQueue, this);
 }
 
-int SLAudio::resampleAudio(void **pcmBuffer) {
+int SLAudio::resampleAudio() {
 //    LOGE("SLAudio::resampleAudio")
     int data_size = 0;
 
@@ -158,8 +166,80 @@ int SLAudio::resampleAudio(void **pcmBuffer) {
             continue;
         }
         avFrame = av_frame_alloc();
+        int ret = avcodec_receive_frame(avCodecContext, avFrame);
         //接收avFrame数据
-        if (avcodec_receive_frame(avCodecContext, avFrame) != 0) {
+        if (ret == 0){
+            //===============================重采样===============================
+            //把目标音频不同格式重新采样编码成新的统一格式音频
+            //目前输入和输出的采样率是相同的，不能修改，如果要修改跟AVFilter有关
+
+            //channels声道数、channel_layout声道布局
+            //根据声道数获取声道布局，或者根据声道布局获取声道数
+            if (avFrame->channels && avFrame->channel_layout == 0) {
+                avFrame->channel_layout = av_get_default_channel_layout(avFrame->channels);
+            } else if (avFrame->channels == 0 && avFrame->channel_layout > 0) {
+                avFrame->channels = av_get_channel_layout_nb_channels(avFrame->channel_layout);
+            }
+
+            //重采样上下文
+            SwrContext *swr_ctx;
+            swr_ctx = swr_alloc_set_opts(
+                    NULL,
+                    AV_CH_LAYOUT_STEREO,//输出的声道布局
+                    AV_SAMPLE_FMT_S16,//输出采样位数格式
+                    avFrame->sample_rate,//输出采样率
+                    avFrame->channel_layout,//输入声道布局
+                    (AVSampleFormat) avFrame->format,//输入采样位数格式
+                    avFrame->sample_rate,//输入采样率
+                    NULL, NULL//这两个log相关
+            );
+            if (!swr_ctx || swr_init(swr_ctx) < 0) {
+                av_packet_free(&avPacket);
+                av_free(avPacket);
+                avPacket = NULL;
+                av_frame_free(&avFrame);
+                av_free(avFrame);
+                avFrame = NULL;
+                swr_free(&swr_ctx);
+                pthread_mutex_unlock(&codecMutex);
+                continue;
+            }
+
+            //计算PCM数据大小 size = 采样个数 * 声道数 * 单个采样点大小
+            //44100Hz、16bit、2个声道  size = 44100 * 2 * (16/8)这是一秒钟的PCM数据大小，16/8=2 为两个字节
+            //实际调用 返回值nb为输出采样个数，理论上和avFrame->nb_samples是一样的
+            nb = swr_convert(
+                    swr_ctx,
+                    &buffer,//转码后输出的PCM数据
+                    avFrame->nb_samples,//输出采样个数，实际处理的数据个数，而不是1秒采样个数=采样率
+                    (const uint8_t **) avFrame->data,//输出的avFrame中原始压缩数据
+                    avFrame->nb_samples);//输入采样个数
+
+            int out_channels = av_get_channel_layout_nb_channels(AV_CH_LAYOUT_STEREO);
+            //采样个数 * 声道数 * 单个采样点大小
+            data_size = nb * out_channels * av_get_bytes_per_sample(AV_SAMPLE_FMT_S16);
+
+            //avFrame->pts （int64_t类型的，当前帧展示给用户的时间戳，基于time_base，这个time_base是分数形式，类似于帧率）
+            //av_q2d方法就是time_base.num / (double)time_base.den
+            //这个clock是理论上视频播放时间。
+            now_time = avFrame->pts * av_q2d(time_base);
+            if (now_time < clock) {
+                now_time = clock;
+            }
+            clock = now_time;
+            //ffmpeg解码的pcm数据是8bit，将这个数据传给外面
+//            *pcmBuffer = buffer;
+
+            av_packet_free(&avPacket);
+            av_free(avPacket);
+            avPacket = NULL;
+            av_frame_free(&avFrame);
+            av_free(avFrame);
+            avFrame = NULL;
+            swr_free(&swr_ctx);
+            pthread_mutex_unlock(&codecMutex);
+            break;
+        } else {
             LOGE("playAudio avcodec_receive_frame Failed");
             av_packet_free(&avPacket);
             av_free(avPacket);
@@ -170,116 +250,45 @@ int SLAudio::resampleAudio(void **pcmBuffer) {
             pthread_mutex_unlock(&codecMutex);
             continue;
         }
-
-        //===============================重采样===============================
-        //把目标音频不同格式重新采样编码成新的统一格式音频
-        //目前输入和输出的采样率是相同的，不能修改，如果要修改跟AVFilter有关
-
-        //channels声道数、channel_layout声道布局
-        //根据声道数获取声道布局，或者根据声道布局获取声道数
-        if (avFrame->channels && avFrame->channel_layout == 0) {
-            avFrame->channel_layout = av_get_default_channel_layout(avFrame->channels);
-        } else if (avFrame->channels == 0 && avFrame->channel_layout > 0) {
-            avFrame->channels = av_get_channel_layout_nb_channels(avFrame->channel_layout);
-        }
-
-        //重采样上下文
-        SwrContext *swr_ctx;
-        swr_ctx = swr_alloc_set_opts(
-                NULL,
-                AV_CH_LAYOUT_STEREO,//输出的声道布局
-                AV_SAMPLE_FMT_S16,//输出采样位数格式
-                avFrame->sample_rate,//输出采样率
-                avFrame->channel_layout,//输入声道布局
-                (AVSampleFormat) avFrame->format,//输入采样位数格式
-                avFrame->sample_rate,//输入采样率
-                NULL, NULL//这两个log相关
-        );
-        if (!swr_ctx || swr_init(swr_ctx) < 0) {
-            av_packet_free(&avPacket);
-            av_free(avPacket);
-            avPacket = NULL;
-            av_frame_free(&avFrame);
-            av_free(avFrame);
-            avFrame = NULL;
-            swr_free(&swr_ctx);
-            pthread_mutex_unlock(&codecMutex);
-            continue;
-        }
-
-        //计算PCM数据大小 size = 采样个数 * 声道数 * 单个采样点大小
-        //44100Hz、16bit、2个声道  size = 44100 * 2 * (16/8)这是一秒钟的PCM数据大小，16/8=2 为两个字节
-        //实际调用 返回值nb为输出采样个数，理论上和avFrame->nb_samples是一样的
-        nb = swr_convert(
-                swr_ctx,
-                &buffer,//转码后输出的PCM数据
-                avFrame->nb_samples,//输出采样个数，实际处理的数据个数，而不是1秒采样个数=采样率
-                (const uint8_t **) avFrame->data,//输出的avFrame中原始压缩数据
-                avFrame->nb_samples);//输入采样个数
-
-        int out_channels = av_get_channel_layout_nb_channels(AV_CH_LAYOUT_STEREO);
-        //采样个数 * 声道数 * 单个采样点大小
-        data_size = nb * out_channels * av_get_bytes_per_sample(AV_SAMPLE_FMT_S16);
-
-        //avFrame->pts （int64_t类型的，当前帧展示给用户的时间戳，基于time_base，这个time_base是分数形式，类似于帧率）
-        //av_q2d方法就是time_base.num / (double)time_base.den
-        //这个clock是理论上视频播放时间。
-        now_time = avFrame->pts * av_q2d(time_base);
-        if (now_time < clock) {
-            now_time = clock;
-        }
-        clock = now_time;
-        //ffmpeg解码的pcm数据是8bit，将这个数据传给外面
-        *pcmBuffer = buffer;
-
-        av_packet_free(&avPacket);
-        av_free(avPacket);
-        avPacket = NULL;
-        av_frame_free(&avFrame);
-        av_free(avFrame);
-        avFrame = NULL;
-        swr_free(&swr_ctx);
-        pthread_mutex_unlock(&codecMutex);
-        break;
     }
     return data_size;
 }
 
 int SLAudio::getSoundTouch() {
-    while (playStatus != NULL && !playStatus->isExit) {
-        soundBuffer = NULL;
-        int data_size = 0;
-
-        //这个地方的流程、api还是不是太懂
-        if (soundFinish) {//判断receiveSamples是否完成
-            soundFinish = false;
-            data_size = resampleAudio(reinterpret_cast<void **>(&soundBuffer));
-            if (data_size > 0) {
-                for (int i = 0; i < data_size / 2 + 1; ++i) {
-                    sampleBuffer[i] = (soundBuffer[i * 2] | (soundBuffer[i * 2 + 1] << 8));
-                }
-                //nb为采样个数
-                soundTouch->putSamples(sampleBuffer, nb);
-                num = soundTouch->receiveSamples(sampleBuffer, data_size / 4);
-            } else {
-                soundTouch->flush();
-            }
-        }
-
-        if (num == 0) {
-            soundFinish = true;
-            continue;
-        } else {
-            if (soundBuffer == NULL) {
-                num = soundTouch->receiveSamples(sampleBuffer, data_size / 4);
-                if (num == 0) {
-                    soundFinish = true;
-                    continue;
-                }
-            }
-            return num;
-        }
-    }
+//    while (playStatus != NULL && !playStatus->isExit) {
+//        soundBuffer = NULL;
+//        int data_size = 0;
+//
+//        //这个地方的流程、api还是不是太懂
+//        if (soundFinish) {//判断receiveSamples是否完成
+//            soundFinish = false;
+//            data_size = resampleAudio(reinterpret_cast<void **>(&soundBuffer));
+//            if (data_size > 0) {
+//                for (int i = 0; i < data_size / 2 + 1; ++i) {
+//                    sampleBuffer[i] = (soundBuffer[i * 2] | (soundBuffer[i * 2 + 1] << 8));
+//                }
+//                //nb为采样个数
+//                soundTouch->putSamples(sampleBuffer, nb);
+//                num = soundTouch->receiveSamples(sampleBuffer, data_size / 4);
+//            } else {
+//                soundTouch->flush();
+//            }
+//        }
+//
+//        if (num == 0) {
+//            soundFinish = true;
+//            continue;
+//        } else {
+//            if (soundBuffer == NULL) {
+//                num = soundTouch->receiveSamples(sampleBuffer, data_size / 4);
+//                if (num == 0) {
+//                    soundFinish = true;
+//                    continue;
+//                }
+//            }
+//            return num;
+//        }
+//    }
     return 0;
 }
 
@@ -350,7 +359,7 @@ void SLAudio::stop() {
 }
 
 void SLAudio::release() {
-    LOGE("SLAudio::release")
+    LOGE("SLAudio::release");
     stop();
     //停止播放时，要释放掉内存
     if (queue != NULL) {

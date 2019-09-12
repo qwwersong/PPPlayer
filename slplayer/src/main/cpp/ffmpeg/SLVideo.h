@@ -56,6 +56,8 @@ public:
     void play();
     void release();
 
+    void setSurface(BaseSurface *baseSurface);
+
     void decodeSoft(AVFrame *avFrame);
     void decodeHard(AVPacket *avPacket);
 

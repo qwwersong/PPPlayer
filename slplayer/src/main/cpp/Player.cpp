@@ -27,6 +27,7 @@ Java_com_songlei_slplayer_player_Player_setSurface(JNIEnv *env, jobject instance
     java_surface = env->NewGlobalRef(surface);//创建全局jobj
     if (ffmpegManager != NULL && java_surface != NULL) {
         ffmpegManager->baseSurface = new BaseSurface(env, java_surface);
+        ffmpegManager->setSurface(ffmpegManager->baseSurface);
     }
 
 }

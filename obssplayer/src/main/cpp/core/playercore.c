@@ -634,6 +634,7 @@ int slave_entry(fmp_context *ptx)
 			s = ptx->stream[i];
 			if(s)
 			{
+				LOGE("slave_entry media_stream process");
 				ret = s->process(s,ps,0);
 				if(ret == NO_MORE_DATA )
 				{
@@ -1061,6 +1062,7 @@ void vpc_get_status(void *pc,player_status*ps)
     
 	if(sa){
 		ps->a_kbps = sa->cur_kbps;
+		LOGE("vpc_get_status sa->use_time = %d", sa->use_time);
 		ptx->position = sa->use_time;
 	}
 
@@ -1076,6 +1078,7 @@ void vpc_get_status(void *pc,player_status*ps)
     }
 
  	ps->cur_play_pos = (uint32_t)(ptx->do_seek_point + (ptx->position));
+	LOGE("vpc_get_status ps->cur_play_pos = %d", ps->cur_play_pos);
 	//vpc_printf("ptx->seeked_pos= %d, st =%d, ptx->position=%d\r\n",ptx->seeked_pos,st,ptx->position);
 	if(ps->cur_play_pos < ptx->do_seek_point)
 		ps->cur_play_pos = ptx->do_seek_point;
@@ -1531,6 +1534,7 @@ void fill_packet_info(struct media_stream *s, uint8_t *buffer, int size)
 
 	pdc->out_ts     = psp->dts;
 	s->use_time		= psp->stream_time;
+	LOGE("fill_packet_info psp->stream_time = %d", psp->stream_time);
 	s->buffer_time = s->recv_time - s->use_time;
    // vpc_printf("use time=%d, bufftime=%d,psp->dts=%d\r\n",  psp->stream_time, s->buffer_time, psp->dts);
     
@@ -1612,6 +1616,7 @@ int get_media_stream_buffer(struct media_stream *s, TIME_TYPE stop_ts, void (*ha
 		if(!ret){	
 			return 0;
 		}
+		LOGE("get_media_stream_buffer fill_packet_info");
 		fill_packet_info(s, out_buffer, get_len);
 		if( pdc->stream_time >= stop_ts ) {
 			return 1;
@@ -1654,6 +1659,7 @@ int audio_stream_process(struct media_stream *s, TIME_TYPE ps, int eof )
 	{
 		if( pdc->in_len == 0 ) 
 		{
+			LOGE("audio_stream_process get_media_stream_buffer");
 			if( !get_media_stream_buffer(s,0, 0) )
 				return NO_MORE_DATA;
 #if 0
@@ -1821,6 +1827,7 @@ int video_stream_process(struct media_stream *s, TIME_TYPE ps, int eof)
 
 		if( pdc->in_len == 0 )
 		{
+			LOGE("video_stream_process get_media_stream_buffer");
 			ret = get_media_stream_buffer(s, 0, 0);
 			if( !ret )
 			{
@@ -2139,6 +2146,7 @@ void process_error(fmp_context *ptx, int err)
 
 TIME_TYPE smooth_media_time(struct media_stream *s, TIME_TYPE dts )
 {
+    LOGE("smooth_media_time 计算当前时间");
 	TIME_TYPE retTime = 0;
 	int av_diff = 0;
 

@@ -25,6 +25,13 @@ int avformat_callback(void *data) {
     return 0;
 }
 
+void FFmpegManager::setSurface(BaseSurface *surface) {
+    if (video != NULL) {
+        LOGE("设置surface");
+        video->setSurface(surface);
+    }
+}
+
 void FFmpegManager::initFFmpeg() {
     //1、注册
     av_register_all();
