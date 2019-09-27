@@ -114,7 +114,7 @@ void FFmpegManager::getStreamInfo() {
                     LOGE("num = %d, den = %d", num, den);
                     int fps = num / den;
                     video->defaultDelayTime = 1.0 / fps;
-                    LOGE("defaultDelayTime = %lf", video->defaultDelayTime);
+                    LOGE("默认延时时间 defaultDelayTime = %lf", video->defaultDelayTime);
                 }
                 video->avCodecContext = getAVCodecContext(avFormatContext->streams[i]->codecpar);
             }
@@ -269,12 +269,20 @@ void FFmpegManager::start() {
 }
 
 void FFmpegManager::pause() {
+    if (playStatus != NULL) {
+        playStatus->pasue = true;
+    }
+
     if (audio != NULL) {
         audio->pause();
     }
 }
 
 void FFmpegManager::resume() {
+    if (playStatus != NULL) {
+        playStatus->pasue = false;
+    }
+
     if (audio != NULL) {
         audio->resume();
     }

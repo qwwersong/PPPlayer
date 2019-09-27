@@ -26,6 +26,14 @@ void *playVideo(void *data) {
     LOGE("SLVideo::playVideo")
     SLVideo *slVideo = static_cast<SLVideo *>(data);
     while (slVideo->playStatus != NULL && !slVideo->playStatus->isExit) {
+
+        if (slVideo->playStatus->pasue) {
+            //TODO::这里暂停和没有是有区别的，暂停后可能会有好几帧的数据缓慢显示
+            //TODO::暂停时这里还在跑
+            av_usleep(1000 * 100);
+            continue;
+        }
+
         if (slVideo->queue->getQueueSize() == 0) {
             av_usleep(1000 * 100);
             continue;
@@ -143,7 +151,7 @@ void SLVideo::decodeSoft(AVFrame *avFrame) {
         double diff = getFrameDiffTime(avFrame, NULL);
         LOGE("decodeSoft diff = %f", diff)
         double delayTime = getDelayTime(diff) * 1000000;
-        LOGE("最后睡眠时间 = %f", delayTime);
+//        LOGE("最后睡眠时间 = %f", delayTime);
         av_usleep(delayTime);
         baseSurface->drawFrame(avCodecContext, avFrame);
     } else {//当前视频不是YUV420P格式
@@ -244,23 +252,25 @@ void SLVideo::release() {
 double SLVideo::getFrameDiffTime(AVFrame *avFrame, AVPacket *avPacket) {
     double pts = 0;
     if (avFrame != NULL) {
-        LOGE("getFrameDiffTime 获取avFrame的pts = %f", pts)
         pts = av_frame_get_best_effort_timestamp(avFrame);
+        LOGE("getFrameDiffTime 获取avFrame的pts = %f", pts)
     }
     if (avPacket != NULL) {
-        LOGE("getFrameDiffTime 获取avPacket的pts = %f", pts)
         pts = avPacket->pts;
+        LOGE("getFrameDiffTime 获取avPacket的pts = %f", pts)
     }
     //判断是否有有效的pts，这个pts不一定有值
     if (pts == AV_NOPTS_VALUE) {
         pts = 0;
     }
     pts *= av_q2d(time_base);//为什么要选取流的time_base而不选别的
+    LOGE("getFrameDiffTime av_q2d pts = %f", pts)
 
     if (pts > 0) {//如果不大于零，这个clock就是上一帧视频的clock时间
         clock = pts;
     }
 
+    LOGE("getFrameDiffTime 音频audio的clock = %f pts的clock = %f", audio->clock, clock)
     //音频当前帧的时间戳-视频当前的时间戳
     double diff = audio->clock - clock;//>0的话就是视频慢，音频快放完了，要让视频睡眠小一点
     return diff;
@@ -270,6 +280,9 @@ double SLVideo::getFrameDiffTime(AVFrame *avFrame, AVPacket *avPacket) {
 double SLVideo::getDelayTime(double diff) {
     //这个地方研究一下，加注释
     //单位是秒
+    /**
+     * diff是上面计算得到，是两帧之间音频时间差
+     */
     LOGE("getDelayTime diff = %f  delayTime = %f", diff, delayTime)
     //TODO::这个策略有问题，diff通过上面getFrameDiffTime方法计算获得，第一帧是0.09，最后delayTime计算得到0.027
     //TODO::逐渐相加越来越大，
@@ -300,6 +313,7 @@ double SLVideo::getDelayTime(double diff) {
         delayTime = defaultDelayTime;
     }
     LOGE("最后延时时间 = %f", delayTime);
+//    return 0;
     return delayTime;
 }
 

@@ -53,7 +53,7 @@ void pcmBufferCallBack(SLAndroidSimpleBufferQueueItf bf, void *context) {//循�
             if (audio->clock - audio->last_time >= 0.1) {
                 audio->last_time = audio->clock;
 //                LOGE("onCallTimeInfo clock = %lf duration = %d", audio->clock, audio->duration);
-                LOGE("Native currentTime = %f duration = %f", audio->clock, audio->duration);
+//                LOGE("Native currentTime = %f duration = %f", audio->clock, audio->duration);
                 audio->callJava->onCallTimeInfo(CHILD_THREAD, audio->clock, audio->duration);
             }
             //循环入队，放入到这个队列后，OpenSLES会循环从这个队列取数据，并将数据放到mic播放

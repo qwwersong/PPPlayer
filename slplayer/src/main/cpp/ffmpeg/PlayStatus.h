@@ -12,6 +12,7 @@ public:
     bool isExit = false;
     bool isLoading = true;
     bool isSeek = false;
+    bool pasue = false;
 
 public:
     PlayStatus();
