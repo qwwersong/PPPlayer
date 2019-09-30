@@ -9,6 +9,7 @@ android {
         targetSdkVersion globalConfiguration.androidTargetSdkVersion
         versionCode 1
         versionName "1.0"
+
     }
 
     buildTypes {
@@ -22,4 +23,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    def viewDependencies = rootProject.ext.viewDependencies
+    implementation viewDependencies.exo_player2
+
+    api project(":basemodule")
 }

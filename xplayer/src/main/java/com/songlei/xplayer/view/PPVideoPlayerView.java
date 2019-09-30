@@ -20,8 +20,6 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.songlei.xplayer.R;
 import com.songlei.xplayer.base.Option;
 import com.songlei.xplayer.bean.VideoModeBean;
@@ -676,17 +674,18 @@ public class PPVideoPlayerView extends PPOrientationView {
         int width = CommonUtil.dip2px(getContext(), 150);
         int height = CommonUtil.dip2px(getContext(), 100);
 //        mPreView.setImageBitmap(mMediaUtil.decodeFrame(time));
-        Glide.with(getContext().getApplicationContext())
-                .setDefaultRequestOptions(
-                        new RequestOptions()
-                                //这里限制了只从缓存读取
-                                .onlyRetrieveFromCache(true)
-                                .frame(1000 * time)
-                                .override(width, height)
-                                .dontAnimate()
-                                .centerCrop())
-                .load(url)
-                .into(mPreView);
+
+//        Glide.with(getContext().getApplicationContext())
+//                .setDefaultRequestOptions(
+//                        new RequestOptions()
+//                                //这里限制了只从缓存读取
+//                                .onlyRetrieveFromCache(true)
+//                                .frame(1000 * time)
+//                                .override(width, height)
+//                                .dontAnimate()
+//                                .centerCrop())
+//                .load(url)
+//                .into(mPreView);
     }
 
     private void startDownFrame(String url) {
@@ -696,13 +695,13 @@ public class PPVideoPlayerView extends PPOrientationView {
             int height = CommonUtil.dip2px(getContext(), 100);
 //            mPreView.setImageBitmap(mMediaUtil.decodeFrame(time));
 
-            Glide.with(getContext().getApplicationContext())
-                    .setDefaultRequestOptions(
-                            new RequestOptions()
-                                    .frame(1000 * time)
-                                    .override(width, height)
-                                    .centerCrop())
-                    .load(url).preload(width, height);
+//            Glide.with(getContext().getApplicationContext())
+//                    .setDefaultRequestOptions(
+//                            new RequestOptions()
+//                                    .frame(1000 * time)
+//                                    .override(width, height)
+//                                    .centerCrop())
+//                    .load(url).preload(width, height);
         }
     }
 

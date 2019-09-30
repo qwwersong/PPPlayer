@@ -1,1 +1,1 @@
-include ':app', ':xplayer', ':obssplayer', ':basemodule', ':slplayer'
+include ':app', ':xplayer', ':obssplayer', ':basemodule', ':slplayer', ':exoplayer'

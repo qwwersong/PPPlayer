@@ -1,16 +1,18 @@
 package com.songlei.xplayer.util;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ContextThemeWrapper;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.fragment.app.FragmentActivity;
 
 
 /**
@@ -82,6 +84,7 @@ public class PlayerLayoutHelper {
     }
 
     //显示actionBar和statusBar
+    @SuppressLint("RestrictedApi")
     public static void showSupportActionBar(Context context, boolean actionBar, boolean statusBar) {
         if (actionBar) {
             AppCompatActivity appCompatActivity = PlayerLayoutHelper.getAppCompActivity(context);
@@ -105,6 +108,7 @@ public class PlayerLayoutHelper {
     }
 
     //隐藏actionBar和statusBar
+    @SuppressLint("RestrictedApi")
     public static void hideSupportActionBar(Context context, boolean actionBar, boolean statusBar) {
         if (actionBar) {
             AppCompatActivity appCompatActivity = PlayerLayoutHelper.getAppCompActivity(context);

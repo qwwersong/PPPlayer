@@ -3,11 +3,12 @@ package com.songlei.xplayer.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.support.v7.widget.TintContextWrapper;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Surface;
 import android.view.WindowManager;
+
+import androidx.appcompat.widget.TintContextWrapper;
 
 import java.util.Formatter;
 import java.util.Locale;
